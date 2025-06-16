@@ -37,6 +37,9 @@ struct ProfileView: View {
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .background(Color.grayscaleWhite)
+      .onAppear {
+        viewModel.handleAction(.onAppear)
+      }
     }
     .scrollIndicators(.hidden)
   }

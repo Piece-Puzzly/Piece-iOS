@@ -12,20 +12,26 @@ import UseCases
 @Observable
 @MainActor
 final class ProfileViewModel {
-  enum Action { }
+  enum Action {
+    case onAppear
+  }
   
   init(getProfileUseCase: GetProfileBasicUseCase) {
     self.getProfileUseCase = getProfileUseCase
-    
-    Task {
-      await fetchUserProfile()
-    }
   }
   
   private let getProfileUseCase: GetProfileBasicUseCase
   private(set) var isLoading = true
   private(set) var error: Error?
   private(set) var userProfile: UserProfile?
+  
+  func handleAction(_ action: Action) {
+    switch action {
+    case .onAppear:
+      isLoading = true
+      Task { await fetchUserProfile() }
+    }
+  }
   
   private func fetchUserProfile() async {
     do {

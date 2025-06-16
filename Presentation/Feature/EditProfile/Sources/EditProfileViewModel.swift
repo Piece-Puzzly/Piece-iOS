@@ -30,6 +30,10 @@ final class EditProfileViewModel {
     case saveJob
     case saveContact
     case editContact
+    case updateEditingState
+    case updateEditingNicknameState
+    case setImageFromCamera(Data?)
+    case selectPhoto(PhotosPickerItem?)
   }
   
   init(
@@ -50,8 +54,15 @@ final class EditProfileViewModel {
   private let checkNicknameUseCase: CheckNicknameUseCase
   private let uploadProfileImageUseCase: UploadProfileImageUseCase
   
+  // 초기 패치해온 프로필 데이터
+  private var initialProfile: ProfileBasicModel?
+  
+  var imageState: ImageState = .normal
+  var nicknameState: NicknameState = .normal
+  
   // TextField Bind
-  var profileImage: UIImage? = nil
+  var profileImageData: Data? = nil
+  var profileImageUrl: String = ""
   var nickname: String = ""
   var description: String = ""
   var birthDate: String = ""
@@ -63,8 +74,6 @@ final class EditProfileViewModel {
   var contacts: [ContactModel] = [ContactModel(type: .kakao, value: "")]
   
   // isValid
-  var isValidProfileImage: Bool = false
-  var isValidNickname: Bool = true
   var isDescriptionValid: Bool {
     !description.isEmpty && description.count <= 20
   }
@@ -78,9 +87,10 @@ final class EditProfileViewModel {
   var isContactsValid: Bool {
     return contacts.allSatisfy { !$0.value.isEmpty }
   }
-  var isNextButtonEnabled: Bool {
-    return isValidProfileImage &&
-    didCheckDuplicates && isValidNickname &&
+  
+  var isConfirmButtonEnable: Bool {
+    isEditing &&
+    nicknameState.isEnableConfirmButton && // success editing normal
     !nickname.isEmpty &&
     !description.isEmpty &&
     isValidBirthDate &&
@@ -88,42 +98,18 @@ final class EditProfileViewModel {
     isValidHeight &&
     isVaildWeight &&
     !job.isEmpty &&
-    isContactsValid &&
-    !isEditingNickName
-  }
-  var isEditing: Bool = false {
-    didSet {
-      print("isEditing 상태 변경: \(isEditing)")
-    }
-  }
-  var isEditingNickName: Bool = false
-  var navigationItemColor: Color {
-    isEditing ? .primaryDefault : .grayscaleDark3
+    isContactsValid
   }
   
-  // TextField InfoMessage
-  var nicknameInfoText: String {
-    if !isEditingNickName {
-      return ""
-    } else if nickname.isEmpty && didTapnextButton {
-      return "필수 항목을 입력해 주세요."
-    } else if nickname.count > 6 {
-      return "6자 이하로 작성해 주세요."
-    } else if didCheckDuplicates && !isValidNickname {
-      return "이미 사용 중인 닉네임입니다."
-    } else if didCheckDuplicates && isValidNickname {
-      return "사용할 수 있는 닉네임입니다."
-    } else {
-      return ""
-    }
+  var isEditing: Bool = false
+  var canEditImage: Bool {
+    imageState != .pending
   }
-  var nicknameInfoTextColor: Color  {
-    if didCheckDuplicates && isValidNickname {
-      return Color.primaryDefault
-    } else {
-      return Color.systemError
-    }
+  var navigationItemColor: Color {
+    isConfirmButtonEnable ? .primaryDefault : .grayscaleDark3
   }
+  var isInitialLoad: Bool = true
+  
   var descriptionInfoText: String {
     if description.isEmpty && didTapnextButton {
       return "필수 항목을 입력해 주세요."
@@ -195,8 +181,7 @@ final class EditProfileViewModel {
   var selectedSNSContactType: ContactModel.ContactType? = nil
   var prevSelectedContact: ContactModel? = nil
   var isContactTypeChangeSheetPresented: Bool = false
-  var selectedItem: PhotosPickerItem? = nil
-  var didCheckDuplicates: Bool = true
+  var selectedPhotoPickerItem: PhotosPickerItem? = nil
   var didTapnextButton: Bool = false
   
   var locationItems: [BottomSheetTextItem] = Locations.all.map { BottomSheetTextItem(text: $0) }
@@ -214,6 +199,9 @@ final class EditProfileViewModel {
   var isContactSheetPresented: Bool = false
   var isProfileImageSheetPresented: Bool = false
   var showToast: Bool = false
+  var canShowPendingOverlay: Bool {
+      imageState == .pending
+  }
   
   func handleAction(_ action: Action) {
     switch action {
@@ -258,25 +246,29 @@ final class EditProfileViewModel {
       tapContactBottomSheetSaveButton()
     case .editContact:
       tapContactBottomSheetEditButton()
+    case .updateEditingState:
+      updateEditingState()
+    case .updateEditingNicknameState:
+      updateEditingNicknameState()
+    case .setImageFromCamera(let imageData):
+      setImageFromCamera(imageData)
+    case .selectPhoto(let item):
+      selectedPhotoPickerItem = item
+      Task { await setImageFromAlbum() }
     }
   }
   
   private func handleTapConfirmButton() async {
-    print("isNextButtonEnabled: \(isNextButtonEnabled)")
+    if nicknameState == .editing {
+      updateEditingNicknameState(to: .unchecked)
+    }
     
-    if profileImage == nil || nickname.isEmpty || description.isEmpty || birthDate.isEmpty || location.isEmpty || height.isEmpty || weight.isEmpty || job.isEmpty || !isContactsValid {
+    if profileImageUrl.isEmpty || !nicknameState.isEnableConfirmButton || description.isEmpty || birthDate.isEmpty || location.isEmpty || height.isEmpty || weight.isEmpty || job.isEmpty || !isContactsValid {
       didTapnextButton = true
       await isToastVisible()
     } else {
       do {
-        guard let profileImage = profileImage else { return }
-        guard let imageData = profileImage.resizedAndCompressedData(targetSize: CGSize(width: 400, height: 400), compressionQuality: 0.5) else {
-          print("이미지 데이터 변환 실패")
-          return
-        }
-        
-        let imageURL = try await uploadProfileImageUseCase.execute(image: imageData)
-        print("이미지 업로드 성공: \(imageURL)")
+        await uploadProfileImageIfNeeded()
         
         let basicInfo = ProfileBasicModel(
           nickname: nickname,
@@ -288,12 +280,17 @@ final class EditProfileViewModel {
           location: location,
           smokingStatus: smokingStatus,
           snsActivityLevel: snsActivityLevel,
-          imageUri: imageURL.absoluteString,
+          imageUri: profileImageUrl,
+          pendingImageUrl: nil,
           contacts: contacts
         )
         
-        _ = try await updateProfileBasicUseCase.execute(profile: basicInfo)
-        isEditing = false
+        let updatedProfile = try await updateProfileBasicUseCase.execute(profile: basicInfo)
+        initialProfile = updatedProfile
+        pendingStateIfNeeded()
+        updateEditingState()
+        updateEditingNicknameState()
+        didTapnextButton = false
       } catch {
         print(error.localizedDescription)
       }
@@ -301,9 +298,9 @@ final class EditProfileViewModel {
   }
   
   private func handleTapVaildNicknameButton() async {
-    isValidNickname = (try? await checkNicknameUseCase.execute(nickname: nickname)) ?? false
-    didCheckDuplicates = true
-    isEditingNickName = false
+    let isValidNickname = (try? await checkNicknameUseCase.execute(nickname: nickname)) ?? false
+    let nickNameState: NicknameState = isValidNickname ? .success : .duplicated
+    updateEditingNicknameState(to: nickNameState)
   }
   
   @MainActor
@@ -326,37 +323,53 @@ final class EditProfileViewModel {
       return regex.firstMatch(in: input, options: [], range: range) != nil
   }
   
-  func loadImage() async {
-    guard let selectedItem else {
-      print("선택된 아이템이 없습니다.")
+  private func uploadProfileImageIfNeeded() async {
+    guard let imageData = self.profileImageData else {
+      print("DEBUG: 업로드할 이미지 없음")
       return
     }
     
     do {
-      if let data = try await selectedItem.loadTransferable(type: Data.self),
-         let image = UIImage(data: data) {
-        self.profileImage = image  // UIImage로 저장
-        self.isValidProfileImage = true
-        self.isEditing = true
-      } else {
-        print("이미지 데이터를 로드할 수 없습니다.")
-      }
+      let imageURL = try await uploadProfileImageUseCase.execute(image: imageData)
+      self.profileImageUrl = imageURL.absoluteString
+      self.profileImageData = nil
+      print("DEBUG: 이미지 업로드 성공: \(imageURL)")
     } catch {
-      print("이미지 로드 중 오류 발생: \(error.localizedDescription)")
+      print("DEBUG: 이미지 업로드 중 오류 발생: \(error.localizedDescription)")
     }
   }
   
-  func setImageFromCamera(_ image: UIImage) {
-    self.profileImage = image
-    self.isValidProfileImage = true
-    self.isEditing = true
+  func loadImageData() async -> Data? {
+    if let imageData = try? await selectedPhotoPickerItem?.loadTransferable(type: Data.self),
+       let resizedImageData = UIImage(data: imageData)?.resizedAndCompressedData(targetSize: CGSize(width: 400, height: 400)) {
+      return resizedImageData
+    }
+    
+    return nil
+  }
+
+  func setImageFromAlbum() async {
+    if let imageData = await loadImageData() {
+      self.profileImageData = imageData
+      self.imageState = .editing
+      handleAction(.updateEditingState)
+    }
+  }
+  
+  func setImageFromCamera(_ imageData: Data?) {
+    self.profileImageData = imageData
+    self.imageState = .editing
+    handleAction(.updateEditingState)
   }
   
   @MainActor
   private func getBasicProfile() async {
     do {
       let profile = try await getProfileBasicUseCase.execute()
+      // 초기 프로필 저장
+      initialProfile = profile
       
+      // 현재 데이터 바인딩
       nickname = profile.nickname
       description = profile.description
       birthDate = profile.birthdate.toCompactDateString
@@ -367,26 +380,77 @@ final class EditProfileViewModel {
       snsActivityLevel = profile.snsActivityLevel
       job = profile.job
       contacts = profile.contacts
-      
-      if let imageUrl = URL(string: profile.imageUri) {
-        profileImage = await fetchImage(from: imageUrl)
-      }
-      
-      isEditing = false
-      isEditingNickName = false
+
+      setImageState(for: profile)
+      setImage(for: profile)
     } catch {
       print(error.localizedDescription)
     }
   }
   
-  private func fetchImage(from url: URL) async -> UIImage? {
-      do {
-          let (data, _) = try await URLSession.shared.data(from: url)
-          return UIImage(data: data)
-      } catch {
-          print("이미지 다운로드 실패: \(error.localizedDescription)")
-          return nil
-      }
+  private func setImageState(for profile: ProfileBasicModel) {
+    if profile.pendingImageUrl != nil {
+      self.imageState = .pending
+    } else {
+      self.imageState = .normal
+    }
+  }
+  
+  private func setImage(for profile: ProfileBasicModel) {
+    switch imageState {
+    case .normal:
+      profileImageUrl = profile.imageUri
+    case .pending:
+      guard let pendingImageUrl = profile.pendingImageUrl else { return }
+      profileImageUrl = pendingImageUrl
+    default:
+      break
+    }
+  }
+
+  private func updateEditingNicknameState(to state: NicknameState? = nil) {
+    if let state {
+      nicknameState = state
+      return
+    }
+    
+    guard let initial = initialProfile else { return }
+    
+    nicknameState = determineNicknameState(initial: initial)
+    updateEditingState()
+  }
+  
+  private func determineNicknameState(initial: ProfileBasicModel) -> NicknameState {
+      guard nickname != initial.nickname else { return .normal }
+      guard !nickname.isEmpty else { return .empty }
+      guard nickname.count <= 6 else { return .overLength }
+      
+      return .editing
+  }
+  
+  private func updateEditingState() {
+    guard let initial = initialProfile else { return }
+    
+    let hasChanges =
+    imageState == .editing ||
+    (nicknameState.isEnableConfirmButton && nickname != initial.nickname) ||
+    description != initial.description ||
+    birthDate != initial.birthdate.toCompactDateString ||
+    location != initial.location ||
+    height != String(initial.height) ||
+    weight != String(initial.weight) ||
+    smokingStatus != initial.smokingStatus ||
+    snsActivityLevel != initial.snsActivityLevel ||
+    job != initial.job ||
+    contacts.map { $0.type } != initial.contacts.map { $0.type } ||
+    contacts.map { $0.value } != initial.contacts.map { $0.value }
+    
+    isEditing = hasChanges
+  }
+  private func pendingStateIfNeeded() {
+    if imageState == .editing {
+      imageState = .pending
+    }
   }
 }
 
@@ -425,6 +489,7 @@ extension EditProfileViewModel {
     }
     
     isLocationSheetPresented = false
+    updateEditingState()
   }
 }
 
@@ -511,6 +576,7 @@ extension EditProfileViewModel {
     }
     
     isJobSheetPresented = false
+    updateEditingState()
   }
 }
 
@@ -531,6 +597,7 @@ extension EditProfileViewModel {
     if let index = contacts.firstIndex(where: { $0.id == contact.id }),
        index > 0 {
       contacts.remove(at: index)
+      updateEditingState()
     }
   }
   
@@ -541,6 +608,8 @@ extension EditProfileViewModel {
       if let itemIndex = contactBottomSheetItems.firstIndex(where: { $0.icon == targetIcon }) {
         contactBottomSheetItems[itemIndex].state = .selected
       }
+      
+      updateEditingState()
     }
   }
   
@@ -586,6 +655,7 @@ extension EditProfileViewModel {
     
     prevSelectedContact = nil
     isContactTypeChangeSheetPresented = false
+    updateEditingState()
   }
   
   func tapContactBottomSheetSaveButton() {
@@ -599,6 +669,7 @@ extension EditProfileViewModel {
     }
     
     isContactSheetPresented = false
+    updateEditingState()
   }
 }
 
@@ -606,5 +677,65 @@ extension EditProfileViewModel {
 extension EditProfileViewModel {
   private enum Constant {
     static let contactModelCount: Int = 4
+  }
+  
+  enum ImageState {
+    case normal // 심사중 아님
+    case editing // 이미지 변경했는데 아직 저장안함
+    case pending // 이미지 심사중
+  }
+  
+  enum NicknameState {
+    case empty // 비어있을 때, 텍스트 입력 시 지정 가능
+    case normal // 초기와 같음, 텍스트 입력 시 지정 가능
+    case editing // 초기와 다름, 텍스트 입력 시 지정 가능
+    case overLength // 6글자 초과, 텍스트 입력 시 지정 가능
+    case duplicated // 중복된 상태, 중복버튼 누를 때 지정 가능
+    case success // 가능한 닉네임, 중복버튼 누를 떄 지정 가능
+    case unchecked // 수정은 했지만 중복검사 안함, 저장버튼 누를 때만 지정 가능 (저장버튼 누를때 editing인 경우 unchecked로 넘어감)
+    
+    var infoText: String {
+      switch self {
+      case .normal, .editing, .empty:
+        return ""
+      case .duplicated:
+        return "이미 사용 중인 닉네임입니다."
+      case .success:
+        return "사용할 수 있는 닉네임입니다."
+      case .overLength:
+        return "6자 이하로 작성해주세요."
+      case .unchecked:
+        return "닉네임 중복 검사를 진행해 주세요."
+      }
+    }
+    
+    var infoTextColor: Color {
+      switch self {
+      case .normal, .editing, .empty:
+        return Color.clear
+      case .duplicated, .overLength, .unchecked:
+        return Color.systemError
+      case .success:
+        return Color.primaryDefault
+      }
+    }
+    
+    var isEnableNickNameCheckButton: Bool {
+      switch self {
+      case .editing, .unchecked, .duplicated:
+        return true
+      case .empty, .normal, .success, .overLength:
+        return false
+      }
+    }
+    
+    var isEnableConfirmButton: Bool {
+      switch self {
+      case .success, .editing, .normal:
+        return true
+      case .empty, .duplicated, .overLength, .unchecked:
+        return false
+      }
+    }
   }
 }

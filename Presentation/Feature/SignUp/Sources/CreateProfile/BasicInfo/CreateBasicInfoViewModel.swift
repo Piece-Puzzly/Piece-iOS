@@ -270,6 +270,7 @@ final class CreateBasicInfoViewModel {
           smokingStatus: smokingStatus,
           snsActivityLevel: snsActivityLevel,
           imageUri: imageURL.absoluteString,
+          pendingImageUrl: nil,
           contacts: contacts
         )
         

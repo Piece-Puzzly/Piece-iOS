@@ -21,6 +21,7 @@ public struct ProfileBasicResponseDTO: Decodable {
   public let smokingStatus: String
   public let snsActivityLevel: String
   public let imageUrl: String
+  public let pendingImageUrl: String?
   public let contacts: [ContactResponseDTO]
 }
 
@@ -38,6 +39,7 @@ public extension ProfileBasicResponseDTO {
       smokingStatus: smokingStatus,
       snsActivityLevel: snsActivityLevel,
       imageUri: imageUrl,
+      pendingImageUrl: pendingImageUrl,
       contacts: contacts.map { $0.toDomain() }
     )
   }

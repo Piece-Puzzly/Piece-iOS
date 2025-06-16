@@ -17,6 +17,7 @@ public struct ProfileBasicModel {
   public let smokingStatus: String
   public let snsActivityLevel: String
   public let imageUri: String
+  public let pendingImageUrl: String?
   public let contacts: [ContactModel]
   
   public init(
@@ -31,6 +32,7 @@ public struct ProfileBasicModel {
     smokingStatus: String,
     snsActivityLevel: String,
     imageUri: String,
+    pendingImageUrl: String?,
     contacts: [ContactModel]
   ) {
     self.nickname = nickname
@@ -44,6 +46,7 @@ public struct ProfileBasicModel {
     self.smokingStatus = smokingStatus
     self.snsActivityLevel = snsActivityLevel
     self.imageUri = imageUri
+    self.pendingImageUrl = pendingImageUrl
     self.contacts = contacts
   }
 }
@@ -60,6 +63,7 @@ public extension ProfileBasicModel {
     smokingStatus: "",
     snsActivityLevel: "",
     imageUri: "",
+    pendingImageUrl: nil,
     contacts: []
   )
 }
