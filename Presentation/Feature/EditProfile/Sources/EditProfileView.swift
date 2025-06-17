@@ -41,8 +41,13 @@ struct EditProfileView: View {
         ScrollViewReader { proxy in
           ScrollView {
             VStack(alignment: .center, spacing: 32) {
-              // 프로필 이미지
-              profileImageButton
+              VStack(spacing: 8) {
+                // 프로필 이미지
+                profileImageButton
+                
+                // 프로필 이미지 설명 라벨
+                profileImageDescriptionLabel
+              }
               
               // 닉네임
               nicknameTextField.id("nickname_scroll")
@@ -155,7 +160,7 @@ struct EditProfileView: View {
         buttonAction: { viewModel.handleAction(.saveContact) },
         onTapRowItem: { viewModel.tapContactRowItem($0) }
       )
-      .presentationDetents([.height(458)])
+      .presentationDetents([.height(479)])
     }
     .sheet(isPresented: $viewModel.isContactTypeChangeSheetPresented) {
       PCBottomSheet<BottomSheetIconItem>(
@@ -167,7 +172,7 @@ struct EditProfileView: View {
         buttonAction: { viewModel.handleAction(.editContact) },
         onTapRowItem: { viewModel.tapContactRowItem($0) }
       )
-      .presentationDetents([.height(458)])
+      .presentationDetents([.height(479)])
     }
     .onAppear {
       viewModel.handleAction(.onAppear)
@@ -277,7 +282,7 @@ struct EditProfileView: View {
       .foregroundStyle(Color.grayscaleWhite)
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .background(Color.alphaBlack40)
-      .clipShape(Circle())
+      .clipShape(RoundedRectangle(cornerRadius: 20))
   }
   
   private var profileEditButton: some View {
@@ -293,6 +298,12 @@ struct EditProfileView: View {
               .stroke(Color.white, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
           )
       )
+  }
+  
+  private var profileImageDescriptionLabel: some View {
+    Text("얼굴이 잘 나온 사진으로 등록해 주세요.")
+      .pretendard(.body_S_M)
+      .foregroundStyle(Color.grayscaleDark3)
   }
   
   private var nicknameTextField: some View {
@@ -319,8 +330,8 @@ struct EditProfileView: View {
     .onSubmit {
       focusField = "description"
     }
-    .onChange(of: viewModel.nickname) { _, _ in
-      viewModel.handleAction(.updateEditingNicknameState)
+    .onChange(of: viewModel.nickname) { _, newValue in
+      viewModel.handleAction(.updateNickname(value: newValue))
     }
   }
   

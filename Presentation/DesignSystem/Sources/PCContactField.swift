@@ -84,6 +84,8 @@ public struct PCContactField: View {
         HStack {
           contact.image
           DesignSystemAsset.Icons.chevronDown24.swiftUIImage
+            .renderingMode(.template)
+            .foregroundColor(Color.grayscaleDark3)
         }
       }
 

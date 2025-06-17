@@ -41,37 +41,41 @@ struct CreateBasicInfoView: View {
               title
               
               // 프로필 이미지
-              Button {
-                viewModel.isProfileImageSheetPresented = true
-              } label: {
-                profileImage
-              }
-              .actionSheet(isPresented: $viewModel.isProfileImageSheetPresented) {
-                ActionSheet(
-                  title: Text("프로필 사진 선택"),
-                  buttons: [
-                    .default(Text("카메라")) { viewModel.handleAction(.selectCamera) },
-                    .default(Text("앨범")) { viewModel.handleAction(.selectPhotoLibrary) },
-                    .cancel(Text("취소"))
-                  ]
-                )
-              }
-              .fullScreenCover(isPresented: $viewModel.isCameraPresented) {
-                CameraPicker {
-                  viewModel.setImageFromCamera($0)
+              VStack(spacing: 8) {
+                Button {
+                  viewModel.isProfileImageSheetPresented = true
+                } label: {
+                  profileImage
                 }
-              }
-              .photosPicker(
-                isPresented: $viewModel.isPhotoSheetPresented,
-                selection: Binding(
-                  get: { viewModel.selectedItem },
-                  set: {
-                    viewModel.selectedItem = $0
-                    Task { await viewModel.loadImage() }
+                .actionSheet(isPresented: $viewModel.isProfileImageSheetPresented) {
+                  ActionSheet(
+                    title: Text("프로필 사진 선택"),
+                    buttons: [
+                      .default(Text("카메라")) { viewModel.handleAction(.selectCamera) },
+                      .default(Text("앨범")) { viewModel.handleAction(.selectPhotoLibrary) },
+                      .cancel(Text("취소"))
+                    ]
+                  )
+                }
+                .fullScreenCover(isPresented: $viewModel.isCameraPresented) {
+                  CameraPicker {
+                    viewModel.setImageFromCamera($0)
                   }
-                ),
-                matching: .images
-              )
+                }
+                .photosPicker(
+                  isPresented: $viewModel.isPhotoSheetPresented,
+                  selection: Binding(
+                    get: { viewModel.selectedItem },
+                    set: {
+                      viewModel.selectedItem = $0
+                      Task { await viewModel.loadImage() }
+                    }
+                  ),
+                  matching: .images
+                )
+                
+                profileImageDescriptionLabel
+              }
               // 닉네임
               nicknameTextField.id("nickname_scroll")
               
@@ -186,7 +190,7 @@ struct CreateBasicInfoView: View {
         buttonAction: { viewModel.handleAction(.saveContact) },
         onTapRowItem: { viewModel.tapContactRowItem($0) }
       )
-      .presentationDetents([.height(458)])
+      .presentationDetents([.height(479)])
     }
     .sheet(isPresented: $viewModel.isContactTypeChangeSheetPresented) {
       PCBottomSheet<BottomSheetIconItem>(
@@ -198,7 +202,7 @@ struct CreateBasicInfoView: View {
         buttonAction: { viewModel.handleAction(.editContact) },
         onTapRowItem: { viewModel.tapContactRowItem($0) }
       )
-      .presentationDetents([.height(458)])
+      .presentationDetents([.height(479)])
     }
   }
   
@@ -223,26 +227,41 @@ struct CreateBasicInfoView: View {
           .resizable()
           .scaledToFill()
           .frame(width: 120, height: 120)
-          .clipShape(Circle())
+          .clipShape(RoundedRectangle(cornerRadius: 20))
       } else {
         DesignSystemAsset.Images.profileImageNodata.swiftUIImage
       }
     }
     .overlay(alignment: .bottomTrailing) {
-      DesignSystemAsset.Icons.plus24.swiftUIImage
-        .renderingMode(.template)
-        .foregroundStyle(Color.grayscaleWhite)
-        .background(
-          Circle()
-            .frame(width: 33, height: 33)
-            .foregroundStyle(Color.primaryDefault)
-            .overlay(
-              Circle()
-                .stroke(Color.white, lineWidth: 3)
-            )
-        )
+      profileEditButton(
+        viewModel.profileImage != nil
+        ? DesignSystemAsset.Icons.pencilFill24.swiftUIImage
+        : DesignSystemAsset.Icons.plus24.swiftUIImage
+      )
     }
-    .padding(.bottom, 8)
+  }
+  
+  private func profileEditButton(_ image: Image) -> some View {
+    image
+      .renderingMode(.template)
+      .foregroundStyle(Color.grayscaleWhite)
+      .background(
+        Circle()
+          .frame(width: 36, height: 36)
+          .foregroundStyle(Color.primaryDefault)
+          .overlay(
+            Circle()
+              .stroke(Color.white, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
+          )
+      )
+      .padding(.bottom, 10)
+      .padding(.trailing, 10)
+  }
+  
+  private var profileImageDescriptionLabel: some View {
+    Text("얼굴이 잘 나온 사진으로 등록해 주세요.")
+      .pretendard(.body_S_M)
+      .foregroundStyle(Color.grayscaleDark3)
   }
   
   private var nicknameTextField: some View {
@@ -255,19 +274,22 @@ struct CreateBasicInfoView: View {
     )
     .withButton(
       RoundedButton(
-        type: .solid,
+        type: viewModel.nicknameState.isEnableNickNameCheckButton ? .solid : .disabled,
         buttonText: "중복검사",
         width: .maxWidth,
-        action: { viewModel.handleAction(.tapVaildNickName)}
+        action: { viewModel.handleAction(.tapVaildNickName) }
       )
     )
     .infoText(
-      viewModel.nicknameInfoText,
-      color: viewModel.nicknameInfoTextColor
+      viewModel.nicknameState.infoText,
+      color: viewModel.nicknameState.infoTextColor
     )
     .textMaxLength(6)
     .onSubmit {
       focusField = "description"
+    }
+    .onChange(of: viewModel.nickname) { _, newValue in
+      viewModel.handleAction(.updateNickname(value: newValue))
     }
   }
   

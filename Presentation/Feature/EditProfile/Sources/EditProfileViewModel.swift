@@ -90,9 +90,8 @@ final class EditProfileViewModel {
   
   var isConfirmButtonEnable: Bool {
     isEditing &&
-    nicknameState.isEnableConfirmButton && // success editing normal
-    !nickname.isEmpty &&
-    !description.isEmpty &&
+    nicknameState.isEnableConfirmButton &&
+    isDescriptionValid &&
     isValidBirthDate &&
     !location.isEmpty &&
     isValidHeight &&
@@ -263,7 +262,7 @@ final class EditProfileViewModel {
       updateEditingNicknameState(to: .unchecked)
     }
     
-    if profileImageUrl.isEmpty || !nicknameState.isEnableConfirmButton || description.isEmpty || birthDate.isEmpty || location.isEmpty || height.isEmpty || weight.isEmpty || job.isEmpty || !isContactsValid {
+    if profileImageUrl.isEmpty || !nicknameState.isEnableConfirmButton || !isDescriptionValid || birthDate.isEmpty || location.isEmpty || height.isEmpty || weight.isEmpty || job.isEmpty || !isContactsValid {
       didTapnextButton = true
       await isToastVisible()
     } else {
@@ -408,6 +407,11 @@ final class EditProfileViewModel {
     }
   }
 
+  private func handleUpdateNickname(_ newValue: String) {
+    nickname = newValue.replacingOccurrences(of: " ", with: "")
+    updateEditingNicknameState()
+  }
+  
   private func updateEditingNicknameState(to state: NicknameState? = nil) {
     if let state {
       nicknameState = state

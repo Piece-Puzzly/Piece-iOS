@@ -28,6 +28,7 @@ final class CreateBasicInfoViewModel {
     case saveJob
     case saveContact
     case editContact
+    case updateNickname(value: String)
   }
   
   init(
@@ -46,6 +47,7 @@ final class CreateBasicInfoViewModel {
   private let checkNicknameUseCase: CheckNicknameUseCase
   private let uploadProfileImageUseCase: UploadProfileImageUseCase
   let profileCreator: ProfileCreator
+  var nicknameState: NicknameState = .empty
   
   // TextField Bind
   var profileImage: UIImage? = nil
@@ -61,7 +63,6 @@ final class CreateBasicInfoViewModel {
   
   // isValid
   var isValidProfileImage: Bool = false
-  var isValidNickname: Bool = false
   var isDescriptionValid: Bool {
     !description.isEmpty && description.count <= 20
   }
@@ -77,38 +78,14 @@ final class CreateBasicInfoViewModel {
   }
   var isNextButtonEnabled: Bool {
     return isValidProfileImage &&
-    didCheckDuplicates && isValidNickname &&
-    isValidBirthDate &&
-    !nickname.isEmpty &&
-    !description.isEmpty &&
+    nicknameState.isEnableNextButton &&
+    isDescriptionValid &&
     isValidBirthDate &&
     !location.isEmpty &&
     isValidHeight &&
     isVaildWeight &&
     !job.isEmpty &&
     isContactsValid
-  }
-  
-  // TextField InfoMessage
-  var nicknameInfoText: String {
-    if nickname.isEmpty && didTapnextButton {
-      return "필수 항목을 입력해 주세요."
-    } else if nickname.count > 6 {
-      return "6자 이하로 작성해 주세요."
-    } else if didCheckDuplicates && !isValidNickname {
-      return "이미 사용 중인 닉네임입니다."
-    } else if didCheckDuplicates && isValidNickname {
-      return "사용할 수 있는 닉네임입니다."
-    } else {
-      return ""
-    }
-  }
-  var nicknameInfoTextColor: Color  {
-    if didCheckDuplicates && isValidNickname {
-      return Color.primaryDefault
-    } else {
-      return Color.systemError
-    }
   }
   var descriptionInfoText: String {
     if description.isEmpty && didTapnextButton {
@@ -238,13 +215,22 @@ final class CreateBasicInfoViewModel {
       tapContactBottomSheetSaveButton()
     case .editContact:
       tapContactBottomSheetEditButton()
+    case .updateNickname(let value):
+      handleUpdateNickname(value)
     }
   }
   
   private func handleTapNextButton() async {
-    print("isNextButtonEnabled: \(isNextButtonEnabled)")
+    switch nicknameState {
+    case .empty:
+      updateEditingNicknameState(to: .emptyError)
+    case .editing:
+      updateEditingNicknameState(to: .unchecked)
+    default:
+      break
+    }
     
-    if profileImage == nil || nickname.isEmpty || description.isEmpty || birthDate.isEmpty || location.isEmpty || height.isEmpty || weight.isEmpty || job.isEmpty || !isContactsValid {
+    if profileImage == nil || !nicknameState.isEnableNextButton || !isDescriptionValid || birthDate.isEmpty || location.isEmpty || height.isEmpty || weight.isEmpty || job.isEmpty || !isContactsValid {
       didTapnextButton = true
       profileCreator.isBasicInfoValid(false)
       await isToastVisible()
@@ -285,8 +271,9 @@ final class CreateBasicInfoViewModel {
   }
   
   private func handleTapVaildNicknameButton() async {
-    isValidNickname = (try? await checkNicknameUseCase.execute(nickname: nickname)) ?? false
-    didCheckDuplicates = true
+    let isValidNickname = (try? await checkNicknameUseCase.execute(nickname: nickname)) ?? false
+    let nickNameState: NicknameState = isValidNickname ? .success : .duplicated
+    updateEditingNicknameState(to: nickNameState)
   }
   
   @MainActor
@@ -331,6 +318,27 @@ final class CreateBasicInfoViewModel {
   func setImageFromCamera(_ image: UIImage) {
     self.profileImage = image
     self.isValidProfileImage = true
+  }
+  
+  private func handleUpdateNickname(_ newValue: String) {
+    nickname = newValue.replacingOccurrences(of: " ", with: "")
+    updateEditingNicknameState()
+  }
+  
+  private func updateEditingNicknameState(to state: NicknameState? = nil) {
+    if let state {
+      nicknameState = state
+      return
+    }
+    
+    nicknameState = determineNicknameState(nickname: nickname)
+  }
+  
+  private func determineNicknameState(nickname: String) -> NicknameState {
+    guard !nickname.isEmpty else { return .empty }
+    guard nickname.count <= 6 else { return .overLength }
+    
+    return .editing
   }
 }
 
@@ -547,5 +555,61 @@ extension CreateBasicInfoViewModel {
 extension CreateBasicInfoViewModel {
   private enum Constant {
     static let contactModelCount: Int = 4
+  }
+  
+  enum NicknameState {
+    case empty // 비어있을 때, 텍스트 입력 시 지정 가능
+    case emptyError // 비어있을 때 다음버튼 눌렀을 때
+    case editing // 수정중이며 중복검사 안했을 때, 텍스트 입력 시 지정 가능
+    case overLength // 6글자 초과, 텍스트 입력 시 지정 가능
+    case duplicated // 중복된 상태, 중복버튼 누를 때 지정 가능
+    case success // 가능한 닉네임, 중복버튼 누를 떄 지정 가능
+    case unchecked // 수정은 했지만 중복검사 안함, 다음버튼 누를 시 editing -> unchecked로 넘어감
+    
+    var infoText: String {
+      switch self {
+      case .empty, .editing:
+        return ""
+      case .emptyError:
+        return "필수 항목을 입력해 주세요."
+      case .duplicated:
+        return "이미 사용 중인 닉네임입니다."
+      case .success:
+        return "사용할 수 있는 닉네임입니다."
+      case .overLength:
+        return "6자 이하로 작성해주세요."
+      case .unchecked:
+        return "닉네임 중복 검사를 진행해 주세요."
+      }
+    }
+    
+    var infoTextColor: Color {
+      switch self {
+      case .editing, .empty:
+        return Color.clear
+      case .emptyError, .duplicated, .overLength, .unchecked:
+        return Color.systemError
+      case .success:
+        return Color.primaryDefault
+      }
+    }
+    
+    var isEnableNickNameCheckButton: Bool {
+      switch self {
+      case .editing, .unchecked, .duplicated:
+        return true
+      case .empty, .emptyError, .success, .overLength:
+        return false
+      }
+    }
+    
+    var isEnableNextButton: Bool {
+      switch self {
+      case .success:
+        return true
+      case .empty, .emptyError, .editing, .duplicated, .overLength, .unchecked:
+        return false
+      }
+    }
   }
 }
