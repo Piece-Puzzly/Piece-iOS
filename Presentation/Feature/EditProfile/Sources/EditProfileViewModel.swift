@@ -31,7 +31,7 @@ final class EditProfileViewModel {
     case saveContact
     case editContact
     case updateEditingState
-    case updateEditingNicknameState
+    case updateNickname(value: String)
     case setImageFromCamera(Data?)
     case selectPhoto(PhotosPickerItem?)
   }
@@ -247,8 +247,8 @@ final class EditProfileViewModel {
       tapContactBottomSheetEditButton()
     case .updateEditingState:
       updateEditingState()
-    case .updateEditingNicknameState:
-      updateEditingNicknameState()
+    case .updateNickname(let value):
+      handleUpdateNickname(value)
     case .setImageFromCamera(let imageData):
       setImageFromCamera(imageData)
     case .selectPhoto(let item):
