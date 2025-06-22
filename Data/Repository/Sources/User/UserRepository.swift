@@ -7,6 +7,7 @@
 
 import DTO
 import Entities
+import LocalStorage
 import PCNetwork
 import RepositoryInterfaces
 
