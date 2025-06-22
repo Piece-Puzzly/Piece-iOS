@@ -18,6 +18,9 @@ import PCFoundationExtension
 final class EditProfileViewModel {
   enum Action {
     case onAppear
+    case popBack
+    case tapBackButton
+    case tapCloseAlert
     case tapConfirmButton
     case tapVaildNickName
     case selectCamera
@@ -197,6 +200,8 @@ final class EditProfileViewModel {
   }
   var isContactSheetPresented: Bool = false
   var isProfileImageSheetPresented: Bool = false
+  var shouldPopBack: Bool = false
+  var showProfileExitAlert: Bool = false
   var showToast: Bool = false
   var canShowPendingOverlay: Bool {
       imageState == .pending
@@ -210,6 +215,20 @@ final class EditProfileViewModel {
       }
       
       setupJobItemsWithEtc()
+    case .popBack:
+      Task {
+        showProfileExitAlert = false
+        try? await Task.sleep(for: .milliseconds(100))
+        shouldPopBack = true
+      }
+    case .tapBackButton:
+      if isEditing {
+        showProfileExitAlert = true
+      } else {
+        shouldPopBack = true
+      }
+    case .tapCloseAlert:
+      showProfileExitAlert = false
     case .tapConfirmButton:
       Task {
         await handleTapConfirmButton()

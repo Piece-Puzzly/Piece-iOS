@@ -174,15 +174,23 @@ struct EditProfileView: View {
       )
       .presentationDetents([.height(479)])
     }
+    .pcAlert(isPresented: $viewModel.showProfileExitAlert) {
+      profileExitAlert
+    }
     .onAppear {
       viewModel.handleAction(.onAppear)
+    }
+    .onChange(of: viewModel.shouldPopBack) { _, shouldPopBack in
+      if shouldPopBack { 
+        router.pop()
+      }
     }
   }
   
   private var navigationBar: some View {
     NavigationBar(
       title: "기본 정보 수정",
-      leftButtonTap: { router.pop() },
+      leftButtonTap: { viewModel.handleAction(.tapBackButton) },
       rightButton: Button {
         viewModel.handleAction(.tapConfirmButton)
         focusField = nil
@@ -529,6 +537,18 @@ struct EditProfileView: View {
       Rectangle()
         .foregroundStyle(Color.grayscaleDark2)
         .cornerRadius(12)
+    )
+  }
+  
+  private var profileExitAlert: AlertView<Text> {
+    AlertView(
+      icon: DesignSystemAsset.Icons.notice40.swiftUIImage,
+      title: { Text("작성 중인 프로필이 사라져요!") },
+      message: "지금 뒤로 가면 프로필이 저장되지 않습니다.\n계속 이어서 작성해 보세요.",
+      firstButtonText: "작성 중단하기",
+      secondButtonText: "이어서 작성하기",
+      firstButtonAction: { viewModel.handleAction(.popBack) },
+      secondButtonAction: { viewModel.handleAction(.tapCloseAlert) }
     )
   }
 }
