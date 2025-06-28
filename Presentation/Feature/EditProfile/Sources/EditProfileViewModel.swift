@@ -22,6 +22,7 @@ final class EditProfileViewModel {
     case tapBackButton
     case tapCloseAlert
     case tapConfirmButton
+    case tapConfirmImageReexamination
     case tapVaildNickName
     case selectCamera
     case selectPhotoLibrary
@@ -202,6 +203,7 @@ final class EditProfileViewModel {
   var isProfileImageSheetPresented: Bool = false
   var shouldPopBack: Bool = false
   var showProfileExitAlert: Bool = false
+  var showImageReexaminationAlert: Bool = false
   var showToast: Bool = false
   var canShowPendingOverlay: Bool {
       imageState == .pending
@@ -229,7 +231,18 @@ final class EditProfileViewModel {
       }
     case .tapCloseAlert:
       showProfileExitAlert = false
+      showImageReexaminationAlert = false
     case .tapConfirmButton:
+      if imageState == .editing {
+        showImageReexaminationAlert = true
+      } else {
+        Task {
+          await handleTapConfirmButton()
+        }
+      }
+    case .tapConfirmImageReexamination:
+      showImageReexaminationAlert = false
+      
       Task {
         await handleTapConfirmButton()
       }

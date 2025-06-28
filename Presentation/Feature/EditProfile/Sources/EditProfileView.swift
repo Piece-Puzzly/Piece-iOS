@@ -177,6 +177,9 @@ struct EditProfileView: View {
     .pcAlert(isPresented: $viewModel.showProfileExitAlert) {
       profileExitAlert
     }
+    .pcAlert(isPresented: $viewModel.showImageReexaminationAlert) {
+      imageReexaminationAlert
+    }
     .onAppear {
       viewModel.handleAction(.onAppear)
     }
@@ -549,6 +552,18 @@ struct EditProfileView: View {
       secondButtonText: "이어서 작성하기",
       firstButtonAction: { viewModel.handleAction(.popBack) },
       secondButtonAction: { viewModel.handleAction(.tapCloseAlert) }
+    )
+  }
+
+  private var imageReexaminationAlert: AlertView<Text> {
+    AlertView(
+      icon: DesignSystemAsset.Icons.notice40.swiftUIImage,
+      title: { Text("사진은 심사 통과 후 반영됩니다!") },
+      message: "안전한 커뮤니티를 위해 사진은 수정 시\n심사를 다시 진행해요. 신중하게 변경해 주세요!",
+      firstButtonText: "뒤로",
+      secondButtonText: "변경하기",
+      firstButtonAction: { viewModel.handleAction(.tapCloseAlert) },
+      secondButtonAction: { viewModel.handleAction(.tapConfirmImageReexamination) }
     )
   }
 }
