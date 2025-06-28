@@ -484,9 +484,8 @@ final class EditProfileViewModel {
     smokingStatus != initial.smokingStatus ||
     snsActivityLevel != initial.snsActivityLevel ||
     job != initial.job ||
-    contacts.map { $0.type } != initial.contacts.map { $0.type } ||
-    contacts.map { $0.value } != initial.contacts.map { $0.value }
-    
+    Set(contacts.map { $0.type }) != Set(initial.contacts.map { $0.type }) ||
+    Set(contacts.map { $0.value }) != Set(initial.contacts.map { $0.value })
     isEditing = hasChanges
   }
   private func pendingStateIfNeeded() {
