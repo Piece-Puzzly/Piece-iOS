@@ -117,6 +117,12 @@ struct EditProfileView: View {
       .ignoresSafeArea(.keyboard)
     }
     .toolbar(.hidden, for: .navigationBar)
+    .pcAlert(isPresented: $viewModel.showProfileExitAlert) {
+      profileExitAlert
+    }
+    .pcAlert(isPresented: $viewModel.showImageReexaminationAlert) {
+      imageReexaminationAlert
+    }
     .sheet(isPresented: $viewModel.isLocationSheetPresented) {
       PCBottomSheet<BottomSheetTextItem>(
         isButtonEnabled: Binding(projectedValue: .constant(viewModel.isLocationBottomSheetButtonEnable)),
@@ -163,12 +169,6 @@ struct EditProfileView: View {
         onTapRowItem: { viewModel.tapContactRowItem($0) }
       )
       .presentationDetents([.height(479)])
-    }
-    .pcAlert(isPresented: $viewModel.showProfileExitAlert) {
-      profileExitAlert
-    }
-    .pcAlert(isPresented: $viewModel.showImageReexaminationAlert) {
-      imageReexaminationAlert
     }
     .overlay(alignment: .bottom) {
       PCToast(
