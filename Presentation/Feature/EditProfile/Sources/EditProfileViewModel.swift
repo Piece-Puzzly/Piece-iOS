@@ -204,7 +204,6 @@ final class EditProfileViewModel {
   var shouldPopBack: Bool = false
   var showProfileExitAlert: Bool = false
   var showImageReexaminationAlert: Bool = false
-  var showToast: Bool = false
   var canShowPendingOverlay: Bool {
       imageState == .pending
   }
@@ -296,7 +295,6 @@ final class EditProfileViewModel {
     
     if profileImageUrl.isEmpty || !nicknameState.isEnableConfirmButton || !isDescriptionValid || birthDate.isEmpty || location.isEmpty || height.isEmpty || weight.isEmpty || job.isEmpty || !isContactsValid {
       didTapnextButton = true
-      await isToastVisible()
     } else {
       do {
         await uploadProfileImageIfNeeded()
@@ -335,10 +333,6 @@ final class EditProfileViewModel {
   }
   
   @MainActor
-  private func isToastVisible() async {
-    showToast = true
-    try? await Task.sleep(for: .seconds(3))
-    showToast = false
   }
   
   private func isValidBirthDateFormat(_ date: String) -> Bool {
