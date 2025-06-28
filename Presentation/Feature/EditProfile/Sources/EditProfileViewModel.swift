@@ -215,46 +215,33 @@ final class EditProfileViewModel {
     case .onAppear:
       Task {
         await getBasicProfile()
+        setupJobItemsWithEtc()
       }
-      
-      setupJobItemsWithEtc()
     case .popBack:
       Task {
-        showProfileExitAlert = false
+        hideAlerts()
         try? await Task.sleep(for: .milliseconds(100))
-        shouldPopBack = true
+        setPopBack()
       }
     case .tapBackButton:
-      if isEditing {
-        showProfileExitAlert = true
-      } else {
-        shouldPopBack = true
-      }
+      isEditing ? showExitAlert() : setPopBack()
     case .tapCloseAlert:
-      showProfileExitAlert = false
-      showImageReexaminationAlert = false
+      hideAlerts()
     case .tapConfirmButton:
       if imageState == .editing {
         showImageReexaminationAlert = true
       } else {
-        Task {
-          await handleTapConfirmButton()
-        }
+        Task { await handleTapConfirmButton() }
       }
     case .tapConfirmImageReexamination:
       showImageReexaminationAlert = false
-      
-      Task {
-        await handleTapConfirmButton()
-      }
+      Task { await handleTapConfirmButton() }
     case .selectCamera:
       isCameraPresented = true
     case .selectPhotoLibrary:
       isPhotoSheetPresented = true
     case .tapVaildNickName:
-      Task {
-        await handleTapVaildNicknameButton()
-      }
+      Task { await handleTapVaildNicknameButton() }
     case .tapLocation:
       isLocationSheetPresented = true
       updateLocationBottomSheetItems()
@@ -338,7 +325,6 @@ final class EditProfileViewModel {
     updateEditingNicknameState(to: nickNameState)
   }
   
-  @MainActor
   private func showToast(isSuccess: Bool) async {
     toastMessage = isSuccess ? Constant.saveSuccessToastMessage : Constant.saveErrorToastMessage
     
@@ -346,6 +332,19 @@ final class EditProfileViewModel {
     try? await Task.sleep(for: .milliseconds(3000))
     showProfileEditSuccessToast = false
   }
+  
+  private func hideAlerts() {
+    showProfileExitAlert = false
+    showImageReexaminationAlert = false
+  }
+
+  private func showExitAlert() {
+    showProfileExitAlert = true
+  }
+
+  private func setPopBack() {
+    shouldPopBack = true
+  }  
   
   private func isValidBirthDateFormat(_ date: String) -> Bool {
     let dateRegex = #"^(19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])$"# // YYYYMMDD
