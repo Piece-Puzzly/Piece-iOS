@@ -170,6 +170,12 @@ struct EditProfileView: View {
     .pcAlert(isPresented: $viewModel.showImageReexaminationAlert) {
       imageReexaminationAlert
     }
+    .overlay(alignment: .bottom) {
+      PCToast(
+        isVisible: $viewModel.showProfileEditSuccessToast,
+        text: viewModel.toastMessage
+      )
+    }
     .onAppear {
       viewModel.handleAction(.onAppear)
     }

@@ -204,6 +204,8 @@ final class EditProfileViewModel {
   var shouldPopBack: Bool = false
   var showProfileExitAlert: Bool = false
   var showImageReexaminationAlert: Bool = false
+  var showProfileEditSuccessToast: Bool = false
+  var toastMessage: String = Constant.saveSuccessToastMessage
   var canShowPendingOverlay: Bool {
       imageState == .pending
   }
@@ -295,6 +297,7 @@ final class EditProfileViewModel {
     
     if profileImageUrl.isEmpty || !nicknameState.isEnableConfirmButton || !isDescriptionValid || birthDate.isEmpty || location.isEmpty || height.isEmpty || weight.isEmpty || job.isEmpty || !isContactsValid {
       didTapnextButton = true
+      await showToast(isSuccess: false)
     } else {
       do {
         await uploadProfileImageIfNeeded()
@@ -320,8 +323,11 @@ final class EditProfileViewModel {
         updateEditingState()
         updateEditingNicknameState()
         didTapnextButton = false
+        
+        await showToast(isSuccess: true)
       } catch {
         print(error.localizedDescription)
+        await showToast(isSuccess: false)
       }
     }
   }
@@ -333,6 +339,12 @@ final class EditProfileViewModel {
   }
   
   @MainActor
+  private func showToast(isSuccess: Bool) async {
+    toastMessage = isSuccess ? Constant.saveSuccessToastMessage : Constant.saveErrorToastMessage
+    
+    showProfileEditSuccessToast = true
+    try? await Task.sleep(for: .milliseconds(3000))
+    showProfileEditSuccessToast = false
   }
   
   private func isValidBirthDateFormat(_ date: String) -> Bool {
@@ -707,6 +719,8 @@ extension EditProfileViewModel {
 extension EditProfileViewModel {
   private enum Constant {
     static let contactModelCount: Int = 4
+    static let saveSuccessToastMessage: String = "프로필이 수정되었어요"
+    static let saveErrorToastMessage: String = "프로필 수정에 실패했어요"
   }
   
   enum ImageState {
