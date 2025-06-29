@@ -15,6 +15,7 @@ public class NetworkService {
   public static let shared = NetworkService()
   private let authQueue = DispatchQueue(label: "authQueue")
   private let networkLogger: NetworkLogger
+  private let dateFormatter = DateFormatter()
   private var session: Session
   
   private init() {
@@ -44,12 +45,14 @@ public class NetworkService {
       interceptor: interceptor,
       eventMonitors: [networkLogger]
     )
+    
+    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssX"
   }
   
   public func request<T: Decodable>(endpoint: TargetType) async throws -> T {
     print("🛰 request path: \(endpoint.path)")
     let decoder = JSONDecoder()
-    decoder.dateDecodingStrategy = .iso8601
+    decoder.dateDecodingStrategy = .formatted(dateFormatter)
     
     return try await withCheckedThrowingContinuation { continuation in
       session.request(endpoint)
