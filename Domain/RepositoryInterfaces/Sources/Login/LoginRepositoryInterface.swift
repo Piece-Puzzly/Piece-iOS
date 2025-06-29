@@ -14,4 +14,5 @@ public protocol LoginRepositoryInterface {
   func verifySMSCode(phoneNumber: String, code: String) async throws -> VerifySMSCodeResponseModel
   func checkTokenHealth(token: String) async throws -> VoidModel
   func registerFcmToken(token: String) async throws -> VoidModel
+  func testLogin(userId: Int) async throws -> SocialLoginResultModel
 }

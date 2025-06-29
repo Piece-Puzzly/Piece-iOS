@@ -25,7 +25,6 @@ public final class LoginRepository: LoginRepositoryInterface {
   ) async throws -> SocialLoginResultModel {
     let body = SocialLoginRequsetDTO(providerName: providerName, token: token)
     let endpoint = LoginEndpoint.loginWithOAuth(body: body)
-    
     let responseDTO: SocialLoginResponseDTO = try await networkService.requestWithoutAuth(endpoint: endpoint)
     PCKeychainManager.shared.save(.accessToken, value: responseDTO.accessToken)
     PCKeychainManager.shared.save(.refreshToken, value: responseDTO.refreshToken)
@@ -63,6 +62,15 @@ public final class LoginRepository: LoginRepositoryInterface {
     let requestDto = FCMTokenRequestDTO(token: token)
     let endpoint = LoginEndpoint.registerFcmToken(body: requestDto)
     let responseDTO: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
+    return responseDTO.toDomain()
+  }
+  
+  public func testLogin(userId: Int) async throws -> SocialLoginResultModel {
+    let endpoint = LoginEndpoint.testLogin(userId: userId)
+    let responseDTO: SocialLoginResponseDTO = try await networkService.requestWithoutAuth(endpoint: endpoint)
+    PCKeychainManager.shared.save(.accessToken, value: responseDTO.accessToken)
+    PCKeychainManager.shared.save(.refreshToken, value: responseDTO.refreshToken)
+    networkService.updateCredentials()
     return responseDTO.toDomain()
   }
 }

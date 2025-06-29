@@ -37,6 +37,8 @@ extension Project {
             "kakaolink"
           ],
           "GIDClientID": "$(GIDClientID).apps.googleusercontent.com",
+          "TEST_LOGIN_ID": "$(TEST_LOGIN_ID)",
+          "TEST_LOGIN_PASSWORD": "$(TEST_LOGIN_PASSWORD)",
           "CFBundleShortVersionString": AppConstants.version,
           "CFBundleVersion": AppConstants.build,
           "CFBundleDisplayName": AppConstants.bundleDisplayName,
