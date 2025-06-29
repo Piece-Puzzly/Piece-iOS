@@ -11,9 +11,13 @@ import UseCases
 public struct LoginViewFactory {
   @ViewBuilder
   public static func createLoginView(
-    socialLoginUseCase: SocialLoginUseCase
+    socialLoginUseCase: SocialLoginUseCase,
+    testLoginUseCase: TestLoginUseCase
   ) -> some View {
-    LoginView(socialLoginUseCase: socialLoginUseCase)
+    LoginView(
+      socialLoginUseCase: socialLoginUseCase,
+      testLoginUseCase: testLoginUseCase
+    )
   }
   
   @ViewBuilder

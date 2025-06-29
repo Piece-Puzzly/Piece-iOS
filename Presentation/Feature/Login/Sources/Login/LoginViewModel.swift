@@ -24,15 +24,23 @@ final class LoginViewModel: NSObject {
     case tapAppleLoginButton
     case tapKakaoLoginButton
     case tapGoogleLoginButton
+    case submitTestLoginPassword
   }
   
-  init(socialLoginUseCase: SocialLoginUseCase) {
+  init(
+    socialLoginUseCase: SocialLoginUseCase,
+    testLoginUseCase: TestLoginUseCase
+  ) {
     self.socialLoginUseCase = socialLoginUseCase
+    self.testLoginUseCase = testLoginUseCase
   }
   
   let inquiriesUri = "https://kd0n5.channel.io/home"
   var showBannedAlert: Bool = false
+  var showTestPasswordAlert: Bool = false
+  var testPassword: String = ""
   private let socialLoginUseCase: SocialLoginUseCase
+  private let testLoginUseCase: TestLoginUseCase
   private(set) var destination: Route?
   
   func handleAction(_ action: Action) {
@@ -48,6 +56,10 @@ final class LoginViewModel: NSObject {
     case .tapGoogleLoginButton:
       Task {
         await handleGoogleLoginButton()
+      }
+    case .submitTestLoginPassword:
+      Task {
+        await submitTestLoginPassword(testPassword)
       }
     }
   }
@@ -136,6 +148,19 @@ final class LoginViewModel: NSObject {
       setRoute(userRole: socialLoginResponse.role)
     } catch {
       print("Social login failed: \(error.localizedDescription)")
+    }
+  }
+  
+  private func submitTestLoginPassword(_ password: String) async {
+    showTestPasswordAlert = false
+    
+    do {
+      let testLoginResponse = try await testLoginUseCase.execute(password: password)
+      setRoute(userRole: testLoginResponse.role)
+    } catch let error as TestLoginError {
+      print(error.errorDescription)
+    } catch {
+      print(error.localizedDescription)
     }
   }
 }
