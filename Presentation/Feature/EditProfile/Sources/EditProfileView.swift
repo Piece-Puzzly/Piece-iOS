@@ -115,18 +115,14 @@ struct EditProfileView: View {
         }
       }
       .ignoresSafeArea(.keyboard)
-      
-      VStack {
-        Spacer()
-        if viewModel.showToast {
-          toast
-            .padding(.bottom, 84)
-            .opacity(viewModel.showToast ? 1 : 0)
-            .animation(.easeInOut(duration: 0.5), value: viewModel.showToast)
-        }
-      }
     }
     .toolbar(.hidden, for: .navigationBar)
+    .pcAlert(isPresented: $viewModel.showProfileExitAlert) {
+      profileExitAlert
+    }
+    .pcAlert(isPresented: $viewModel.showImageReexaminationAlert) {
+      imageReexaminationAlert
+    }
     .sheet(isPresented: $viewModel.isLocationSheetPresented) {
       PCBottomSheet<BottomSheetTextItem>(
         isButtonEnabled: Binding(projectedValue: .constant(viewModel.isLocationBottomSheetButtonEnable)),
@@ -174,15 +170,26 @@ struct EditProfileView: View {
       )
       .presentationDetents([.height(479)])
     }
+    .overlay(alignment: .bottom) {
+      PCToast(
+        isVisible: $viewModel.showProfileEditSuccessToast,
+        text: viewModel.toastMessage
+      )
+    }
     .onAppear {
       viewModel.handleAction(.onAppear)
+    }
+    .onChange(of: viewModel.shouldPopBack) { _, shouldPopBack in
+      if shouldPopBack { 
+        router.pop()
+      }
     }
   }
   
   private var navigationBar: some View {
     NavigationBar(
       title: "기본 정보 수정",
-      leftButtonTap: { router.pop() },
+      leftButtonTap: { viewModel.handleAction(.tapBackButton) },
       rightButton: Button {
         viewModel.handleAction(.tapConfirmButton)
         focusField = nil
@@ -515,20 +522,27 @@ struct EditProfileView: View {
     }
   }
   
-  private var toast: some View {
-    HStack {
-      DesignSystemAsset.Icons.notice20.swiftUIImage
-        .renderingMode(.template)
-      Text("모든 항목을 작성해 주세요")
-        .pretendard(.body_S_M)
-    }
-    .foregroundStyle(Color.grayscaleWhite)
-    .padding(.vertical, 8)
-    .padding(.horizontal, 20)
-    .background(
-      Rectangle()
-        .foregroundStyle(Color.grayscaleDark2)
-        .cornerRadius(12)
+  private var profileExitAlert: AlertView<Text> {
+    AlertView(
+      icon: DesignSystemAsset.Icons.notice40.swiftUIImage,
+      title: { Text("작성 중인 프로필이 사라져요!") },
+      message: "지금 뒤로 가면 프로필이 저장되지 않습니다.\n계속 이어서 작성해 보세요.",
+      firstButtonText: "작성 중단하기",
+      secondButtonText: "이어서 작성하기",
+      firstButtonAction: { viewModel.handleAction(.popBack) },
+      secondButtonAction: { viewModel.handleAction(.tapCloseAlert) }
+    )
+  }
+
+  private var imageReexaminationAlert: AlertView<Text> {
+    AlertView(
+      icon: DesignSystemAsset.Icons.notice40.swiftUIImage,
+      title: { Text("사진은 심사 통과 후 반영됩니다!") },
+      message: "안전한 커뮤니티를 위해 사진은 수정 시\n심사를 다시 진행해요. 신중하게 변경해 주세요!",
+      firstButtonText: "뒤로",
+      secondButtonText: "변경하기",
+      firstButtonAction: { viewModel.handleAction(.tapCloseAlert) },
+      secondButtonAction: { viewModel.handleAction(.tapConfirmImageReexamination) }
     )
   }
 }

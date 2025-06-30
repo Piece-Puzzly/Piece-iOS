@@ -18,7 +18,11 @@ import PCFoundationExtension
 final class EditProfileViewModel {
   enum Action {
     case onAppear
+    case popBack
+    case tapBackButton
+    case tapCloseAlert
     case tapConfirmButton
+    case tapConfirmImageReexamination
     case tapVaildNickName
     case selectCamera
     case selectPhotoLibrary
@@ -197,7 +201,11 @@ final class EditProfileViewModel {
   }
   var isContactSheetPresented: Bool = false
   var isProfileImageSheetPresented: Bool = false
-  var showToast: Bool = false
+  var shouldPopBack: Bool = false
+  var showProfileExitAlert: Bool = false
+  var showImageReexaminationAlert: Bool = false
+  var showProfileEditSuccessToast: Bool = false
+  var toastMessage: String = Constant.saveSuccessToastMessage
   var canShowPendingOverlay: Bool {
       imageState == .pending
   }
@@ -207,21 +215,33 @@ final class EditProfileViewModel {
     case .onAppear:
       Task {
         await getBasicProfile()
+        setupJobItemsWithEtc()
       }
-      
-      setupJobItemsWithEtc()
-    case .tapConfirmButton:
+    case .popBack:
       Task {
-        await handleTapConfirmButton()
+        hideAlerts()
+        try? await Task.sleep(for: .milliseconds(100))
+        setPopBack()
       }
+    case .tapBackButton:
+      isEditing ? showExitAlert() : setPopBack()
+    case .tapCloseAlert:
+      hideAlerts()
+    case .tapConfirmButton:
+      if imageState == .editing {
+        showImageReexaminationAlert = true
+      } else {
+        Task { await handleTapConfirmButton() }
+      }
+    case .tapConfirmImageReexamination:
+      showImageReexaminationAlert = false
+      Task { await handleTapConfirmButton() }
     case .selectCamera:
       isCameraPresented = true
     case .selectPhotoLibrary:
       isPhotoSheetPresented = true
     case .tapVaildNickName:
-      Task {
-        await handleTapVaildNicknameButton()
-      }
+      Task { await handleTapVaildNicknameButton() }
     case .tapLocation:
       isLocationSheetPresented = true
       updateLocationBottomSheetItems()
@@ -264,7 +284,7 @@ final class EditProfileViewModel {
     
     if profileImageUrl.isEmpty || !nicknameState.isEnableConfirmButton || !isDescriptionValid || birthDate.isEmpty || location.isEmpty || height.isEmpty || weight.isEmpty || job.isEmpty || !isContactsValid {
       didTapnextButton = true
-      await isToastVisible()
+      await showToast(isSuccess: false)
     } else {
       do {
         await uploadProfileImageIfNeeded()
@@ -290,8 +310,11 @@ final class EditProfileViewModel {
         updateEditingState()
         updateEditingNicknameState()
         didTapnextButton = false
+        
+        await showToast(isSuccess: true)
       } catch {
         print(error.localizedDescription)
+        await showToast(isSuccess: false)
       }
     }
   }
@@ -302,12 +325,26 @@ final class EditProfileViewModel {
     updateEditingNicknameState(to: nickNameState)
   }
   
-  @MainActor
-  private func isToastVisible() async {
-    showToast = true
-    try? await Task.sleep(for: .seconds(3))
-    showToast = false
+  private func showToast(isSuccess: Bool) async {
+    toastMessage = isSuccess ? Constant.saveSuccessToastMessage : Constant.saveErrorToastMessage
+    
+    showProfileEditSuccessToast = true
+    try? await Task.sleep(for: .milliseconds(3000))
+    showProfileEditSuccessToast = false
   }
+  
+  private func hideAlerts() {
+    showProfileExitAlert = false
+    showImageReexaminationAlert = false
+  }
+
+  private func showExitAlert() {
+    showProfileExitAlert = true
+  }
+
+  private func setPopBack() {
+    shouldPopBack = true
+  }  
   
   private func isValidBirthDateFormat(_ date: String) -> Bool {
     let dateRegex = #"^(19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])$"# // YYYYMMDD
@@ -446,9 +483,8 @@ final class EditProfileViewModel {
     smokingStatus != initial.smokingStatus ||
     snsActivityLevel != initial.snsActivityLevel ||
     job != initial.job ||
-    contacts.map { $0.type } != initial.contacts.map { $0.type } ||
-    contacts.map { $0.value } != initial.contacts.map { $0.value }
-    
+    Set(contacts.map { $0.type }) != Set(initial.contacts.map { $0.type }) ||
+    Set(contacts.map { $0.value }) != Set(initial.contacts.map { $0.value })
     isEditing = hasChanges
   }
   private func pendingStateIfNeeded() {
@@ -681,6 +717,8 @@ extension EditProfileViewModel {
 extension EditProfileViewModel {
   private enum Constant {
     static let contactModelCount: Int = 4
+    static let saveSuccessToastMessage: String = "프로필이 수정되었어요"
+    static let saveErrorToastMessage: String = "프로필 수정에 실패했어요"
   }
   
   enum ImageState {
