@@ -7,6 +7,7 @@
 
 import DTO
 import Entities
+import LocalStorage
 import PCNetwork
 import RepositoryInterfaces
 
@@ -22,6 +23,24 @@ final class UserRepository: UserRepositoryInterface {
     let endpoint = UserEndpoint.getUserRole
     let response: UserInfoResponseDTO = try await networkService.request(endpoint: endpoint)
     
+    updateTokensIfRoleChanged(response: response)
+    
     return response.toDomain()
+  }
+}
+
+private extension UserRepository {
+  func updateTokensIfRoleChanged(response userInfoResponse: UserInfoResponseDTO) {
+    guard userInfoResponse.hasRoleChanged,
+          let accessToken = userInfoResponse.accessToken,
+          let refreshToken = userInfoResponse.refreshToken
+    else { return }
+    
+    saveTokens(accessToken: accessToken, refreshToken: refreshToken)
+  }
+  
+  func saveTokens(accessToken: String, refreshToken: String) {
+    PCKeychainManager.shared.save(.accessToken, value: accessToken)
+    PCKeychainManager.shared.save(.refreshToken, value: refreshToken)
   }
 }

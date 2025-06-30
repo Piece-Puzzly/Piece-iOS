@@ -12,6 +12,9 @@ public struct UserInfoResponseDTO: Decodable {
   public let userId: Int
   public let role: String
   public let profileStatus: ProfileStatus?
+  public let hasRoleChanged: Bool
+  public let accessToken: String?
+  public let refreshToken: String?
 }
 
 public extension UserInfoResponseDTO {

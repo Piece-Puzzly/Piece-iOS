@@ -13,6 +13,7 @@ let project = Project.dynamicFramework(
   dependencies: [
     .domain(target: .RepositoryInterfaces),
     .domain(target: .Entities),
+    .data(target: .LocalStorage),
     .data(target: .DTO),
     .data(target: .PCNetwork)
   ]
