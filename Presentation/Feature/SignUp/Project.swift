@@ -17,6 +17,7 @@ let project = Project.staticLibrary(
     .utility(target: .PCFoundationExtension),
     .domain(target: .UseCases),
     .domain(target: .Entities),
+    .externalDependency(dependency: .Mantis),
   ]
 )
 
