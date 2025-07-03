@@ -26,7 +26,7 @@ struct ReportUserView: View {
     VStack(spacing: 0) {
       NavigationBar(
         title: "신고하기",
-        leftButtonTap: { router.popToRoot() }
+        leftButtonTap: { router.pop() }
       )
       
       ScrollViewReader { proxy in
