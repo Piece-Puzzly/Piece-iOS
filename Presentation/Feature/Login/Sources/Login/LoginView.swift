@@ -18,9 +18,15 @@ struct LoginView: View {
   @Environment(Router.self) private var router: Router
   
   init(
-    socialLoginUseCase: SocialLoginUseCase
+    socialLoginUseCase: SocialLoginUseCase,
+    testLoginUseCase: TestLoginUseCase
   ) {
-    _viewModel = .init(wrappedValue: .init(socialLoginUseCase: socialLoginUseCase))
+    _viewModel = .init(
+      wrappedValue: .init(
+        socialLoginUseCase: socialLoginUseCase,
+        testLoginUseCase: testLoginUseCase
+      )
+    )
   }
   
   var body: some View {
@@ -28,10 +34,20 @@ struct LoginView: View {
       Color.grayscaleWhite.ignoresSafeArea()
       VStack(alignment: .center) {
         VStack(alignment: .leading, spacing: 12) {
-          Text("Piece")
-            .foregroundStyle(Color.primaryDefault) +
-          Text("에서 마음이 통하는\n이상형을 만나보세요")
-            .foregroundStyle(Color.grayscaleBlack)
+          VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 0) {
+              Text("Piece")
+                .foregroundStyle(Color.primaryDefault)
+                .contentShape(Rectangle())
+                .onTapGesture(count: 5) {
+                  viewModel.showTestPasswordAlert = true
+                }
+              Text("에서 마음이 통하는")
+                .foregroundStyle(Color.grayscaleBlack)
+            }
+            Text("이상형을 만나보세요")
+              .foregroundStyle(Color.grayscaleBlack)
+          }
           Text("서로의 빈 곳을 채우며 맞물리는 퍼즐처럼.\n서로의 가치관과 마음이 연결되는 순간을 만들어갑니다.")
             .pretendard(.body_S_M)
             .foregroundStyle(Color.grayscaleDark3)
@@ -79,6 +95,14 @@ struct LoginView: View {
         )
       }
     )
+    .alert("테스트 로그인 비밀번호를 입력해주세요", isPresented: $viewModel.showTestPasswordAlert) {
+      TextField("", text: $viewModel.testPassword)
+      Button("확인") {
+        viewModel.handleAction(.submitTestLoginPassword)
+      }
+    } message: {
+      Text("Provide test login password")
+    }
     .toolbar(.hidden, for: .navigationBar)
   }
   

@@ -70,6 +70,10 @@ public struct UseCaseFactory {
     RegisterFcmTokenUseCaseImpl(repository: repository)
   }
   
+  public static func createTestLoginUseCase(repository: LoginRepositoryInterface) -> TestLoginUseCase {
+    TestLoginUseCaseImpl(repository: repository)
+  }
+  
   // MARK: - 기타
   
   public static func createFetchTermsUseCase(repository: TermsRepositoryInterfaces) -> FetchTermsUseCase {

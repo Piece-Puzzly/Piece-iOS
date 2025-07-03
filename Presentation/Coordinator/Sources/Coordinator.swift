@@ -44,9 +44,13 @@ public struct Coordinator {
     switch route {
       // MARK: - 로그인
     case .login:
-      let socialLoginRepository = repositoryFactory.createLoginRepository()
-      let socialLoginUseCase = UseCaseFactory.createSocialLoginUseCase(repository: socialLoginRepository)
-      LoginViewFactory.createLoginView(socialLoginUseCase: socialLoginUseCase)
+      let loginRepository = repositoryFactory.createLoginRepository()
+      let socialLoginUseCase = UseCaseFactory.createSocialLoginUseCase(repository: loginRepository)
+      let testLoginUseCase = UseCaseFactory.createTestLoginUseCase(repository: loginRepository)
+      LoginViewFactory.createLoginView(
+        socialLoginUseCase: socialLoginUseCase,
+        testLoginUseCase: testLoginUseCase
+      )
       
     case .verifyContact:
       let loginRepository = repositoryFactory.createLoginRepository()

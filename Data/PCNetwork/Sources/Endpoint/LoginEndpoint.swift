@@ -15,6 +15,7 @@ public enum LoginEndpoint: TargetType {
   case tokenRefresh(body: TokenRefreshRequestDTO)
   case tokenHealthCheck(token: String)
   case registerFcmToken(body: FCMTokenRequestDTO)
+  case testLogin(userId: Int)
   
   public var headers: [String : String] {
     switch self {
@@ -32,6 +33,8 @@ public enum LoginEndpoint: TargetType {
         NetworkHeader.contentType: NetworkHeader.applicationJson,
         NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
       ]
+    case .testLogin:
+      [:]
     }
   }
   
@@ -42,6 +45,7 @@ public enum LoginEndpoint: TargetType {
     case .tokenRefresh: .patch
     case .tokenHealthCheck: .get
     case .registerFcmToken: .post
+    case .testLogin: .post
     }
   }
   
@@ -55,6 +59,8 @@ public enum LoginEndpoint: TargetType {
       "api/login/token/health-check/"
     case .registerFcmToken:
       "api/users/fcm-token"
+    case let .testLogin(userId):
+      "api/login/test/users/\(userId)"
     }
   }
   
@@ -67,6 +73,8 @@ public enum LoginEndpoint: TargetType {
     case let .tokenHealthCheck(token): .query([URLQueryItem(name: "token", value: token)])
     case let .registerFcmToken(body):
         .body(body)
+    case .testLogin:
+        .plain
     }
   }
 }
