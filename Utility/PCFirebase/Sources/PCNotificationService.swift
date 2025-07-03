@@ -57,7 +57,6 @@ public final class PCNotificationService: NSObject, UNUserNotificationCenterDele
     let userInfo = response.notification.request.content.userInfo
     print(userInfo)
   }
-
   
   // MARK: - MessagingDelegate
   
