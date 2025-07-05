@@ -99,6 +99,7 @@ public extension Modules {
     case PreviewProfile
     case NotificationList
     case EditProfile
+    case PCImagePicker
     
     var path: String {
       switch self {

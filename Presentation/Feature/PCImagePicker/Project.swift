@@ -1,23 +1,20 @@
 //
 //  Project.swift
-//  ProjectDescriptionHelpers
+//  AppManifests
 //
-//  Created by eunseou on 1/12/25.
+//  Created by 홍승완 on 7/5/25.
 //
 
 import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.staticLibrary(
-  name: Modules.Presentation.SignUp.rawValue,
+  name: Modules.Presentation.PCImagePicker.rawValue,
   dependencies: [
     .presentation(target: .DesignSystem),
     .presentation(target: .Router),
-    .presentation(target: .PCWebView),
-    .presentation(target: .PCImagePicker),
     .utility(target: .PCFoundationExtension),
-    .domain(target: .UseCases),
-    .domain(target: .Entities),
+    .externalDependency(dependency: .Mantis),
   ]
 )
 
