@@ -29,6 +29,7 @@ import Mantis
 /// - Note: 이미지는 1:1 비율로 정사각형 크롭이 적용됩니다.
 /// - Warning: 이미지가 nil인 경우 빈 크롭 화면이 표시됩니다.
 struct ImageCropperWrapperContainer: View {
+  @Environment(PCImagePickerStore.self) private var store
   @Binding var image: UIImage?
   
   let onCompleted: (UIImage) -> Void
@@ -53,7 +54,7 @@ struct ImageCropperWrapperContainer: View {
     VStack(spacing: 0) {
       NavigationBar(
         title: "사진 편집",
-        titleColor: .white,
+        titleColor: navigationTitleColor,
         leftButtonTap: nil,
         rightButton: EmptyView()
       )
@@ -65,6 +66,15 @@ struct ImageCropperWrapperContainer: View {
       )
     }
     .toolbar(.hidden, for: .navigationBar)
+  }
+  
+  private var navigationTitleColor: Color {
+    switch store.sourceType {
+    case .camera:
+      return .white
+    case .photoLibrary:
+      return .grayscaleBlack
+    }
   }
 }
 

@@ -1,5 +1,5 @@
 //
-//  CameraStateManager.swift
+//  PCImagePickerStore.swift
 //  PCImagePicker
 //
 //  Created by 홍승완 on 7/6/25.
@@ -8,16 +8,22 @@
 import SwiftUI
 import Mantis
 
-enum CameraState: Equatable {
+public enum ImagePickerSourceType {
+  case camera
+  case photoLibrary
+}
+
+enum PCImagePickerState: Equatable {
   case loading
   case camera
+  case photoLibrary
   case cropper
   case complete(UIImage?)
   case cancel
   
-  static func == (lhs: CameraState, rhs: CameraState) -> Bool {
+  static func == (lhs: PCImagePickerState, rhs: PCImagePickerState) -> Bool {
     switch (lhs, rhs) {
-    case (.loading, .loading), (.camera, .camera), (.cropper, .cropper), (.cancel, .cancel):
+    case (.loading, .loading), (.camera, .camera), (.photoLibrary, .photoLibrary), (.cropper, .cropper), (.cancel, .cancel):
       return true
     case (.complete(let lhsImage), .complete(let rhsImage)):
       return lhsImage == rhsImage
@@ -28,22 +34,29 @@ enum CameraState: Equatable {
 }
 
 @Observable
-class CameraStateManager {
-  var state: CameraState
+class PCImagePickerStore {
+  let sourceType: ImagePickerSourceType
+  var state: PCImagePickerState
   var imageToCrop: UIImage?
   
-  init(state: CameraState, imageToCrop: UIImage? = nil) {
-    self.state = state
-    self.imageToCrop = imageToCrop
+  init(sourceType: ImagePickerSourceType) {
+    self.sourceType = sourceType
+    self.state = .loading
     
-    setCameraReady()
+    initializeSource()
   }
   
-  // MARK: 카메라 준비 완료
-  private func setCameraReady() {
+  // MARK: 소스 초기화 준비
+  private func initializeSource() {
     Task {
       try? await Task.sleep(for: .milliseconds(100))
-      state = .camera
+      
+      switch sourceType {
+      case .camera:
+        state = .camera
+      case .photoLibrary:
+        state = .photoLibrary
+      }
     }
   }
   
