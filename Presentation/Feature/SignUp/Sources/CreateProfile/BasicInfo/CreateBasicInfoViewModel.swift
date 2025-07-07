@@ -6,12 +6,11 @@
 //
 
 import SwiftUI
-import Observation
 import UseCases
 import DesignSystem
-import _PhotosUI_SwiftUI
 import Entities
 import PCFoundationExtension
+import PCImagePicker
 
 @Observable
 final class CreateBasicInfoViewModel {
@@ -29,6 +28,7 @@ final class CreateBasicInfoViewModel {
     case saveContact
     case editContact
     case updateNickname(value: String)
+    case setImageFromImagePicker(Data?)
   }
   
   init(
@@ -50,7 +50,7 @@ final class CreateBasicInfoViewModel {
   var nicknameState: NicknameState = .empty
   
   // TextField Bind
-  var profileImage: UIImage? = nil
+  var profileImageData: Data? = nil
   var nickname: String = ""
   var description: String = ""
   var birthDate: String = ""
@@ -62,7 +62,7 @@ final class CreateBasicInfoViewModel {
   var contacts: [ContactModel] = [ContactModel(type: .kakao, value: "")]
   
   // isValid
-  var isValidProfileImage: Bool = false
+  var isValidProfileImage: Bool { profileImageData != nil }
   var isDescriptionValid: Bool {
     !description.isEmpty && description.count <= 20
   }
@@ -158,7 +158,6 @@ final class CreateBasicInfoViewModel {
   var selectedSNSContactType: ContactModel.ContactType? = nil
   var prevSelectedContact: ContactModel? = nil
   var isContactTypeChangeSheetPresented: Bool = false
-  var selectedItem: PhotosPickerItem? = nil
   var didCheckDuplicates: Bool = false
   var didTapnextButton: Bool = false
   
@@ -167,8 +166,7 @@ final class CreateBasicInfoViewModel {
   var contactBottomSheetItems: [BottomSheetIconItem] = BottomSheetIconItem.defaultContactItems
   
   // Sheet
-  var isPhotoSheetPresented: Bool = false
-  var isCameraPresented: Bool  = false
+  var imagePickerSource: ImagePickerSourceType?
   var isJobSheetPresented: Bool = false
   var isLocationSheetPresented: Bool = false
   var canAddMoreContact: Bool {
@@ -185,9 +183,9 @@ final class CreateBasicInfoViewModel {
         await handleTapNextButton()
       }
     case .selectCamera:
-      isCameraPresented = true
+      imagePickerSource = .camera
     case .selectPhotoLibrary:
-      isPhotoSheetPresented = true
+      imagePickerSource = .photoLibrary
     case .tapVaildNickName:
       Task {
         await handleTapVaildNicknameButton()
@@ -217,6 +215,8 @@ final class CreateBasicInfoViewModel {
       tapContactBottomSheetEditButton()
     case .updateNickname(let value):
       handleUpdateNickname(value)
+    case .setImageFromImagePicker(let imageData):
+      self.profileImageData = imageData
     }
   }
   
@@ -230,19 +230,15 @@ final class CreateBasicInfoViewModel {
       break
     }
     
-    if profileImage == nil || !nicknameState.isEnableNextButton || !isDescriptionValid || birthDate.isEmpty || location.isEmpty || height.isEmpty || weight.isEmpty || job.isEmpty || !isContactsValid {
+    if profileImageData == nil || !nicknameState.isEnableNextButton || !isDescriptionValid || birthDate.isEmpty || location.isEmpty || height.isEmpty || weight.isEmpty || job.isEmpty || !isContactsValid {
       didTapnextButton = true
       profileCreator.isBasicInfoValid(false)
       await isToastVisible()
     } else if isNextButtonEnabled {
       do {
-        guard let profileImage = profileImage else { return }
-        guard let imageData = profileImage.resizedAndCompressedData(targetSize: CGSize(width: 400, height: 400), compressionQuality: 0.5) else {
-          print("이미지 데이터 변환 실패")
-          return
-        }
+        guard let profileImageData else { return }
         
-        let imageURL = try await uploadProfileImageUseCase.execute(image: imageData)
+        let imageURL = try await uploadProfileImageUseCase.execute(image: profileImageData)
         print("이미지 업로드 성공: \(imageURL)")
         
         let basicInfo = ProfileBasicModel(
@@ -294,30 +290,6 @@ final class CreateBasicInfoViewModel {
       guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
       let range = NSRange(location: 0, length: input.utf16.count)
       return regex.firstMatch(in: input, options: [], range: range) != nil
-  }
-  
-  func loadImage() async {
-    guard let selectedItem else {
-      print("선택된 아이템이 없습니다.")
-      return
-    }
-    
-    do {
-      if let data = try await selectedItem.loadTransferable(type: Data.self),
-         let image = UIImage(data: data) {
-        self.profileImage = image  // UIImage로 저장
-        self.isValidProfileImage = true
-      } else {
-        print("이미지 데이터를 로드할 수 없습니다.")
-      }
-    } catch {
-      print("이미지 로드 중 오류 발생: \(error.localizedDescription)")
-    }
-  }
-  
-  func setImageFromCamera(_ image: UIImage) {
-    self.profileImage = image
-    self.isValidProfileImage = true
   }
   
   private func handleUpdateNickname(_ newValue: String) {
