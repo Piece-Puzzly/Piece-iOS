@@ -8,7 +8,9 @@
 import SwiftUI
 import Mantis
 
-public enum ImagePickerSourceType {
+public enum ImagePickerSourceType: Identifiable {
+  public var id: Self { self }
+  
   case camera
   case photoLibrary
 }
