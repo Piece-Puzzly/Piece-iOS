@@ -7,10 +7,10 @@
 
 import SwiftUI
 import DesignSystem
-import _PhotosUI_SwiftUI
 import Entities
 import UseCases
 import Router
+import PCImagePicker
 
 struct EditProfileView: View {
   @State var viewModel: EditProfileViewModel
@@ -170,6 +170,12 @@ struct EditProfileView: View {
       )
       .presentationDetents([.height(479)])
     }
+    .fullScreenCover(item: $viewModel.imagePickerSource) { source in
+      PCImagePicker(sourceType: source) { image in
+        let imageData = image?.resizedAndCompressedData(targetSize: .init(width: 400, height: 400))
+        viewModel.handleAction(.setImageFromImagePicker(imageData))
+      }
+    }
     .overlay(alignment: .bottom) {
       PCToast(
         isVisible: $viewModel.showProfileEditSuccessToast,
@@ -219,20 +225,6 @@ struct EditProfileView: View {
         ]
       )
     }
-    .fullScreenCover(isPresented: $viewModel.isCameraPresented) {
-      CameraPicker { image in
-        let imageData = image.resizedAndCompressedData(targetSize: .init(width: 400, height: 400))
-        viewModel.handleAction(.setImageFromCamera(imageData))
-      }
-    }
-    .photosPicker(
-      isPresented: $viewModel.isPhotoSheetPresented,
-      selection: Binding(
-        get: { viewModel.selectedPhotoPickerItem },
-        set: { viewModel.handleAction(.selectPhoto($0)) }
-      ),
-      matching: .images
-    )
   }
   
   private var profileImageView: some View {

@@ -6,12 +6,11 @@
 //
 
 import SwiftUI
-import Observation
 import UseCases
 import DesignSystem
-import _PhotosUI_SwiftUI
 import Entities
 import PCFoundationExtension
+import PCImagePicker
 
 @MainActor
 @Observable
@@ -36,8 +35,7 @@ final class EditProfileViewModel {
     case editContact
     case updateEditingState
     case updateNickname(value: String)
-    case setImageFromCamera(Data?)
-    case selectPhoto(PhotosPickerItem?)
+    case setImageFromImagePicker(Data?)
   }
   
   init(
@@ -184,7 +182,6 @@ final class EditProfileViewModel {
   var selectedSNSContactType: ContactModel.ContactType? = nil
   var prevSelectedContact: ContactModel? = nil
   var isContactTypeChangeSheetPresented: Bool = false
-  var selectedPhotoPickerItem: PhotosPickerItem? = nil
   var didTapnextButton: Bool = false
   
   var locationItems: [BottomSheetTextItem] = Locations.all.map { BottomSheetTextItem(text: $0) }
@@ -192,8 +189,7 @@ final class EditProfileViewModel {
   var contactBottomSheetItems: [BottomSheetIconItem] = BottomSheetIconItem.defaultContactItems
   
   // Sheet
-  var isPhotoSheetPresented: Bool = false
-  var isCameraPresented: Bool  = false
+  var imagePickerSource: ImagePickerSourceType?
   var isJobSheetPresented: Bool = false
   var isLocationSheetPresented: Bool = false
   var canAddMoreContact: Bool {
@@ -237,9 +233,9 @@ final class EditProfileViewModel {
       showImageReexaminationAlert = false
       Task { await handleTapConfirmButton() }
     case .selectCamera:
-      isCameraPresented = true
+      imagePickerSource = .camera
     case .selectPhotoLibrary:
-      isPhotoSheetPresented = true
+      imagePickerSource = .photoLibrary
     case .tapVaildNickName:
       Task { await handleTapVaildNicknameButton() }
     case .tapLocation:
@@ -269,11 +265,8 @@ final class EditProfileViewModel {
       updateEditingState()
     case .updateNickname(let value):
       handleUpdateNickname(value)
-    case .setImageFromCamera(let imageData):
-      setImageFromCamera(imageData)
-    case .selectPhoto(let item):
-      selectedPhotoPickerItem = item
-      Task { await setImageFromAlbum() }
+    case .setImageFromImagePicker(let imageData):
+      updateProfileImageData(imageData)
     }
   }
   
@@ -374,25 +367,8 @@ final class EditProfileViewModel {
       print("DEBUG: 이미지 업로드 중 오류 발생: \(error.localizedDescription)")
     }
   }
-  
-  func loadImageData() async -> Data? {
-    if let imageData = try? await selectedPhotoPickerItem?.loadTransferable(type: Data.self),
-       let resizedImageData = UIImage(data: imageData)?.resizedAndCompressedData(targetSize: CGSize(width: 400, height: 400)) {
-      return resizedImageData
-    }
-    
-    return nil
-  }
 
-  func setImageFromAlbum() async {
-    if let imageData = await loadImageData() {
-      self.profileImageData = imageData
-      self.imageState = .editing
-      handleAction(.updateEditingState)
-    }
-  }
-  
-  func setImageFromCamera(_ imageData: Data?) {
+  func updateProfileImageData(_ imageData: Data?) {
     self.profileImageData = imageData
     self.imageState = .editing
     handleAction(.updateEditingState)
