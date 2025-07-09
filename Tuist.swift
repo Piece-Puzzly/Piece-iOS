@@ -2,6 +2,6 @@ import ProjectDescription
 
 let tuist = Tuist.init(
   project: .tuist(
-    compatibleXcodeVersions: ["16.2"]
+    compatibleXcodeVersions: ["16.3"]
   )
 )
