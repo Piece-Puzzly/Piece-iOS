@@ -11,6 +11,8 @@ import SwiftUI
 
 struct EditValuePickCard: View {
   @State var viewModel: EditValuePickCardViewModel
+  private let isEditing: Bool
+  
   init(
     valuePick: ProfileValuePickModel,
     isEditing: Bool,
@@ -19,10 +21,10 @@ struct EditValuePickCard: View {
     _viewModel = .init(
       wrappedValue: .init(
         model: valuePick,
-        isEditing: isEditing,
         onModelUpdate: onModelUpdate
       )
     )
+    self.isEditing = isEditing
   }
   
   var body: some View {
@@ -67,11 +69,12 @@ struct EditValuePickCard: View {
     VStack(spacing: 8) {
       ForEach(viewModel.model.answers) { answer in
         SelectCard(
-          isEditing: viewModel.isEditing,
+          isEditing: isEditing,
           isSelected: answer.id == viewModel.model.selectedAnswer,
           text: answer.content,
           tapAction: { viewModel.handleAction(.didTapAnswer(id: answer.id)) }
         )
+        .allowsHitTesting(isEditing)
       }
     }
   }

@@ -20,7 +20,7 @@ final class EditValuePickViewModel {
   var valuePicks: [ProfileValuePickModel] = []
   var isEditing: Bool = false
   var isEdited: Bool {
-    initialValuePicks == valuePicks
+    initialValuePicks != valuePicks
   }
   
   private(set) var initialValuePicks: [ProfileValuePickModel] = []

@@ -31,10 +31,7 @@ struct EditValuePickView: View {
       NavigationBar(
         title: "가치관 Pick",
         leftButtonTap: { router.pop() },
-        rightButton: Button { viewModel.handleAction(.didTapSaveButton) } label: {
-          Text(viewModel.isEditing ? "저장": "수정")
-            .foregroundStyle(viewModel.isEditing ? Color.grayscaleDark3 : Color.primaryDefault)
-        }
+        rightButton: navigationBarRightButton
       )
       
       ScrollView {
@@ -45,6 +42,15 @@ struct EditValuePickView: View {
     .frame(maxHeight: .infinity)
     .background(Color.grayscaleWhite)
     .toolbar(.hidden)
+  private var navigationBarRightButton: some View {
+    Button {
+      viewModel.handleAction(.didTapSaveButton)
+    } label: {
+      Text(viewModel.isEditing ? "저장": "수정")
+        .pretendard(.body_M_M)
+        .foregroundStyle(navigationBarRightButtonStyle)
+        .contentShape(Rectangle())
+    }
   }
   
   private var valuePicks: some View {
@@ -62,5 +68,11 @@ struct EditValuePickView: View {
         Divider(weight: .thick)
       }
     }
+  }
+  
+  private var navigationBarRightButtonStyle: Color {
+    viewModel.isEditing
+    ? (viewModel.isEdited ? Color.primaryDefault : Color.grayscaleDark3)
+    : Color.primaryDefault
   }
 }
