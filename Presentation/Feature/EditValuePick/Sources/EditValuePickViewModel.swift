@@ -15,6 +15,9 @@ final class EditValuePickViewModel {
   enum Action {
     case updateValuePick(ProfileValuePickModel)
     case didTapSaveButton
+    case popBack
+    case tapBackButton
+    case tapCloseAlert
   }
   
   var valuePicks: [ProfileValuePickModel] = []
@@ -22,6 +25,8 @@ final class EditValuePickViewModel {
   var isEdited: Bool {
     initialValuePicks != valuePicks
   }
+  var showValuePickExitAlert: Bool = false
+  var shouldPopBack: Bool = false
   
   private(set) var initialValuePicks: [ProfileValuePickModel] = []
   private let getProfileValuePicksUseCase: GetProfileValuePicksUseCase
@@ -48,6 +53,15 @@ final class EditValuePickViewModel {
       
     case .didTapSaveButton:
       didTapSaveButton()
+      
+    case .popBack:
+      handlePopBack()
+      
+    case .tapCloseAlert:
+      hideAlert()
+      
+    case .tapBackButton:
+      isEditing ? showExitAlert() : setPopBack()
     }
   }
   
@@ -82,5 +96,28 @@ final class EditValuePickViewModel {
     } catch {
       print(error)
     }
+  }
+  
+  private func handlePopBack() {
+    Task {
+      hideAlert()
+      try? await Task.sleep(for: .milliseconds(100))
+      setPopBack()
+    }
+  }
+}
+
+// MARK: EditValuePick ExitAlert func
+private extension EditValuePickViewModel {
+  func showExitAlert() {
+    showValuePickExitAlert = true
+  }
+  
+  func hideAlert() {
+    showValuePickExitAlert = false
+  }
+  
+  func setPopBack() {
+    shouldPopBack = true
   }
 }
