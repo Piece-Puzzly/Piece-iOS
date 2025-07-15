@@ -16,8 +16,8 @@ final class EditValuePickViewModel {
     case updateValuePick(ProfileValuePickModel)
     case didTapSaveButton
     case popBack
-    case tapBackButton
-    case tapCloseAlert
+    case didTapBackButton
+    case didTapCloseAlert
   }
   
   var valuePicks: [ProfileValuePickModel] = []
@@ -57,10 +57,10 @@ final class EditValuePickViewModel {
     case .popBack:
       handlePopBack()
       
-    case .tapCloseAlert:
+    case .didTapCloseAlert:
       hideAlert()
       
-    case .tapBackButton:
+    case .didTapBackButton:
       isEditing ? showExitAlert() : setPopBack()
     }
   }

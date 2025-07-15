@@ -30,7 +30,7 @@ struct EditValuePickView: View {
     VStack(spacing: 0) {
       NavigationBar(
         title: "가치관 Pick",
-        leftButtonTap: { viewModel.handleAction(.tapBackButton) },
+        leftButtonTap: { viewModel.handleAction(.didTapBackButton) },
         rightButton: navigationBarRightButton
       )
       
@@ -86,7 +86,7 @@ struct EditValuePickView: View {
       firstButtonText: "작성 중단하기",
       secondButtonText: "이어서 작성하기",
       firstButtonAction: { viewModel.handleAction(.popBack) },
-      secondButtonAction: { viewModel.handleAction(.tapCloseAlert) }
+      secondButtonAction: { viewModel.handleAction(.didTapCloseAlert) }
     )
   }
   
