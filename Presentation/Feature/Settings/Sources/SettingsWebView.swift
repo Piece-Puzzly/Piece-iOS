@@ -28,6 +28,7 @@ struct SettingsWebView: View {
       PCWebView(uri: viewModel.uri)
         .padding(.bottom, 74)
     }
+    .toolbar(.hidden, for: .navigationBar)
     .onAppear {
       viewModel.setDismissAction { dismiss() }
     }
