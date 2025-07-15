@@ -17,6 +17,9 @@ final class EditValueTalkViewModel {
     case updateValueTalk(ProfileValueTalkModel)
     case didTapSaveButton
     case onDisappear
+    case popBack
+    case didTapBackButton
+    case didTapCloseAlert
   }
   
   var valueTalks: [ProfileValueTalkModel] = []
@@ -25,6 +28,8 @@ final class EditValueTalkViewModel {
   var isEdited: Bool {
     initialValueTalks != valueTalks
   }
+  var showValueTalkExitAlert: Bool = false
+  var shouldPopBack: Bool = false
   
   private(set) var initialValueTalks: [ProfileValueTalkModel] = []
   private let getProfileValueTalksUseCase: GetProfileValueTalksUseCase
@@ -69,6 +74,15 @@ final class EditValueTalkViewModel {
       Task {
         await disconnectSse()
       }
+      
+    case .popBack:
+      handlePopBack()
+      
+    case .didTapCloseAlert:
+      hideAlert()
+      
+    case .didTapBackButton:
+      isEditing ? showExitAlert() : setPopBack()
     }
   }
   
@@ -159,5 +173,28 @@ final class EditValueTalkViewModel {
       valueTalks[index].summary = summary.summary
       cardViewModels[index].updateSummary(summary.summary)
     }
+  }
+  
+  private func handlePopBack() {
+    Task {
+      hideAlert()
+      try? await Task.sleep(for: .milliseconds(100))
+      setPopBack()
+    }
+  }
+}
+
+// MARK: EditValueTalk ExitAlert func
+private extension EditValueTalkViewModel {
+  func showExitAlert() {
+    showValueTalkExitAlert = true
+  }
+  
+  func hideAlert() {
+    showValueTalkExitAlert = false
+  }
+  
+  func setPopBack() {
+    shouldPopBack = true
   }
 }
