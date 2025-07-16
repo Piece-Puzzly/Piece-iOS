@@ -15,16 +15,13 @@ final class EditValuePickCardViewModel {
   }
   
   let onModelUpdate: (ProfileValuePickModel) -> Void
-  let isEditing: Bool
   var model: ProfileValuePickModel
   
   init(
     model: ProfileValuePickModel,
-    isEditing: Bool,
     onModelUpdate: @escaping (ProfileValuePickModel) -> Void
   ) {
     self.model = model
-    self.isEditing = isEditing
     self.onModelUpdate = onModelUpdate
   }
   
