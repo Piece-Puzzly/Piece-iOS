@@ -57,7 +57,7 @@ struct ReportUserView: View {
     .pcAlert(isPresented: $viewModel.showBlockAlert) {
       AlertView(
         title: {
-          Text("\(viewModel.nickname)님을\n신고하시겠습니까?")
+          Text("\(viewModel.nickname)님을 신고할까요?")
         },
         message: "신고하면 되돌릴 수 없으니,\n신중한 신고 부탁드립니다.",
         firstButtonText: "취소",
@@ -69,7 +69,7 @@ struct ReportUserView: View {
     .pcAlert(isPresented: $viewModel.showBlockResultAlert) {
       AlertView(
         title: {
-          Text("\(viewModel.nickname)님을 신고했습니다.")
+          Text("\(viewModel.nickname)님을 신고했어요")
         },
         message: "신고된 내용은 신속하게 검토하여\n조치하겠습니다.",
         secondButtonText: "홈으로",
@@ -90,7 +90,7 @@ struct ReportUserView: View {
   }
   
   private var title: some View {
-    Text("\(viewModel.nickname)님을\n신고하시겠습니까?")
+    Text("\(viewModel.nickname)님을 신고할까요?")
       .pretendard(.heading_L_SB)
       .foregroundStyle(.grayscaleBlack)
       .frame(maxWidth: .infinity, alignment: .leading)
