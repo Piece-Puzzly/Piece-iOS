@@ -586,9 +586,7 @@ fileprivate struct EditContactContainer: View {
       HStack(spacing: 16) {
         PCContactField(
           contact: bindingForContact(id: contact.id),
-          action: {
-            viewModel.handleAction(.tapChangeContact(contact))
-          }
+          action: { viewModel.handleAction(.tapChangeContact(contact)) }
         )
         .focused(focusField, equals: "contact_\(contact.id)")
         .id("contact_\(contact.id)_scroll")

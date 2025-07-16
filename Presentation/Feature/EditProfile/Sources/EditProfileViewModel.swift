@@ -353,10 +353,10 @@ final class EditProfileViewModel {
   }
   
   func isAllowedInput(_ input: String) -> Bool {
-      let pattern = #"^[A-Za-z0-9\s[:punct:][:symbol:]]*$"#
-      guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
-      let range = NSRange(location: 0, length: input.utf16.count)
-      return regex.firstMatch(in: input, options: [], range: range) != nil
+    let pattern = #"^[A-Za-z0-9가-힣ㄱ-ㅎㅏ-ㅣ\s[:punct:][:symbol:]]*$"#
+    guard let regex = try? NSRegularExpression(pattern: pattern) else { return false }
+    let range = NSRange(location: 0, length: input.utf16.count)
+    return regex.firstMatch(in: input, options: [], range: range) != nil
   }
   
   private func uploadProfileImageIfNeeded() async {
