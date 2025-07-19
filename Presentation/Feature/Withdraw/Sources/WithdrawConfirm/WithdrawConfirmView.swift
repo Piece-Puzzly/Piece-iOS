@@ -79,7 +79,7 @@ private extension WithdrawConfirmView {
           .pretendard(.heading_L_SB)
           .foregroundStyle(.grayscaleBlack)
         
-        Text("탈퇴하면 계정과 관련된 모든 정보가 삭제되며\n복구할 수 없습니다. 탈퇴하시겠습니까?")
+        Text("탈퇴하면 계정과 관련된 모든 정보가 삭제되며\n복구할 수 없습니다.")
           .pretendard(.body_S_M)
           .foregroundStyle(.grayscaleDark3)
       }

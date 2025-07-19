@@ -162,7 +162,7 @@ struct CreateBasicInfoView: View {
         isButtonEnabled: Binding(projectedValue: .constant(viewModel.isLocationBottomSheetButtonEnable)),
         items: $viewModel.locationItems,
         titleText: "활동 지역",
-        subtitleText: "주로 활동하는 지역을 선택해주세요.",
+        subtitleText: "주로 활동하는 지역을 선택해 주세요.",
         buttonText: "적용하기",
         buttonAction: { viewModel.handleAction(.saveLocation) },
         onTapRowItem: { viewModel.tapLocationRowItem($0) }
@@ -185,7 +185,7 @@ struct CreateBasicInfoView: View {
         isButtonEnabled: Binding(projectedValue: .constant(viewModel.isContactBottomSheetButtonEnable)),
         items: $viewModel.contactBottomSheetItems,
         titleText: "연락처",
-        subtitleText: "연락을 주고받고 싶은 연락처를 선택해 작성해주세요.\n1개 이상 필수로 작성해야 합니다.",
+        subtitleText: "공개하고 싶은 연락처를 선택해 주세요.\n1개 이상 필수로 작성해야 해요.",
         buttonText: "적용하기",
         buttonAction: { viewModel.handleAction(.saveContact) },
         onTapRowItem: { viewModel.tapContactRowItem($0) }
@@ -197,7 +197,7 @@ struct CreateBasicInfoView: View {
         isButtonEnabled: Binding(projectedValue: .constant(viewModel.isContactBottomSheetButtonEnable)),
         items: $viewModel.contactBottomSheetItems,
         titleText: "연락처",
-        subtitleText: "연락을 주고받고 싶은 연락처를 선택해 작성해주세요.\n1개 이상 필수로 작성해야 합니다.",
+        subtitleText: "공개하고 싶은 연락처를 선택해 주세요.\n1개 이상 필수로 작성해야 해요.",
         buttonText: "적용하기",
         buttonAction: { viewModel.handleAction(.editContact) },
         onTapRowItem: { viewModel.tapContactRowItem($0) }
@@ -208,10 +208,10 @@ struct CreateBasicInfoView: View {
   
   private var title: some View {
     VStack(alignment: .leading, spacing: 12) {
-      Text("간단한 정보로\n당신을 표현하세요")
+      Text("간단한 정보로\n당신을 표현해 주세요")
         .pretendard(.heading_L_SB)
         .foregroundStyle(Color.grayscaleBlack)
-      Text("작성 후에도 언제든 수정 가능하니,\n편안하게 작성해 주세요.")
+      Text("작성 후에도 언제든 수정할 수 있어요.")
         .pretendard(.body_S_M)
         .foregroundStyle(Color.grayscaleDark3)
     }
@@ -259,7 +259,7 @@ struct CreateBasicInfoView: View {
   }
   
   private var profileImageDescriptionLabel: some View {
-    Text("얼굴이 잘 나온 사진으로 등록해 주세요.")
+    Text("얼굴이 잘 보이는 사진으로 등록해 주세요.")
       .pretendard(.body_S_M)
       .foregroundStyle(Color.grayscaleDark3)
   }

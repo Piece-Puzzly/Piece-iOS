@@ -67,11 +67,11 @@ struct MatchingMainView: View {
       AlertView(
         title: {
           Text("\(matchingMainViewModel.name)").foregroundStyle(Color.primaryDefault) +
-          Text("님과의\n인연을 이어가시겠습니까?").foregroundStyle(Color.grayscaleBlack)
+          Text("님과의\n인연을 이어갈까요?").foregroundStyle(Color.grayscaleBlack)
         },
-        message: "서로 매칭을 수락하면, 연락처가 공개됩니다.",
+        message: "서로 수락하면, 연락처가 공개돼요.",
         firstButtonText: "뒤로",
-        secondButtonText: "매칭 수락하기"
+        secondButtonText: "인연 수락하기"
       ) {
         matchingMainViewModel.isMatchAcceptAlertPresented = false
       } secondButtonAction: {
@@ -145,11 +145,11 @@ struct MatchingMainView: View {
           Group {
             Text("진중한 만남")
               .foregroundStyle(Color.primaryDefault) +
-            Text("을 이어가기 위해\n프로필을 살펴보고 있어요")
+            Text("을 이어가기 위해\n프로필을 살펴보고 있어요.")
               .foregroundStyle(Color.grayscaleBlack)
           }
           .pretendard(.heading_M_SB)
-          Text("작성 후 24시간 이내에 심사가 진행됩니다.\n생성한 프로필을 검토하며 기다려 주세요.")
+          Text("작성 후 24시간 이내에 심사가 진행돼요.\n푸쉬 알림을 켜면 결과를 빠르게 확인할 수 있어요.")
             .pretendard(.body_S_M)
             .foregroundStyle(Color.grayscaleDark3)
         }

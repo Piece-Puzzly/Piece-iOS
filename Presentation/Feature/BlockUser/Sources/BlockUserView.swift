@@ -39,7 +39,7 @@ struct BlockUserView: View {
     .pcAlert(isPresented: $viewModel.isBlockUserAlertPresented) {
       AlertView(
         title: {
-          Text("\(viewModel.nickname)님을\n차단하시겠습니까?")
+          Text("\(viewModel.nickname)님을 차단할까요?")
             .pretendard(.heading_M_SB)
             .foregroundStyle(Color.grayscaleBlack)
         },
@@ -59,7 +59,7 @@ struct BlockUserView: View {
             .pretendard(.heading_M_SB)
             .foregroundStyle(Color.grayscaleBlack)
         },
-        message: "매칭이 즉시 종료되며,\n상대방에게 차단 사실을 알리지 않습니다.",
+        message: "상대방과의 만남이 즉시 종료됩니다.",
         secondButtonText: "홈으로"
       ) {
         viewModel.handleAction(.didTapBlockUserCompleteButton)
@@ -81,11 +81,11 @@ struct BlockUserView: View {
   
   private var title: some View {
     VStack(alignment: .leading, spacing: 12) {
-      Text("\(viewModel.nickname)님을\n차단하시겠습니까?")
+      Text("\(viewModel.nickname)님을 차단할까요?")
         .pretendard(.heading_L_SB)
         .foregroundStyle(Color.grayscaleBlack)
       
-      Text("차단하면 상대방의 매칭이 즉시 종료되며,\n상대방에게 차단 사실을 알리지 않습니다.")
+      Text("하단 내용을 확인해 주세요.")
         .pretendard(.body_S_M)
         .foregroundStyle(Color.grayscaleDark3)
     }

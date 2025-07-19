@@ -125,17 +125,17 @@ private struct AlertBottomView: View {
     Color.grayscaleBlack.ignoresSafeArea()
     VStack{
       AlertView(
-        title: { Text("수줍은 수달").foregroundColor(.primaryDefault) + Text("님과의\n인연을 이어가시겠습니까?") },
-        message: "서로 매칭을 수락하면, 연락처가 공개됩니다.",
+        title: { Text("수줍은 수달").foregroundColor(.primaryDefault) + Text("님과의\n인연을 이어갈까요?") },
+        message: "서로 수락하면, 연락처가 공개돼요.",
         firstButtonText: "뒤로",
-        secondButtonText: "매칭 수락하기",
+        secondButtonText: "인연 수락하기",
         firstButtonAction: {},
         secondButtonAction: {}
       )
       AlertView(
         icon: DesignSystemAsset.Icons.matchingModeCheck20.swiftUIImage,
-        title: { Text("수줍은 수달님과의 인연을 이어가시겠습니까?") },
-        message: "서로 매칭을 수락하면, 연락처가 공개됩니다.",
+        title: { Text("수줍은 수달님과의 인연을 이어갈까요?") },
+        message: "서로 수락하면, 연락처가 공개돼요.",
         firstButtonText: "label",
         secondButtonText: "label",
         firstButtonAction: {},
@@ -144,8 +144,8 @@ private struct AlertBottomView: View {
       
       AlertView(
         icon: DesignSystemAsset.Icons.matchingModeCheck20.swiftUIImage,
-        title: { Text("수줍은 수달님과의 인연을 이어가시겠습니까?") },
-        message: "서로 매칭을 수락하면, 연락처가 공개됩니다.",
+        title: { Text("수줍은 수달님과의 인연을 이어갈까요?") },
+        message: "서로 수락하면, 연락처가 공개돼요.",
         secondButtonText: "label",
         secondButtonAction: {}
       )

@@ -60,11 +60,12 @@ struct MatchResultView: View {
         .ignoresSafeArea()
     )
     .onAppear { viewModel.handleAction(.onAppear) }
+    .toolbar(.hidden, for: .navigationBar)
   }
   
   private var headerText: some View {
     VStack(alignment: .center, spacing: 8) {
-      Group { Text(viewModel.nickname).foregroundStyle(.primaryDefault) + Text("님과 퍼즐 완성 !").foregroundStyle(.grayscaleBlack) }
+      Group { Text(viewModel.nickname).foregroundStyle(.primaryDefault) + Text("님과 마음이 통했어요!").foregroundStyle(.grayscaleBlack) }
         .pretendard(.heading_L_SB)
      Text("망설이지 말고 연락해 보세요\n두 분의 평화로운 사랑을 피스가 응원해요")
         .multilineTextAlignment(.center)
