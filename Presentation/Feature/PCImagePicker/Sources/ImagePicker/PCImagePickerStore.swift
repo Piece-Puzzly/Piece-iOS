@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import Mantis
 
 public enum ImagePickerSourceType: Identifiable {
   public var id: Self { self }
