@@ -78,23 +78,21 @@ struct LoginView: View {
       guard let newValue else { return }
       router.setRoute(newValue)
     }
-    .pcAlert(
-      isPresented: $viewModel.showBannedAlert,
-      alert: {
-        AlertView(
-          title: {
-            Text("계정 이용이 영구 제한되었습니다.")
-              .pretendard(.heading_M_SB)
-              .foregroundStyle(.grayscaleBlack)
-          },
-          message: "궁금한 점이 있다면 고객센터로 문의해주세요.",
-          firstButtonText: "문의하기",
-          secondButtonText: "종료",
-          firstButtonAction: { router.push(to: .settingsWebView(title: "문의하기", uri: viewModel.inquiriesUri)) },
-          secondButtonAction: { exit(0) }
-        )
-      }
-    )
+    .pcAlert(isPresented: $viewModel.showBannedAlert) {
+      AlertView(
+        icon: DesignSystemAsset.Icons.notice40.swiftUIImage ,
+        title: {
+          Text("계정 이용이 영구 제한되었어요")
+            .pretendard(.heading_M_SB)
+            .foregroundStyle(.grayscaleBlack)
+        },
+        message: "궁금한 점이 있다면 고객센터로 문의해 주세요.",
+        firstButtonText: "문의하기",
+        secondButtonText: "종료",
+        firstButtonAction: { router.push(to: .settingsWebView(title: "문의하기", uri: viewModel.inquiriesUri)) },
+        secondButtonAction: { exit(0) }
+      )
+    }
     .alert("테스트 로그인 비밀번호를 입력해주세요", isPresented: $viewModel.showTestPasswordAlert) {
       TextField("", text: $viewModel.testPassword)
       Button("확인") {

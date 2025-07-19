@@ -235,7 +235,7 @@ struct ProfileView: View {
       SettingCategory(
         icon: DesignSystemAsset.Icons.question20.swiftUIImage,
         categoryText: "가치관 Pick",
-        descriptionText: "퀴즈를 통해 나의 연애 스타일을 파악해보고\n선택한 답변을 수정할 수 있습니다."
+        descriptionText: "퀴즈를 통해 나의 연애 스타일을 파악해보고\n선택한 답변을 수정할 수 있어요."
       )
       .contentShape(Rectangle())
       .onTapGesture {
@@ -247,7 +247,7 @@ struct ProfileView: View {
       SettingCategory(
         icon: DesignSystemAsset.Icons.talk20.swiftUIImage,
         categoryText: "가치관 Talk",
-        descriptionText: "꿈과 목표, 관심사와 취향, 연애에 관련된\n내 생각을 확인하고 수정할 수 있습니다."
+        descriptionText: "꿈과 목표, 관심사와 취향, 연애에 관련된\n내 생각을 확인하고 수정할 수 있어요."
       )
       .contentShape(Rectangle())
       .onTapGesture {

@@ -128,7 +128,7 @@ struct EditProfileView: View {
         isButtonEnabled: Binding(projectedValue: .constant(viewModel.isLocationBottomSheetButtonEnable)),
         items: $viewModel.locationItems,
         titleText: "활동 지역",
-        subtitleText: "주로 활동하는 지역을 선택해주세요.",
+        subtitleText: "주로 활동하는 지역을 선택해 주세요.",
         buttonText: "적용하기",
         buttonAction: { viewModel.handleAction(.saveLocation) },
         onTapRowItem: { viewModel.tapLocationRowItem($0) }
@@ -151,7 +151,7 @@ struct EditProfileView: View {
         isButtonEnabled: Binding(projectedValue: .constant(viewModel.isContactBottomSheetButtonEnable)),
         items: $viewModel.contactBottomSheetItems,
         titleText: "연락처",
-        subtitleText: "연락을 주고받고 싶은 연락처를 선택해 작성해주세요.\n1개 이상 필수로 작성해야 합니다.",
+        subtitleText: "공개하고 싶은 연락처를 선택해 주세요.\n1개 이상 필수로 작성해야 해요.",
         buttonText: "적용하기",
         buttonAction: { viewModel.handleAction(.saveContact) },
         onTapRowItem: { viewModel.tapContactRowItem($0) }
@@ -163,7 +163,7 @@ struct EditProfileView: View {
         isButtonEnabled: Binding(projectedValue: .constant(viewModel.isContactBottomSheetButtonEnable)),
         items: $viewModel.contactBottomSheetItems,
         titleText: "연락처",
-        subtitleText: "연락을 주고받고 싶은 연락처를 선택해 작성해주세요.\n1개 이상 필수로 작성해야 합니다.",
+        subtitleText: "공개하고 싶은 연락처를 선택해 주세요.\n1개 이상 필수로 작성해야 해요.",
         buttonText: "적용하기",
         buttonAction: { viewModel.handleAction(.editContact) },
         onTapRowItem: { viewModel.tapContactRowItem($0) }
@@ -308,7 +308,7 @@ struct EditProfileView: View {
   }
   
   private var profileImageDescriptionLabel: some View {
-    Text("얼굴이 잘 나온 사진으로 등록해 주세요.")
+    Text("얼굴이 잘 보이는 사진으로 등록해 주세요.")
       .pretendard(.body_S_M)
       .foregroundStyle(Color.grayscaleDark3)
   }
@@ -525,8 +525,8 @@ struct EditProfileView: View {
   private var profileExitAlert: AlertView<Text> {
     AlertView(
       icon: DesignSystemAsset.Icons.notice40.swiftUIImage,
-      title: { Text("작성 중인 프로필이 사라져요!") },
-      message: "지금 뒤로 가면 프로필이 저장되지 않습니다.\n계속 이어서 작성해 보세요.",
+      title: { Text("작성한 내용이 사라져요!") },
+      message: "지금 뒤로 가면 프로필이 저장되지 않아요.\n계속 이어서 작성해 보세요.",
       firstButtonText: "작성 중단하기",
       secondButtonText: "이어서 작성하기",
       firstButtonAction: { viewModel.handleAction(.popBack) },
@@ -537,8 +537,8 @@ struct EditProfileView: View {
   private var imageReexaminationAlert: AlertView<Text> {
     AlertView(
       icon: DesignSystemAsset.Icons.notice40.swiftUIImage,
-      title: { Text("사진은 심사 통과 후 반영됩니다!") },
-      message: "안전한 커뮤니티를 위해 사진은 수정 시\n심사를 다시 진행해요. 신중하게 변경해 주세요!",
+      title: { Text("수정된 사진은 심사가 필요해요!") },
+      message: "안전한 커뮤니티를 위해 사진을 다시 심사해요.\n심사 중에는 이전 사진으로 매칭이 진행돼요",
       firstButtonText: "뒤로",
       secondButtonText: "변경하기",
       firstButtonAction: { viewModel.handleAction(.tapCloseAlert) },

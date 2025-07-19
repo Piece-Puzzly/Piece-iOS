@@ -20,7 +20,7 @@ final class MatchingMainViewModel {
   enum MatchingButtonState {
     case pending
     case checkMatchingPiece // 매칭 조각 확인하기
-    case acceptMatching // 매칭 수락하기
+    case acceptMatching // 인연 수락하기
     case responseComplete // 응답 완료
     case checkContact(nickname: String) // 연락처 확인하기
     
@@ -31,11 +31,11 @@ final class MatchingMainViewModel {
       case .checkMatchingPiece:
         "매칭 조각 확인하기"
       case .acceptMatching:
-        "매칭 수락하기"
+        "인연 수락하기"
       case .responseComplete:
         "응답 완료"
       case .checkContact:
-        "연락처 확인하기"
+        "인연 확인하기"
       }
     }
     
@@ -62,7 +62,7 @@ final class MatchingMainViewModel {
   enum Action {
     case tapProfileInfo // 매칭 조각 확인하고 상대 프로필 눌렀을때
     case tapMatchingButton // 하단 CTA 매칭 버튼 누를시
-    case didAcceptMatch // 매칭 수락하기
+    case didAcceptMatch // 인연 수락하기
   }
   var userRole: String {
     PCUserDefaultsService.shared.getUserRole().rawValue
@@ -199,7 +199,7 @@ final class MatchingMainViewModel {
         matchingStatus = .BEFORE_OPEN
         matchingButtonState = .checkMatchingPiece
       case .WAITING:
-        //자신은 매칭조각 열람, 상대는 매칭 수락 안함(열람했는지도 모름)
+        //자신은 매칭조각 열람, 상대는 인연 수락 안함(열람했는지도 모름)
         matchingStatus = .WAITING
         matchingButtonState = .acceptMatching
       case .REFUSED:

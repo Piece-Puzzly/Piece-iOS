@@ -71,7 +71,7 @@ struct MatchDetailPhotoView: View {
       
       RoundedButton(
         type: isAcceptButtonEnabled ? .solid : .disabled,
-        buttonText: "매칭 수락하기",
+        buttonText: "인연 수락하기",
         rounding: true
       ) {
         if isAcceptButtonEnabled { isAlertPresented.toggle() }
@@ -81,11 +81,11 @@ struct MatchDetailPhotoView: View {
       AlertView(
         title: {
           Text("\(nickname)").foregroundStyle(Color.primaryDefault) +
-          Text("님과의\n인연을 이어가시겠습니까?").foregroundStyle(Color.grayscaleBlack)
+          Text("님과의\n인연을 이어갈까요?").foregroundStyle(Color.grayscaleBlack)
         },
-        message: "서로 매칭을 수락하면, 연락처가 공개됩니다.",
+        message: "서로 수락하면, 연락처가 공개돼요.",
         firstButtonText: "뒤로",
-        secondButtonText: "매칭 수락하기"
+        secondButtonText: "인연 수락하기"
       ) {
         isAlertPresented = false
       } secondButtonAction: {

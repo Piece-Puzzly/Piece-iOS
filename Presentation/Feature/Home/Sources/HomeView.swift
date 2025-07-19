@@ -72,7 +72,7 @@ struct HomeView: View {
       PCToast(
         isVisible: $showProfileToast,
         icon: DesignSystemAsset.Icons.notice20.swiftUIImage,
-        text: "아직 심사중이에요"
+        text: "아직 프로필을 심사하고 있어요"
       )
       .padding(.bottom, 100)
       

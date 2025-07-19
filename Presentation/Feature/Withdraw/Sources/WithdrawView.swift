@@ -87,7 +87,7 @@ private extension WithdrawView {
         .pretendard(.heading_L_SB)
         .foregroundStyle(.grayscaleBlack)
       
-      Text("탈퇴하는 이유를 알려주세요.\n반영하여 더 나은 사용자 경험을 제공하겠습니다.")
+      Text("탈퇴하는 이유를 알려주세요.\n반영하여 더 나은 사용자 경험을 제공할게요!")
         .pretendard(.body_S_M)
         .foregroundStyle(.grayscaleDark3)
     }

@@ -81,8 +81,8 @@ struct EditValuePickView: View {
   private var valuePickExitAlert: AlertView<Text> {
     AlertView(
       icon: DesignSystemAsset.Icons.notice40.swiftUIImage,
-      title: { Text("작성 중인 프로필이 사라져요!") },
-      message: "지금 뒤로 가면 프로필이 저장되지 않습니다.\n계속 이어서 작성해 보세요.",
+      title: { Text("작성한 내용이 사라져요!") },
+      message: "지금 뒤로 가면 프로필이 저장되지 않아요.\n계속 이어서 작성해 보세요.",
       firstButtonText: "작성 중단하기",
       secondButtonText: "이어서 작성하기",
       firstButtonAction: { viewModel.handleAction(.popBack) },

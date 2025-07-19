@@ -60,7 +60,7 @@ struct ValuePickView: View {
         .foregroundStyle(Color.grayscaleBlack)
         .frame(maxWidth: .infinity, alignment: .leading)
       
-      Text("선택한 답변으로 연애 스타일을 쉽게 확인할 수 있어요.\n서로의 우선순위와 취향을 이해하는 데 큰 도움이 될 거예요.")
+      Text("선택 후에도 언제든 수정할 수 있어요.")
         .pretendard(.body_S_M)
         .foregroundStyle(Color.grayscaleDark3)
         .frame(maxWidth: .infinity, alignment: .leading)
