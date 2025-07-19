@@ -216,7 +216,7 @@ final class MatchingMainViewModel {
       case .MATCHED:
           // 둘다 수락
         matchingStatus = .MATCHED
-        matchingButtonState = .checkContact(nickname: "")
+        matchingButtonState = .checkContact(nickname: matchesInfo.nickname)
       }
       
       name = matchesInfo.nickname
