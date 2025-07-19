@@ -51,6 +51,7 @@ class PCImagePickerStore {
   // MARK: 소스 초기화 준비
   private func initializeSource() {
     Task {
+      // MARK: (카메라/앨범)으로 화면 전환 시 UI 버벅임 이슈로 Task.sleep 100ms 도입
       try? await Task.sleep(for: .milliseconds(100))
       
       switch sourceType {
