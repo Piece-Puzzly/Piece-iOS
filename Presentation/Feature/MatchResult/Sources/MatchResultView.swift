@@ -60,6 +60,7 @@ struct MatchResultView: View {
         .ignoresSafeArea()
     )
     .onAppear { viewModel.handleAction(.onAppear) }
+    .toolbar(.hidden, for: .navigationBar)
   }
   
   private var headerText: some View {
