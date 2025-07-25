@@ -13,9 +13,9 @@ import UseCases
 
 struct AvoidContactsGuideView: View {
   private enum Constant {
-    static let accepetButtonText = "아는사람 차단하기"
+    static let acceptButtonText = "아는 사람 차단하기"
     static let denyButtonText = "다음에 할래요"
-    static let toastText = "지인 차단 완료"
+    static let toastText = "차단 완료"
   }
   
   @State var viewModel: AvoidContactsGuideViewModel
