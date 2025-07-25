@@ -49,6 +49,7 @@ extension Project {
             ["CFBundleURLSchemes": ["com.googleusercontent.apps.$(GIDClientID)"]],
           ],
           "ITSAppUsesNonExemptEncryption": false,
+          "FirebaseAppDelegateProxyEnabled": false,
         ]
       ),
       sources: ["Sources/**"],
