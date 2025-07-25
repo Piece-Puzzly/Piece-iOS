@@ -69,6 +69,21 @@ struct WithdrawView: View {
     .onTapGesture {
         focusState = false
     }
+    .sheet(isPresented: $viewModel.isReasonSheetPresented) {
+      PCBottomSheet<BottomSheetTextItem>(
+        isButtonEnabled: Binding(projectedValue: .constant(viewModel.isLocationBottomSheetButtonEnable)),
+        items: $viewModel.coupleMadeRouteItems,
+        titleText: "헤어짐은 아쉽지만, 축하드려요!",
+        subtitleText: "인연을 어디에서 만났는지 알려주세요.",
+        buttonText: "다음",
+        buttonAction: {
+          router.push(to: .withdrawConfirm(reason: viewModel.withdrawReason))
+          viewModel.isReasonSheetPresented = false
+        },
+        onTapRowItem: { viewModel.handleAction(.tapRowItem($0)) }
+      )
+      .presentationDetents([.height(347)])
+    }
   }
 }
 
