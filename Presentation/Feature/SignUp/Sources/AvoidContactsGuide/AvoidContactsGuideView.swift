@@ -107,10 +107,10 @@ struct AvoidContactsGuideView: View {
   private var acceptButton: some View {
     RoundedButton(
       type: .solid,
-      buttonText: Constant.accepetButtonText,
+      buttonText: Constant.acceptButtonText,
       width: .maxWidth,
       action: {
-        viewModel.handleAction(.tapAccepetButton)
+        viewModel.handleAction(.tapAcceptButton)
       }
     )
   }

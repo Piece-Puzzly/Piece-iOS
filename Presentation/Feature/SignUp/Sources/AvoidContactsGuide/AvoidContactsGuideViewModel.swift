@@ -14,7 +14,7 @@ import Entities
 @Observable
 final class AvoidContactsGuideViewModel {
   enum Action {
-    case tapAccepetButton
+    case tapAcceptButton
     case showShettingAlert
     case cancelAlert
   }
@@ -38,7 +38,7 @@ final class AvoidContactsGuideViewModel {
   
   func handleAction(_ action: Action) {
     switch action {
-    case .tapAccepetButton:
+    case .tapAcceptButton:
       Task {
         await handleAcceptButtonTap()
       }
