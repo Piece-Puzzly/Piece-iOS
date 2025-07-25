@@ -53,6 +53,7 @@ struct WithdrawView: View {
               }
             }
         }
+        .scrollIndicators(.hidden)
       }
       
       RoundedButton(
@@ -61,7 +62,6 @@ struct WithdrawView: View {
         width: .maxWidth,
         action: { router.push(to: .withdrawConfirm(reason: viewModel.withdrawReason)) }
       )
-      .animation(.easeInOut, value: viewModel.isValid)
       .padding(.horizontal, 20)
       .padding(.vertical, 12)
     }
@@ -112,7 +112,6 @@ private extension WithdrawView {
         set: { viewModel.handleAction(.bindingWithdraw($0 ? type : nil)) }
       ))
       .padding(.leading, 14)
-      .animation(.easeInOut, value: viewModel.currentWithdraw)
       
       Text(type.rawValue)
         .foregroundStyle(.grayscaleBlack)
@@ -171,6 +170,5 @@ private extension WithdrawView {
         .contentTransition(.numericText())
     }
     .opacity(count == 0 ? 0 : 1)
-    .animation(.default, value: count)
   }
 }
