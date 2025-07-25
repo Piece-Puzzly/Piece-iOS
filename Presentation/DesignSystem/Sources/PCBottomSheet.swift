@@ -13,7 +13,7 @@ public protocol BottomSheetItemRepresentable: Hashable, Identifiable {
   
   var id: UUID { get }
   var text: String { get }
-  var state: BottomSheetItemState { get }
+  var state: BottomSheetItemState { get set }
 }
 
 public enum BottomSheetItemState {
@@ -294,4 +294,12 @@ public struct PCBottomSheet<T: BottomSheetItemRepresentable>: View {
       action: { buttonAction?() }
     )
   }
+}
+
+extension Array where Element: BottomSheetItemRepresentable {
+    public mutating func selectItem(withId id: UUID) {
+        for i in indices {
+            self[i].state = (self[i].id == id) ? .selected : .unselected
+        }
+    }
 }
