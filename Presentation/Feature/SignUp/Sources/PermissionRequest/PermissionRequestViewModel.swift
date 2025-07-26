@@ -67,7 +67,7 @@ private extension PermissionRequestViewModel {
     do {
       isCameraPermissionGranted = await cameraPermissionUseCase.execute()
       isPhotoPermissionGranted = await photoPermissionUseCase.execute()
-      isNotificationPermissionGranted = try await requestContactsPermissionUseCase.execute()
+      isNotificationPermissionGranted = try await requestNotificationPermissionUseCase.execute()
       isContactsPermissionGranted = try await requestContactsPermissionUseCase.execute()
     } catch {
       print("Permission request error: \(error)")
