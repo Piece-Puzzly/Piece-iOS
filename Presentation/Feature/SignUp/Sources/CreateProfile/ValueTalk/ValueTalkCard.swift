@@ -10,6 +10,11 @@ import Entities
 import SwiftUI
 
 struct ValueTalkCard: View {
+  private enum Constants {
+    static let minAnswerCount: Int = 30
+    static let maxAnswerCount: Int = 300
+  }
+  
   private var focusState: FocusState<ValueTalkView.Field?>.Binding
   @Binding private var viewModel: ValueTalkCardViewModel
 
@@ -87,8 +92,12 @@ struct ValueTalkCard: View {
       }
       .focused(focusState, equals: .valueTalkEditor(viewModel.model.id))
       
-      TextCountIndicator(count: .constant(viewModel.localAnswer.count), maxCount: 300)
-        .opacity(!viewModel.localAnswer.isEmpty || focusState.wrappedValue == .valueTalkEditor(viewModel.model.id) ? 1 : 0)
+      TextCountIndicator(
+        count: .constant(viewModel.localAnswer.count),
+        minCount: Constants.minAnswerCount,
+        maxCount: Constants.maxAnswerCount
+      )
+      .opacity(!viewModel.localAnswer.isEmpty || focusState.wrappedValue == .valueTalkEditor(viewModel.model.id) ? 1 : 0)
     }
     .padding(.horizontal, 16)
     .padding(.vertical, 10) // 폰트 내 lineHeight로 인해서 상단이 패딩이 더 커보이는 것 보졍
