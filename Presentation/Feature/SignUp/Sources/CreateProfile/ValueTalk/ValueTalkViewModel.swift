@@ -56,6 +56,7 @@ final class ValueTalkViewModel {
     }
     
     let isValid = valueTalks.allSatisfy( { $0.answer?.isEmpty == false })
+    print("📌 isValid: \(isValid)")
     if isValid {
       profileCreator.updateValueTalks(valueTalks)
       profileCreator.isValueTalksValid(isValid)

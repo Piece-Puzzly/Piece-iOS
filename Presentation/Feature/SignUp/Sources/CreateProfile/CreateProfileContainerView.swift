@@ -61,15 +61,15 @@ struct CreateProfileContainerView: View {
           .opacity(viewModel.currentStep == .basicInfo ? 1 : 0)
           .disabled(viewModel.currentStep != .basicInfo)
         
-        valueTalkView
-          .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
-          .opacity(viewModel.currentStep == .valueTalk ? 1 : 0)
-          .disabled(viewModel.currentStep != .valueTalk)
-        
         valuePickView
           .transition(.move(edge: .trailing))
           .opacity(viewModel.currentStep == .valuePick ? 1 : 0)
           .disabled(viewModel.currentStep != .valuePick)
+        
+        valueTalkView
+          .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
+          .opacity(viewModel.currentStep == .valueTalk ? 1 : 0)
+          .disabled(viewModel.currentStep != .valueTalk)
       }
       .animation(.easeInOut, value: viewModel.currentStep)
     }
@@ -102,12 +102,19 @@ struct CreateProfileContainerView: View {
   }
   
   private var valueTalkView: some View {
-    ValueTalkView(
-      profileCreator: viewModel.profileCreator,
-      initialValueTalks: viewModel.valueTalks,
-      didTapBottomButton: { viewModel.handleAction(.didTapBottomButton) }
-    )
-    .id(valueTalk)
+    Group {
+      if let valueTalkViewModel = viewModel.valueTalkViewModel {
+        ValueTalkView(
+          viewModel: valueTalkViewModel,
+          didTapBottomButton: {
+            viewModel.handleAction(.didTapBottomButton)
+          }
+        )
+        .id(valueTalk)
+      } else {
+        EmptyView()
+      }
+    }
   }
   
   private var valuePickView: some View {
