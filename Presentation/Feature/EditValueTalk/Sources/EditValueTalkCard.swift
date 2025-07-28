@@ -11,6 +11,12 @@ import SwiftUI
 import PCFoundationExtension
 
 struct EditValueTalkCard: View {
+  private enum Constants {
+    static let minAnswerCount: Int = 30
+    static let maxAnswerCount: Int = 300
+    static let valueTalkMinHeight: Double = 96.0
+  }
+  
   @Bindable private var viewModel: EditValueTalkCardViewModel
   private var focusState: FocusState<EditValueTalkView.Field?>.Binding
   let id: Int
@@ -22,7 +28,7 @@ struct EditValueTalkCard: View {
     index: Int,
     isEditing: Bool
   ) {
-    _viewModel = .init(wrappedValue: viewModel)
+    self.viewModel = viewModel
     self.focusState = focusState
     self.id = index
     self.isEditing = isEditing
@@ -41,16 +47,14 @@ struct EditValueTalkCard: View {
       answer
       Spacer()
         .frame(height: 12)
-      if viewModel.isEditingAnswer {
+      if isEditing {
         guide
           .contentShape(Rectangle())
           .onTapGesture {
             // 도움말 영역 탭 시 포커스 해제
             focusState.wrappedValue = nil
           }
-      }
-      
-      if !viewModel.isEditingAnswer {
+      } else {
         Spacer()
           .frame(height: 20)
         summary
@@ -92,7 +96,7 @@ struct EditValueTalkCard: View {
         get: { viewModel.model.answer },
         set: { viewModel.handleAction(.didUpdateAnswer($0)) }
       ))
-      .frame(maxWidth: .infinity, minHeight: 96, maxHeight: .infinity)
+      .frame(maxWidth: .infinity, minHeight: Constants.valueTalkMinHeight, maxHeight: .infinity)
       .fixedSize(horizontal: false, vertical: true)
       .pretendard(.body_M_M)
       .autocorrectionDisabled()
@@ -115,8 +119,14 @@ struct EditValueTalkCard: View {
         }
       }
       
-      TextCountIndicator(count: .constant(viewModel.model.answer.count), maxCount: 300)
+      if isEditing {
+        TextCountIndicator(
+          count: .constant(viewModel.model.answer.count),
+          minCount: Constants.minAnswerCount,
+          maxCount: Constants.maxAnswerCount
+        )
         .opacity(!viewModel.model.answer.isEmpty || focusState.wrappedValue == .answerEditor(viewModel.model.id) ? 1 : 0)
+      }
     }
     .padding(.horizontal, 16)
     .padding(.vertical, 14)
