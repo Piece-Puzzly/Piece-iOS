@@ -26,7 +26,7 @@ final class EditValueTalkViewModel {
   var cardViewModels: [EditValueTalkCardViewModel] = []
   var isEditing: Bool = false
   var isEdited: Bool {
-    initialValueTalks != valueTalks
+    initialValueTalks.map { $0.answer } != valueTalks.map { $0.answer }
   }
   var showValueTalkExitAlert: Bool = false
   var shouldPopBack: Bool = false
