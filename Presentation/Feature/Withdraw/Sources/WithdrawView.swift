@@ -53,6 +53,7 @@ struct WithdrawView: View {
               }
             }
         }
+        .scrollIndicators(.hidden)
       }
       
       RoundedButton(
@@ -61,13 +62,27 @@ struct WithdrawView: View {
         width: .maxWidth,
         action: { router.push(to: .withdrawConfirm(reason: viewModel.withdrawReason)) }
       )
-      .animation(.easeInOut, value: viewModel.isValid)
       .padding(.horizontal, 20)
       .padding(.vertical, 12)
     }
     .toolbar(.hidden)
     .onTapGesture {
         focusState = false
+    }
+    .sheet(isPresented: $viewModel.isReasonSheetPresented) {
+      PCBottomSheet<BottomSheetTextItem>(
+        isButtonEnabled: Binding(projectedValue: .constant(viewModel.isLocationBottomSheetButtonEnable)),
+        items: $viewModel.coupleMadeRouteItems,
+        titleText: "헤어짐은 아쉽지만, 축하드려요!",
+        subtitleText: "인연을 어디에서 만났는지 알려주세요.",
+        buttonText: "다음",
+        buttonAction: {
+          router.push(to: .withdrawConfirm(reason: viewModel.withdrawReason))
+          viewModel.isReasonSheetPresented = false
+        },
+        onTapRowItem: { viewModel.handleAction(.tapRowItem($0)) }
+      )
+      .presentationDetents([.height(347)])
     }
   }
 }
@@ -112,7 +127,6 @@ private extension WithdrawView {
         set: { viewModel.handleAction(.bindingWithdraw($0 ? type : nil)) }
       ))
       .padding(.leading, 14)
-      .animation(.easeInOut, value: viewModel.currentWithdraw)
       
       Text(type.rawValue)
         .foregroundStyle(.grayscaleBlack)
@@ -171,6 +185,5 @@ private extension WithdrawView {
         .contentTransition(.numericText())
     }
     .opacity(count == 0 ? 0 : 1)
-    .animation(.default, value: count)
   }
 }
