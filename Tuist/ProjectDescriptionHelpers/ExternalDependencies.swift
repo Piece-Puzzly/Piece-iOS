@@ -19,6 +19,7 @@ public enum ExternalDependencies {
   case FirebaseCore
   case FirebaseAnalytics
   case FirebaseMessaging
+  case Mantis
   
   public var name: String {
     switch self {
@@ -33,6 +34,7 @@ public enum ExternalDependencies {
     case .FirebaseCore: "FirebaseCore"
     case .FirebaseAnalytics: "FirebaseAnalytics"
     case .FirebaseMessaging: "FirebaseMessaging"
+    case .Mantis: "Mantis"
     }
   }
 }

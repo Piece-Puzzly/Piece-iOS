@@ -7,9 +7,9 @@
 
 import SwiftUI
 import DesignSystem
-import _PhotosUI_SwiftUI
 import Entities
 import UseCases
+import PCImagePicker
 
 struct CreateBasicInfoView: View {
   @State var viewModel: CreateBasicInfoViewModel
@@ -40,42 +40,14 @@ struct CreateBasicInfoView: View {
             VStack(alignment: .center, spacing: 32) {
               title
               
-              // 프로필 이미지
               VStack(spacing: 8) {
-                Button {
-                  viewModel.isProfileImageSheetPresented = true
-                } label: {
-                  profileImage
-                }
-                .actionSheet(isPresented: $viewModel.isProfileImageSheetPresented) {
-                  ActionSheet(
-                    title: Text("프로필 사진 선택"),
-                    buttons: [
-                      .default(Text("카메라")) { viewModel.handleAction(.selectCamera) },
-                      .default(Text("앨범")) { viewModel.handleAction(.selectPhotoLibrary) },
-                      .cancel(Text("취소"))
-                    ]
-                  )
-                }
-                .fullScreenCover(isPresented: $viewModel.isCameraPresented) {
-                  CameraPicker {
-                    viewModel.setImageFromCamera($0)
-                  }
-                }
-                .photosPicker(
-                  isPresented: $viewModel.isPhotoSheetPresented,
-                  selection: Binding(
-                    get: { viewModel.selectedItem },
-                    set: {
-                      viewModel.selectedItem = $0
-                      Task { await viewModel.loadImage() }
-                    }
-                  ),
-                  matching: .images
-                )
+                // 프로필 이미지
+                profileImageButton
                 
+                // 프로필 이미지 설명 라벨
                 profileImageDescriptionLabel
               }
+              
               // 닉네임
               nicknameTextField.id("nickname_scroll")
               
@@ -204,6 +176,12 @@ struct CreateBasicInfoView: View {
       )
       .presentationDetents([.height(479)])
     }
+    .fullScreenCover(item: $viewModel.imagePickerSource) { source in
+      PCImagePicker(sourceType: source) { image in
+        let imageData = image?.resizedAndCompressedData(targetSize: .init(width: 400, height: 400))
+        viewModel.handleAction(.setImageFromImagePicker(imageData))
+      }
+    }
   }
   
   private var title: some View {
@@ -220,10 +198,29 @@ struct CreateBasicInfoView: View {
     .padding(.top, 20)
   }
   
-  private var profileImage: some View {
+  private var profileImageButton: some View {
+    Button {
+      viewModel.isProfileImageSheetPresented = true
+    } label: {
+      profileImageView
+    }
+    .actionSheet(isPresented: $viewModel.isProfileImageSheetPresented) {
+      ActionSheet(
+        title: Text("프로필 사진 선택"),
+        buttons: [
+          .default(Text("카메라")) { viewModel.handleAction(.selectCamera) },
+          .default(Text("앨범")) { viewModel.handleAction(.selectPhotoLibrary) },
+          .cancel(Text("취소"))
+        ]
+      )
+    }
+  }
+  
+  private var profileImageView: some View {
     Group {
-      if let image = viewModel.profileImage {
-        Image(uiImage: image)
+      if let imageData = viewModel.profileImageData,
+         let uiImage = UIImage(data: imageData) {
+        Image(uiImage: uiImage)
           .resizable()
           .scaledToFill()
           .frame(width: 120, height: 120)
@@ -234,10 +231,12 @@ struct CreateBasicInfoView: View {
     }
     .overlay(alignment: .bottomTrailing) {
       profileEditButton(
-        viewModel.profileImage != nil
+        viewModel.profileImageData != nil
         ? DesignSystemAsset.Icons.pencilFill24.swiftUIImage
         : DesignSystemAsset.Icons.plus24.swiftUIImage
       )
+      .padding(.bottom, 10)
+      .padding(.trailing, 10)
     }
   }
   
@@ -254,8 +253,6 @@ struct CreateBasicInfoView: View {
               .stroke(Color.white, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
           )
       )
-      .padding(.bottom, 10)
-      .padding(.trailing, 10)
   }
   
   private var profileImageDescriptionLabel: some View {

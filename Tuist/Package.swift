@@ -17,6 +17,7 @@ let packageSettings = PackageSettings(
     "GTMAppAuth": .framework,
     "AppAuth": .framework,
     "GoogleSignIn": .framework,
+    "Mantis": .framework,
   ],
   baseSettings: .settings()
 //      .settings(
@@ -45,6 +46,7 @@ enum ExternalDependency: String, CaseIterable {
   case GoogleSignIn
   case Lottie
   case Firebase
+  case Mantis
 }
 
 extension ExternalDependency {
@@ -56,6 +58,7 @@ extension ExternalDependency {
     case .GoogleSignIn: "https://github.com/google/GoogleSignIn-iOS"
     case .Lottie: "https://github.com/airbnb/lottie-ios"
     case .Firebase: "https://github.com/firebase/firebase-ios-sdk"
+    case .Mantis: "https://github.com/guoyingtao/Mantis"
     }
   }
 }
@@ -69,6 +72,7 @@ extension ExternalDependency {
     case .GoogleSignIn: "7.0.0"
     case .Lottie: "4.5.1"
     case .Firebase: "11.8.1"
+    case .Mantis: "2.26.0"
     }
   }
 }

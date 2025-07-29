@@ -14,6 +14,7 @@ let project = Project.staticLibrary(
     .domain(target: .UseCases),
     .presentation(target: .DesignSystem),
     .presentation(target: .Router),
+    .presentation(target: .PCImagePicker),
     .utility(target: .PCFoundationExtension),
   ]
 )
