@@ -191,7 +191,6 @@ final class MatchingMainViewModel {
     do {
       let matchesInfo = try await getMatchesInfoUseCase.execute() // 매칭 상태 확인해야함
       let matchStatus = matchesInfo.matchStatus
-      isShowMatchingMainBasicCard = true
       
       switch matchStatus {
       case .BEFORE_OPEN:
@@ -226,6 +225,12 @@ final class MatchingMainViewModel {
       job = matchesInfo.job
       tags = matchesInfo.matchedValueList
       
+      if matchesInfo.blocked {
+        isShowMatchingNodataCard = true
+        matchingButtonState = .pending
+      } else {
+        isShowMatchingMainBasicCard = true
+      }
     } catch {
       print("Get Match Status :\(error.localizedDescription)")
       isShowMatchingNodataCard = true

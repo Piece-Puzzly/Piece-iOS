@@ -18,6 +18,7 @@ public struct MatchInfosModel {
   public let job: String
   public let matchedValueCount: Int
   public let matchedValueList: [String]
+  public let blocked: Bool
   
   public init(
     matchId: Int,
@@ -29,7 +30,8 @@ public struct MatchInfosModel {
     location: String,
     job: String,
     matchedValueCount: Int,
-    matchedValueList: [String]
+    matchedValueList: [String],
+    blocked: Bool
   ) {
     self.matchId = matchId
     self.matchedUserId = matchedUserId
@@ -41,5 +43,6 @@ public struct MatchInfosModel {
     self.job = job
     self.matchedValueCount = matchedValueCount
     self.matchedValueList = matchedValueList
+    self.blocked = blocked
   }
 }
