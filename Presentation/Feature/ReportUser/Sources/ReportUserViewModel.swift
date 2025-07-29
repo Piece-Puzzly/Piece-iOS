@@ -41,6 +41,7 @@ final class ReportUserViewModel {
     case let .didSelectReportReason(reason):
       selectedReportReason = reason
       showReportReasonEditor = reason == .other
+      updateBottomButtonEnabled()
       
     case .didTapNextButton:
       showBlockAlert = true
@@ -48,6 +49,7 @@ final class ReportUserViewModel {
     case let .didUpdateReportReason(reason):
       let limitedText = reason.count <= 100 ? reason : String(reason.prefix(100))
       reportReason = limitedText
+      updateBottomButtonEnabled()
       
     case .didTapReportButton:
       showBlockAlert = false
@@ -59,11 +61,23 @@ final class ReportUserViewModel {
     do {
       let reason = selectedReportReason == .other ? reportReason : selectedReportReason?.rawValue ?? ""
       if let id = PCUserDefaultsService.shared.getMatchedUserId() {
-        let result = try await reportUserUseCase.execute(id: id, reason: reason)
+        _ = try await reportUserUseCase.execute(id: id, reason: reason)
         showBlockResultAlert = true
       }
     } catch {
       print(error)
+    }
+  }
+  
+  private func updateBottomButtonEnabled() {
+    if let selected = selectedReportReason {
+      if selected == .other {
+        isBottomButtonEnabled = !reportReason.isEmpty
+      } else {
+        isBottomButtonEnabled = true
+      }
+    } else {
+      isBottomButtonEnabled = false
     }
   }
 }
