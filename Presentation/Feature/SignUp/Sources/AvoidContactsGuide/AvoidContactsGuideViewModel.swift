@@ -14,7 +14,7 @@ import Entities
 @Observable
 final class AvoidContactsGuideViewModel {
   enum Action {
-    case tapAccepetButton
+    case tapAcceptButton
     case showShettingAlert
     case cancelAlert
   }
@@ -38,7 +38,7 @@ final class AvoidContactsGuideViewModel {
   
   func handleAction(_ action: Action) {
     switch action {
-    case .tapAccepetButton:
+    case .tapAcceptButton:
       Task {
         await handleAcceptButtonTap()
       }
@@ -71,6 +71,7 @@ final class AvoidContactsGuideViewModel {
     showToast = true
     try? await Task.sleep(for: .seconds(2))
     showToast = false
+    try? await Task.sleep(for: .seconds(0.3)) // 토스트가 사라지는 애니메이션 이후 화면 전환하기 위함
     moveToCompleteSignUp = true
   }
   
