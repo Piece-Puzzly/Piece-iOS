@@ -94,7 +94,7 @@ struct EditValueTalkView: View {
         .pretendard(.body_M_M)
         .foregroundStyle(
           viewModel.isEditing
-          ? (viewModel.isEdited ? Color.primaryDefault : Color.grayscaleDark3)
+          ? (viewModel.isAllAnswerValid ? Color.primaryDefault : Color.grayscaleDark3)
           : Color.primaryDefault)
         .contentShape(Rectangle())
     }

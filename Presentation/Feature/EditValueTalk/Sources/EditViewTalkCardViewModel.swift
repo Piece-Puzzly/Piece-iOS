@@ -18,6 +18,11 @@ final class EditValueTalkCardViewModel: Equatable {
     lhs.model == rhs.model
   }
   
+  enum Constants {
+    static let minAnswerLength: Int = 30
+    static let maxAnswerLength: Int = 300
+  }
+  
   enum Action {
     case didUpdateAnswer(String)
     case didUpdateSummary(String)
@@ -37,6 +42,10 @@ final class EditValueTalkCardViewModel: Equatable {
   var localSummary: String
   var currentGuideText: String {
     model.guides[guideTextIndex]
+  }
+  var isAnswerValid: Bool {
+    model.answer.count >= Constants.minAnswerLength
+    && model.answer.count <= Constants.maxAnswerLength
   }
   
   private(set) var editingState: EditingState = .viewing
@@ -62,7 +71,8 @@ final class EditValueTalkCardViewModel: Equatable {
   func handleAction(_ action: Action) {
     switch action {
     case let .didUpdateAnswer(answer):
-      model.answer = answer
+      let limitedAnswer = String(answer.prefix(Constants.maxAnswerLength))
+      model.answer = limitedAnswer
       onModelUpdate(model)
       
     case let .didUpdateSummary(summary):
