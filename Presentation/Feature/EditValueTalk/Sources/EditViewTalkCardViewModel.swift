@@ -27,6 +27,7 @@ final class EditValueTalkCardViewModel: Equatable {
     case didUpdateAnswer(String)
     case didUpdateSummary(String)
     case didTapSummaryButton
+    case didTapTooltipButton
   }
   
   enum EditingState {
@@ -40,6 +41,7 @@ final class EditValueTalkCardViewModel: Equatable {
   let index: Int
   let isEditingAnswer: Bool
   var localSummary: String
+  var showTooltip: Bool = false
   var currentGuideText: String {
     model.guides[guideTextIndex]
   }
@@ -80,6 +82,11 @@ final class EditValueTalkCardViewModel: Equatable {
       
     case .didTapSummaryButton:
       didTapSummaryButton()
+      
+    case .didTapTooltipButton:
+      if !showTooltip {
+        startTooltipAutoHide()
+      }
     }
   }
   
@@ -118,5 +125,16 @@ final class EditValueTalkCardViewModel: Equatable {
         self?.increaseGuideTextIndex()
       }
       .store(in: &cancellables)
+  }
+  
+  private func startTooltipAutoHide() {
+    showTooltip = true
+    
+    Task {
+      try? await Task.sleep(for: .seconds(5))
+      await MainActor.run {
+        showTooltip = false
+      }
+    }
   }
 }
