@@ -80,7 +80,7 @@ struct EditValueTalkCard: View {
   
   private var category: some View {
     Text(viewModel.model.category)
-      .pretendard(.body_M_M)
+      .pretendard(.body_S_SB)
       .foregroundStyle(Color.primaryDefault)
   }
   
@@ -167,6 +167,8 @@ struct EditValueTalkCard: View {
     VStack(alignment: .leading, spacing: 12) {
       HStack(alignment: .center, spacing: 4) {
         Text("AI 요약")
+          .pretendard(.body_S_SB)
+          .foregroundStyle(Color.primaryDefault)
         DesignSystemAsset.Icons.info20.swiftUIImage
           .renderingMode(.template)
           .foregroundStyle(Color.grayscaleDark3)
