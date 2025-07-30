@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "tooltip_ai_summary.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

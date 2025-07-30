@@ -29,7 +29,7 @@ final class EditValueTalkViewModel {
     initialValueTalks.map { $0.answer } != valueTalks.map { $0.answer }
   }
   var isAllAnswerValid: Bool {
-    cardViewModels.allSatisfy { $0.isAnswerValid }
+    isEdited && cardViewModels.allSatisfy { $0.isAnswerValid }
   }
   var showValueTalkExitAlert: Bool = false
   var shouldPopBack: Bool = false

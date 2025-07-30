@@ -45,9 +45,9 @@ struct EditValueTalkCard: View {
       Spacer()
         .frame(height: 20)
       answer
-      Spacer()
-        .frame(height: 12)
       if isEditing {
+        Spacer()
+          .frame(height: 12)
         guide
           .contentShape(Rectangle())
           .onTapGesture {
@@ -80,7 +80,7 @@ struct EditValueTalkCard: View {
   
   private var category: some View {
     Text(viewModel.model.category)
-      .pretendard(.body_M_M)
+      .pretendard(.body_S_SB)
       .foregroundStyle(Color.primaryDefault)
   }
   
@@ -167,13 +167,29 @@ struct EditValueTalkCard: View {
     VStack(alignment: .leading, spacing: 12) {
       HStack(alignment: .center, spacing: 4) {
         Text("AI 요약")
+          .pretendard(.body_S_SB)
+          .foregroundStyle(Color.primaryDefault)
         DesignSystemAsset.Icons.info20.swiftUIImage
           .renderingMode(.template)
-          .foregroundStyle(Color.grayscaleDark3)
+          .foregroundStyle(
+            viewModel.showTooltip
+            ? Color.primaryDefault
+            : Color.grayscaleDark3
+          )
       }
+      .frame(width: 65, height: 20)
       .contentShape(Rectangle())
       .onTapGesture {
+        withAnimation(.easeInOut(duration: 0.3)) {
+          viewModel.handleAction(.didTapTooltipButton)
+        }
+        
         focusState.wrappedValue = nil
+      }
+      .overlay(alignment: .bottomLeading) {
+        DesignSystemAsset.Images.tooltipAiSummary.swiftUIImage
+          .opacity(viewModel.showTooltip ? 1 : 0)
+          .offset(x: 65, y: 6)
       }
       
       HStack(alignment: .bottom, spacing: 4) {
