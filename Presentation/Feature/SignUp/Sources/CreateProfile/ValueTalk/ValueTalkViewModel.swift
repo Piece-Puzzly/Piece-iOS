@@ -13,6 +13,10 @@ import UseCases
 @MainActor
 @Observable
 final class ValueTalkViewModel {
+  private enum Constants {
+    static let minAnswerCount: Int = 30
+  }
+  
   enum Action {
     case didTapBottomButton
     case updateAnswer(index: Int, answer: String)
@@ -55,7 +59,11 @@ final class ValueTalkViewModel {
       valueTalks[cardViewModel.index].answer = cardViewModel.localAnswer
     }
     
-    let isValid = valueTalks.allSatisfy( { $0.answer?.isEmpty == false })
+    let isValid = valueTalks.allSatisfy { valueTalk in
+      guard let answer = valueTalk.answer, !answer.isEmpty else { return false }
+      return answer.count >= Constants.minAnswerCount
+    }
+    print("📌 isValid: \(isValid)")
     if isValid {
       profileCreator.updateValueTalks(valueTalks)
       profileCreator.isValueTalksValid(isValid)

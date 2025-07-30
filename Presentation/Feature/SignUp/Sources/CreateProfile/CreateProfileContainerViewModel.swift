@@ -26,6 +26,7 @@ final class CreateProfileContainerViewModel {
   
   var currentStep: CreateProfileStep = .basicInfo
   var valuePickViewModel: ValuePickViewModel?
+  var valueTalkViewModel: ValueTalkViewModel?
   
   let profileCreator = ProfileCreator()
   let checkNicknameUseCase: CheckNicknameUseCase
@@ -83,6 +84,11 @@ final class CreateProfileContainerViewModel {
       self.valuePickViewModel = ValuePickViewModel(
         profileCreator: profileCreator,
         initialValuePicks: valuePicks
+      )
+      
+      self.valueTalkViewModel = ValueTalkViewModel(
+        profileCreator: profileCreator,
+        initialValueTalks: valueTalks
       )
 
       error = nil

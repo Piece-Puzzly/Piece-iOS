@@ -26,7 +26,10 @@ final class EditValueTalkViewModel {
   var cardViewModels: [EditValueTalkCardViewModel] = []
   var isEditing: Bool = false
   var isEdited: Bool {
-    initialValueTalks != valueTalks
+    initialValueTalks.map { $0.answer } != valueTalks.map { $0.answer }
+  }
+  var isAllAnswerValid: Bool {
+    cardViewModels.allSatisfy { $0.isAnswerValid }
   }
   var showValueTalkExitAlert: Bool = false
   var shouldPopBack: Bool = false
@@ -93,7 +96,7 @@ final class EditValueTalkViewModel {
           valueTalks[index] = cardViewModel.model
         }
       }
-      if isEdited {
+      if isAllAnswerValid {
         await updateProfileValueTalks()
       }
     } else {

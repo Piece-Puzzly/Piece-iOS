@@ -7,7 +7,6 @@
 
 import DesignSystem
 import Entities
-import Router
 import SwiftUI
 import UseCases
 
@@ -17,21 +16,14 @@ struct ValueTalkView: View {
   }
   
   @Bindable var viewModel: ValueTalkViewModel
-  @Environment(Router.self) private var router: Router
   @FocusState private var focusField: Field?
   var didTapBottomButton: () -> Void
 
   init(
-    profileCreator: ProfileCreator,
-    initialValueTalks: [ValueTalkModel],
+    viewModel: ValueTalkViewModel,
     didTapBottomButton: @escaping () -> Void
   ) {
-    _viewModel = .init(
-      wrappedValue: .init(
-        profileCreator: profileCreator,
-        initialValueTalks: initialValueTalks
-      )
-    )
+    self.viewModel = viewModel
     self.didTapBottomButton = didTapBottomButton
   }
 
