@@ -17,7 +17,7 @@ final class EditValueTalkViewModel {
     case updateValueTalk(ProfileValueTalkModel)
     case didTapSaveButton
     case onDisappear
-    case popBack
+    case didTapCancelEditing
     case didTapBackButton
     case didTapCloseAlert
   }
@@ -78,14 +78,14 @@ final class EditValueTalkViewModel {
         await disconnectSse()
       }
       
-    case .popBack:
-      handlePopBack()
+    case .didTapCancelEditing:
+      handleDidTapCancelEditing()
       
     case .didTapCloseAlert:
       hideAlert()
       
     case .didTapBackButton:
-      isEditing ? showExitAlert() : setPopBack()
+      handleDidTapBackButton()
     }
   }
   
@@ -108,18 +108,7 @@ final class EditValueTalkViewModel {
     do {
       let valueTalks = try await getProfileValueTalksUseCase.execute()
       initialValueTalks = valueTalks
-      self.valueTalks = valueTalks
-      cardViewModels = valueTalks.enumerated().map { index, valueTalk in
-        EditValueTalkCardViewModel(
-          model: valueTalk,
-          index: index,
-          isEditingAnswer: false,
-          onModelUpdate: { [weak self] updatedModel in
-            self?.handleValueTalkUpdate(updatedModel)
-          }
-        )
-      }
-      print(valueTalks)
+      setupValueTalks(for: valueTalks)
     } catch {
       print(error)
     }
@@ -134,13 +123,8 @@ final class EditValueTalkViewModel {
   
   private func updateProfileValueTalks() async {
     do {
-      print("update called")
-      print(valueTalks)
       let updatedValueTalks = try await updateProfileValueTalksUseCase.execute(valueTalks: valueTalks)
-      print("updated")
-      print(updatedValueTalks)
       initialValueTalks = updatedValueTalks
-      isEditing = false
     } catch {
       print(error)
     }
@@ -177,19 +161,44 @@ final class EditValueTalkViewModel {
       cardViewModels[index].updateSummary(summary.summary)
     }
   }
+    
+  private func setupValueTalks(for valueTalks: [ProfileValueTalkModel]) {
+    self.valueTalks = valueTalks
+    cardViewModels = valueTalks.enumerated().map { index, valueTalk in
+      EditValueTalkCardViewModel(
+        model: valueTalk,
+        index: index,
+        isEditingAnswer: false,
+        onModelUpdate: { [weak self] updatedModel in
+          self?.handleValueTalkUpdate(updatedModel)
+        }
+      )
+    }
+  }
   
-  private func handlePopBack() {
+  private func handleDidTapCancelEditing() {
     Task {
       hideAlert()
       try? await Task.sleep(for: .milliseconds(100))
-      setPopBack()
+      cancelEditingMode()
     }
+  }
+  
+  private func cancelEditingMode() {
+    isEditing = false
+    setupValueTalks(for: initialValueTalks)
   }
 }
 
 // MARK: EditValueTalk ExitAlert func
 private extension EditValueTalkViewModel {
-  func showExitAlert() {
+  func handleDidTapBackButton() {
+    !isEditing
+    ? setPopBack()
+    : isEdited ? showAlert() : { isEditing = false }()
+  }
+  
+  func showAlert() {
     showValueTalkExitAlert = true
   }
   
