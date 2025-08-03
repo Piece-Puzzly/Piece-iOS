@@ -9,6 +9,7 @@ import SwiftUI
 
 public struct PCToast: View {
   @Binding public var isVisible: Bool
+  @State private var displayIcon: Image? = nil
   @State private var displayText: String = ""
   @State private var animatedVisibility: Bool = false
   private let icon: Image?
@@ -32,7 +33,7 @@ public struct PCToast: View {
   
   public var body: some View {
     HStack(alignment: .center, spacing: 8) {
-      icon?
+      displayIcon?
         .renderingMode(.template)
         .resizable()
         .frame(width: 20, height: 20)
@@ -52,7 +53,7 @@ public struct PCToast: View {
     .animation(.easeInOut, value: animatedVisibility)
     .onChange(of: isVisible) { _, newValue in
       if newValue {
-        updateTextThenFadeIn()
+        updateContentThenFadeIn()
         scheduleAutoHide()
       }
     }
@@ -61,10 +62,11 @@ public struct PCToast: View {
 
 // MARK: - Private Animation Methods
 extension PCToast {
-  /// 텍스트를 즉시 업데이트한 후, opacity만 애니메이션으로 페이드인
-  private func updateTextThenFadeIn() {
-    // 1단계: 텍스트 즉시 변경 (애니메이션 없음)
+  /// 텍스트와 아이콘을 즉시 업데이트한 후, opacity만 애니메이션으로 페이드인
+  private func updateContentThenFadeIn() {
+    // 1단계: 텍스트와 아이콘 즉시 변경 (애니메이션 없음)
     displayText = text ?? "TOAST MESSAGE IS EMPTY"
+    displayIcon = icon
     
     // 2단계: 다음 프레임에서 opacity 애니메이션
     Task {
