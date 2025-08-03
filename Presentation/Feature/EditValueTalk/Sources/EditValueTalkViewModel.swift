@@ -132,10 +132,13 @@ final class EditValueTalkViewModel {
     }
   }
   
+  // MARK: 저장 시 AI 요약 스켈레톤 UI도 함께 처리해야합니다.
   private func updateProfileValueTalks() async {
     do {
+      cardViewModels.forEach { $0.startGeneratingAISummary() }
       let updatedValueTalks = try await updateProfileValueTalksUseCase.execute(valueTalks: valueTalks)
       initialValueTalks = updatedValueTalks
+      handleDidTapBackButton()
     } catch {
       print(error)
     }
@@ -190,7 +193,6 @@ final class EditValueTalkViewModel {
     }
   }
   
-    
   private func setupValueTalks(for valueTalks: [ProfileValueTalkModel]) {
     self.valueTalks = valueTalks
     cardViewModels = valueTalks.enumerated().map { index, valueTalk in

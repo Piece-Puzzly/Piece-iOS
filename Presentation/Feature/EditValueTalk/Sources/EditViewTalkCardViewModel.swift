@@ -57,7 +57,6 @@ final class EditValueTalkCardViewModel: Equatable {
   let onModelUpdate: (ProfileValueTalkModel) -> Void
   let onSummaryUpdate: (ProfileValueTalkModel) -> Void
   
-  
   init(
     model: ProfileValueTalkModel,
     index: Int,
@@ -99,7 +98,10 @@ final class EditValueTalkCardViewModel: Equatable {
     model.summary = summary
     editingState = .viewing
   }
-    
+  
+  func startGeneratingAISummary() {
+    editingState = .generatingAISummary
+  }
 
   private func increaseGuideTextIndex() {
     guideTextIndex = (guideTextIndex + 1) % model.guides.count
