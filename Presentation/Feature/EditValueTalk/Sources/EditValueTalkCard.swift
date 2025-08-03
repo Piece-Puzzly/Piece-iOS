@@ -197,7 +197,7 @@ struct EditValueTalkCard: View {
           Text("작성해주신 내용을 AI가 요약하고 있어요")
             .pretendard(.body_M_M)
             .foregroundStyle(.grayscaleDark2)
-          PCLottieView(.refresh)
+          PCLottieView(.aiLoadingMotion)
           Spacer()
         } else {
           let summaryBinding = Binding<String>(

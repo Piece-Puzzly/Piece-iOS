@@ -23,6 +23,7 @@ struct EditValueTalkView: View {
   init(
     getProfileValueTalksUseCase: GetProfileValueTalksUseCase,
     updateProfileValueTalksUseCase: UpdateProfileValueTalksUseCase,
+    updateProfileValueTalkSummaryUseCase: UpdateProfileValueTalkSummaryUseCase,
     connectSseUseCase: ConnectSseUseCase,
     disconnectSseUseCase: DisconnectSseUseCase
   ) {
@@ -30,6 +31,7 @@ struct EditValueTalkView: View {
       wrappedValue: .init(
         getProfileValueTalksUseCase: getProfileValueTalksUseCase,
         updateProfileValueTalksUseCase: updateProfileValueTalksUseCase,
+        updateProfileValueTalkSummaryUseCase: updateProfileValueTalkSummaryUseCase,
         connectSseUseCase: connectSseUseCase,
         disconnectSseUseCase: disconnectSseUseCase
       )
@@ -46,7 +48,7 @@ struct EditValueTalkView: View {
       
       VStack(spacing: 0) {
         NavigationBar(
-          title: "가치관 Talk",
+          title: viewModel.isEditing ? "가치관 Talk 수정": "가치관 Talk",
           leftButtonTap: { viewModel.handleAction(.didTapBackButton) },
           rightButton: navigationBarRightButton
         )
@@ -76,6 +78,9 @@ struct EditValueTalkView: View {
     }
     .onChange(of: viewModel.shouldPopBack) { _, shouldPopBack in
       if shouldPopBack { router.pop() }
+    }
+    .onChange(of: viewModel.isEditing) { _, isEditing in
+      if !isEditing { focusField = nil }
     }
     .onAppear {
       viewModel.handleAction(.onAppear)
@@ -126,7 +131,7 @@ struct EditValueTalkView: View {
       message: "지금 뒤로 가면 프로필이 저장되지 않아요.\n계속 이어서 작성해 보세요.",
       firstButtonText: "작성 중단하기",
       secondButtonText: "이어서 작성하기",
-      firstButtonAction: { viewModel.handleAction(.popBack) },
+      firstButtonAction: { viewModel.handleAction(.didTapCancelEditing) },
       secondButtonAction: { viewModel.handleAction(.didTapCloseAlert) }
     )
   }

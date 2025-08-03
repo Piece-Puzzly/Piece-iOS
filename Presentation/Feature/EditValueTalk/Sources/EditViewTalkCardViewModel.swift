@@ -55,17 +55,20 @@ final class EditValueTalkCardViewModel: Equatable {
   private var cancellables: [AnyCancellable] = []
   
   let onModelUpdate: (ProfileValueTalkModel) -> Void
+  let onSummaryUpdate: (ProfileValueTalkModel) -> Void
   
   init(
     model: ProfileValueTalkModel,
     index: Int,
     isEditingAnswer: Bool,
-    onModelUpdate: @escaping (ProfileValueTalkModel) -> Void
+    onModelUpdate: @escaping (ProfileValueTalkModel) -> Void,
+    onSummaryUpdate: @escaping (ProfileValueTalkModel) -> Void
   ) {
     self.model = model
     self.index = index
     self.isEditingAnswer = isEditingAnswer
     self.onModelUpdate = onModelUpdate
+    self.onSummaryUpdate = onSummaryUpdate
     self.localSummary = model.summary
     startTimer()
   }
@@ -95,7 +98,10 @@ final class EditValueTalkCardViewModel: Equatable {
     model.summary = summary
     editingState = .viewing
   }
-    
+  
+  func startGeneratingAISummary() {
+    editingState = .generatingAISummary
+  }
 
   private func increaseGuideTextIndex() {
     guideTextIndex = (guideTextIndex + 1) % model.guides.count
@@ -111,7 +117,7 @@ final class EditValueTalkCardViewModel: Equatable {
       
     case .editingSummary:
       model.summary = localSummary
-      onModelUpdate(model)
+      onSummaryUpdate(model)
       editingState = .viewing
       
     case .generatingAISummary:

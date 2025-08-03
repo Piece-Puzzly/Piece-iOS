@@ -12,12 +12,14 @@ public struct EditValueTalkViewFactory {
   public static func createEditValueTalkViewFactory(
     getProfileValueTalksUseCase: GetProfileValueTalksUseCase,
     updateProfileValueTalksUseCase: UpdateProfileValueTalksUseCase,
+    updateProfileValueTalkSummaryUseCase: UpdateProfileValueTalkSummaryUseCase,
     connectSseUseCase: ConnectSseUseCase,
     disconnectSseUseCase: DisconnectSseUseCase
   ) -> some View {
     EditValueTalkView(
       getProfileValueTalksUseCase: getProfileValueTalksUseCase,
       updateProfileValueTalksUseCase: updateProfileValueTalksUseCase,
+      updateProfileValueTalkSummaryUseCase: updateProfileValueTalkSummaryUseCase,
       connectSseUseCase: connectSseUseCase,
       disconnectSseUseCase: disconnectSseUseCase
     )

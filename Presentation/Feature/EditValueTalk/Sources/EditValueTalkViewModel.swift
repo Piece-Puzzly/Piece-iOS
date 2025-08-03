@@ -15,9 +15,11 @@ final class EditValueTalkViewModel {
   enum Action {
     case onAppear
     case updateValueTalk(ProfileValueTalkModel)
+    case updateAISummaryFromSSE(AISummaryModel)
+    case updateAISummaryManually(ProfileValueTalkModel)
     case didTapSaveButton
     case onDisappear
-    case popBack
+    case didTapCancelEditing
     case didTapBackButton
     case didTapCloseAlert
   }
@@ -37,6 +39,7 @@ final class EditValueTalkViewModel {
   private(set) var initialValueTalks: [ProfileValueTalkModel] = []
   private let getProfileValueTalksUseCase: GetProfileValueTalksUseCase
   private let updateProfileValueTalksUseCase: UpdateProfileValueTalksUseCase
+  private let updateProfileValueTalkSummaryUseCase: UpdateProfileValueTalkSummaryUseCase
   private let connectSseUseCase: ConnectSseUseCase
   private let disconnectSseUseCase: DisconnectSseUseCase
   
@@ -45,11 +48,13 @@ final class EditValueTalkViewModel {
   init(
     getProfileValueTalksUseCase: GetProfileValueTalksUseCase,
     updateProfileValueTalksUseCase: UpdateProfileValueTalksUseCase,
+    updateProfileValueTalkSummaryUseCase: UpdateProfileValueTalkSummaryUseCase,
     connectSseUseCase: ConnectSseUseCase,
     disconnectSseUseCase: DisconnectSseUseCase
   ) {
     self.getProfileValueTalksUseCase = getProfileValueTalksUseCase
     self.updateProfileValueTalksUseCase = updateProfileValueTalksUseCase
+    self.updateProfileValueTalkSummaryUseCase = updateProfileValueTalkSummaryUseCase
     self.connectSseUseCase = connectSseUseCase
     self.disconnectSseUseCase = disconnectSseUseCase
     
@@ -68,6 +73,12 @@ final class EditValueTalkViewModel {
     case let .updateValueTalk(model):
       handleValueTalkUpdate(model)
       
+    case let .updateAISummaryFromSSE(summary):
+      handleUpdateAISummaryFromSSE(summary)
+      
+    case let .updateAISummaryManually(model):
+      handleUpdateAISummaryManually(model)
+      
     case .didTapSaveButton:
       Task {
         await didTapSaveButton()
@@ -78,14 +89,14 @@ final class EditValueTalkViewModel {
         await disconnectSse()
       }
       
-    case .popBack:
-      handlePopBack()
+    case .didTapCancelEditing:
+      handleDidTapCancelEditing()
       
     case .didTapCloseAlert:
       hideAlert()
       
     case .didTapBackButton:
-      isEditing ? showExitAlert() : setPopBack()
+      handleDidTapBackButton()
     }
   }
   
@@ -108,18 +119,7 @@ final class EditValueTalkViewModel {
     do {
       let valueTalks = try await getProfileValueTalksUseCase.execute()
       initialValueTalks = valueTalks
-      self.valueTalks = valueTalks
-      cardViewModels = valueTalks.enumerated().map { index, valueTalk in
-        EditValueTalkCardViewModel(
-          model: valueTalk,
-          index: index,
-          isEditingAnswer: false,
-          onModelUpdate: { [weak self] updatedModel in
-            self?.handleValueTalkUpdate(updatedModel)
-          }
-        )
-      }
-      print(valueTalks)
+      setupValueTalks(for: valueTalks)
     } catch {
       print(error)
     }
@@ -132,15 +132,13 @@ final class EditValueTalkViewModel {
     }
   }
   
+  // MARK: 저장 시 AI 요약 스켈레톤 UI도 함께 처리해야합니다.
   private func updateProfileValueTalks() async {
     do {
-      print("update called")
-      print(valueTalks)
+      cardViewModels.forEach { $0.startGeneratingAISummary() }
       let updatedValueTalks = try await updateProfileValueTalksUseCase.execute(valueTalks: valueTalks)
-      print("updated")
-      print(updatedValueTalks)
       initialValueTalks = updatedValueTalks
-      isEditing = false
+      handleDidTapBackButton()
     } catch {
       print(error)
     }
@@ -152,7 +150,7 @@ final class EditValueTalkViewModel {
     sseTask = Task {
       do {
         for try await createdSummary in connectSseUseCase.execute() {
-          handleSummaryUpdate(createdSummary)
+          handleAction(.updateAISummaryFromSSE(createdSummary))
         }
       } catch {
         print(error)
@@ -171,25 +169,70 @@ final class EditValueTalkViewModel {
     }
   }
   
-  private func handleSummaryUpdate(_ summary: AISummaryModel) {
+  private func handleUpdateAISummaryFromSSE(_ summary: AISummaryModel) {
     if let index = valueTalks.firstIndex(where: { $0.id == summary.profileValueTalkId }) {
       valueTalks[index].summary = summary.summary
       cardViewModels[index].updateSummary(summary.summary)
     }
   }
   
-  private func handlePopBack() {
+  private func handleUpdateAISummaryManually(_ model: ProfileValueTalkModel) {
+    // AI 요약만 업데이트하는 API 콜
+    Task {
+      _ = try await updateProfileValueTalkSummaryUseCase.execute(
+        profileTalkId: model.id,
+        summary: model.summary
+      )
+    }
+    
+    // initial 및 기타 모델들을 모두 업데이트 해주어야 함
+    if let index = valueTalks.firstIndex(where: { $0.id == model.id }) {
+      initialValueTalks[index] = model
+      valueTalks[index] = model
+      cardViewModels[index].model = model
+    }
+  }
+  
+  private func setupValueTalks(for valueTalks: [ProfileValueTalkModel]) {
+    self.valueTalks = valueTalks
+    cardViewModels = valueTalks.enumerated().map { index, valueTalk in
+      EditValueTalkCardViewModel(
+        model: valueTalk,
+        index: index,
+        isEditingAnswer: false,
+        onModelUpdate: { [weak self] updatedModel in
+          self?.handleAction(.updateValueTalk(updatedModel))
+        },
+        onSummaryUpdate: { [weak self] updatedModel in
+          self?.handleAction(.updateAISummaryManually(updatedModel))
+        }
+      )
+    }
+  }
+  
+  private func handleDidTapCancelEditing() {
     Task {
       hideAlert()
       try? await Task.sleep(for: .milliseconds(100))
-      setPopBack()
+      cancelEditingMode()
     }
+  }
+  
+  private func cancelEditingMode() {
+    isEditing = false
+    setupValueTalks(for: initialValueTalks)
   }
 }
 
 // MARK: EditValueTalk ExitAlert func
 private extension EditValueTalkViewModel {
-  func showExitAlert() {
+  func handleDidTapBackButton() {
+    !isEditing
+    ? setPopBack()
+    : isEdited ? showAlert() : { isEditing = false }()
+  }
+  
+  func showAlert() {
     showValueTalkExitAlert = true
   }
   
