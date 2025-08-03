@@ -260,11 +260,13 @@ public struct Coordinator {
       let sseRepository = repositoryFactory.createSseRepository()
       let getProfileValueTalksUseCase = UseCaseFactory.createGetProfileValueTalksUseCase(repository: profileRepository)
       let updateProfileValueTalksUseCase = UseCaseFactory.createUpdateProfileValueTalksUseCase(repository: profileRepository)
+      let updateProfileValueTalkSummaryUseCase = UseCaseFactory.createUpdateProfileValueTalkSummaryUseCase(repository: profileRepository)
       let connectSseUseCase = UseCaseFactory.createConnectSseUseCase(repository: sseRepository)
       let disconnectSseUseCase = UseCaseFactory.createDisconnectSseUseCase(repository: sseRepository)
       EditValueTalkViewFactory.createEditValueTalkViewFactory(
         getProfileValueTalksUseCase: getProfileValueTalksUseCase,
         updateProfileValueTalksUseCase: updateProfileValueTalksUseCase,
+        updateProfileValueTalkSummaryUseCase: updateProfileValueTalkSummaryUseCase,
         connectSseUseCase: connectSseUseCase,
         disconnectSseUseCase: disconnectSseUseCase
       )

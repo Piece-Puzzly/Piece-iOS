@@ -23,6 +23,7 @@ struct EditValueTalkView: View {
   init(
     getProfileValueTalksUseCase: GetProfileValueTalksUseCase,
     updateProfileValueTalksUseCase: UpdateProfileValueTalksUseCase,
+    updateProfileValueTalkSummaryUseCase: UpdateProfileValueTalkSummaryUseCase,
     connectSseUseCase: ConnectSseUseCase,
     disconnectSseUseCase: DisconnectSseUseCase
   ) {
@@ -30,6 +31,7 @@ struct EditValueTalkView: View {
       wrappedValue: .init(
         getProfileValueTalksUseCase: getProfileValueTalksUseCase,
         updateProfileValueTalksUseCase: updateProfileValueTalksUseCase,
+        updateProfileValueTalkSummaryUseCase: updateProfileValueTalkSummaryUseCase,
         connectSseUseCase: connectSseUseCase,
         disconnectSseUseCase: disconnectSseUseCase
       )
