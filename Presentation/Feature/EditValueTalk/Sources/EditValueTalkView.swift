@@ -76,6 +76,13 @@ struct EditValueTalkView: View {
     .pcAlert(isPresented: $viewModel.showValueTalkExitAlert) {
       valueTalkExitAlert
     }
+    .overlay(alignment: .bottom) {
+      PCToast(
+        isVisible: viewModel.showToastBinding,
+        icon: viewModel.toastMessage?.icon,
+        text: viewModel.toastMessage?.text
+      )
+    }
     .onChange(of: viewModel.shouldPopBack) { _, shouldPopBack in
       if shouldPopBack { router.pop() }
     }
@@ -99,7 +106,7 @@ struct EditValueTalkView: View {
         .pretendard(.body_M_M)
         .foregroundStyle(
           viewModel.isEditing
-          ? (viewModel.isAllAnswerValid ? Color.primaryDefault : Color.grayscaleDark3)
+          ? (viewModel.isEdited ? Color.primaryDefault : Color.grayscaleDark3)
           : Color.primaryDefault)
         .contentShape(Rectangle())
     }

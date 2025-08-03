@@ -45,6 +45,13 @@ struct EditValuePickView: View {
     .pcAlert(isPresented: $viewModel.showValuePickExitAlert) {
       valuePickExitAlert
     }
+    .overlay(alignment: .bottom) {
+      PCToast(
+        isVisible: viewModel.showToastBinding,
+        icon: viewModel.toastMessage?.icon,
+        text: viewModel.toastMessage?.text
+      )
+    }
     .onChange(of: viewModel.shouldPopBack) { _, shouldPopBack in
       if shouldPopBack { router.pop() }
     }
