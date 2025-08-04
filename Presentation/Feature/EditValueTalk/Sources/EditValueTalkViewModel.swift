@@ -8,6 +8,8 @@
 import Entities
 import Observation
 import UseCases
+import SwiftUI
+import DesignSystem
 
 @MainActor
 @Observable
@@ -26,6 +28,7 @@ final class EditValueTalkViewModel {
   
   var valueTalks: [ProfileValueTalkModel] = []
   var cardViewModels: [EditValueTalkCardViewModel] = []
+  var toastMessage: ToastMessage? = nil
   var isEditing: Bool = false
   var isEdited: Bool {
     initialValueTalks.map { $0.answer } != valueTalks.map { $0.answer }
@@ -109,6 +112,8 @@ final class EditValueTalkViewModel {
       }
       if isAllAnswerValid {
         await updateProfileValueTalks()
+      } else if isEdited {
+        setToastMessage(for: .minLengthError)
       }
     } else {
       isEditing = true
@@ -242,5 +247,39 @@ private extension EditValueTalkViewModel {
   
   func setPopBack() {
     shouldPopBack = true
+  }
+}
+
+// MARK: - ToastMessage
+extension EditValueTalkViewModel {
+  enum ToastMessage {
+    case minLengthError
+    
+    var text: String {
+      switch self {
+      case .minLengthError:
+        return "모든 항목을 작성해 주세요"
+      }
+    }
+    
+    var icon: Image? {
+      switch self {
+      case .minLengthError:
+        return DesignSystemAsset.Icons.notice20.swiftUIImage
+      }
+    }
+  }
+  
+  var showToastBinding: Binding<Bool> {
+    return Binding<Bool>(
+      get: { self.toastMessage != nil },
+      set: { isVisible in
+        if !isVisible { self.toastMessage = nil }
+      }
+    )
+  }
+  
+  private func setToastMessage(for message: ToastMessage?) {
+    self.toastMessage = message
   }
 }

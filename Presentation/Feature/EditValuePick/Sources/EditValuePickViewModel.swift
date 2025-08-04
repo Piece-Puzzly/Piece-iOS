@@ -8,6 +8,8 @@
 import Entities
 import Observation
 import UseCases
+import SwiftUI
+import DesignSystem
 
 @MainActor
 @Observable
@@ -21,6 +23,7 @@ final class EditValuePickViewModel {
   }
   
   var valuePicks: [ProfileValuePickModel] = []
+  var toastMessage: ToastMessage? = nil
   var isEditing: Bool = false
   var isEdited: Bool {
     initialValuePicks != valuePicks
@@ -93,7 +96,9 @@ final class EditValuePickViewModel {
       _ = try await updateProfileValuePicksUseCase.execute(valuePicks: valuePicks)
       initialValuePicks = valuePicks
       isEditing = false
+      setToastMessage(for: .profileUpdated)
     } catch {
+      setToastMessage(for: .profileUpdateFailure)
       print(error)
     }
   }
@@ -119,5 +124,44 @@ private extension EditValuePickViewModel {
   
   func setPopBack() {
     shouldPopBack = true
+  }
+}
+
+// MARK: - ToastMessage
+extension EditValuePickViewModel {
+  enum ToastMessage {
+    case profileUpdated
+    case profileUpdateFailure
+    
+    var text: String {
+      switch self {
+      case .profileUpdated:
+        return "프로필이 수정되었어요"
+      case .profileUpdateFailure:
+        return "네트워크 연결이 불안정해요"
+      }
+    }
+    
+    var icon: Image? {
+      switch self {
+      case .profileUpdated:
+        return nil
+      case .profileUpdateFailure:
+        return DesignSystemAsset.Icons.notice20.swiftUIImage
+      }
+    }
+  }
+  
+  var showToastBinding: Binding<Bool> {
+    return Binding<Bool>(
+      get: { self.toastMessage != nil },
+      set: { isVisible in
+        if !isVisible { self.toastMessage = nil }
+      }
+    )
+  }
+  
+  private func setToastMessage(for message: ToastMessage?) {
+    self.toastMessage = message
   }
 }
