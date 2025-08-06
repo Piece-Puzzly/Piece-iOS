@@ -8,8 +8,6 @@
 import Combine
 import Entities
 import Foundation
-import SwiftUI
-import Observation
 
 @MainActor
 @Observable
