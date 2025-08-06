@@ -22,6 +22,7 @@ final class EditValueTalkCardViewModel: Equatable {
   }
   
   enum Action {
+    case initializeTextEditorLayout
     case didUpdateAnswer(String)
     case didUpdateSummary(String)
     case didTapSummaryButton
@@ -50,6 +51,7 @@ final class EditValueTalkCardViewModel: Equatable {
   
   private(set) var editingState: EditingState = .viewing
   private(set) var guideTextIndex: Int = 0
+  private(set) var answerText: String = ""
   private var cancellables: [AnyCancellable] = []
   
   let onModelUpdate: (ProfileValueTalkModel) -> Void
@@ -73,9 +75,12 @@ final class EditValueTalkCardViewModel: Equatable {
   
   func handleAction(_ action: Action) {
     switch action {
+      /// TextEditor 높이 계산을 위한 초기 텍스트 설정 (SwiftUI 렌더링 타이밍 이슈 해결)
+    case .initializeTextEditorLayout:
+      self.answerText = model.answer
+      
     case let .didUpdateAnswer(answer):
-      let limitedAnswer = String(answer.prefix(Constants.maxAnswerLength))
-      model.answer = limitedAnswer
+      syncAnswerTextModel(answer)
       onModelUpdate(model)
       
     case let .didUpdateSummary(summary):
@@ -95,6 +100,12 @@ final class EditValueTalkCardViewModel: Equatable {
     localSummary = summary
     model.summary = summary
     editingState = .viewing
+  }
+  
+  func syncAnswerTextModel(_ answer: String) {
+    let limitedAnswer = String(answer.prefix(Constants.maxAnswerLength))
+    model.answer = limitedAnswer
+    answerText = limitedAnswer
   }
   
   func startGeneratingAISummary() {
