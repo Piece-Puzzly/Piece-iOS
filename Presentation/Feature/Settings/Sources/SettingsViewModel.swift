@@ -34,7 +34,13 @@ final class SettingsViewModel {
   var isPushNotificationEnabled = false
   var isBlockContactsEnabled: Bool = false
   var isSyncingContact: Bool = false
-  var updatedDate: Date? = nil
+  private var updatedDate: Date? {
+    get { PCUserDefaultsService.shared.getLatestSyncDate() }
+    set { PCUserDefaultsService.shared.setLatestSyncDate(newValue ?? Date()) }
+  }
+  var updatedDateString: String {
+    DateFormatter.utcDateTimeString(from: updatedDate)
+  }
   var termsItems = [SettingsTermsItem]()
   var version = ""
   var loginInformationImage: Image?
