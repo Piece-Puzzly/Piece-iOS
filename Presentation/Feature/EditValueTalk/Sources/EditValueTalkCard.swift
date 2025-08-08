@@ -90,12 +90,17 @@ struct EditValueTalkCard: View {
       .foregroundStyle(Color.grayscaleDark1)
   }
   
+  
+  private var answerTextBinding: Binding<String> {
+    Binding(
+      get: { viewModel.answerText },
+      set: { viewModel.handleAction(.didUpdateAnswer($0)) }
+    )
+  }
+  
   private var answer: some View {
     VStack(spacing: 16) {
-      TextEditor(text: Binding(
-        get: { viewModel.model.answer },
-        set: { viewModel.handleAction(.didUpdateAnswer($0)) }
-      ))
+      TextEditor(text: answerTextBinding)
       .frame(maxWidth: .infinity, minHeight: Constants.valueTalkMinHeight, maxHeight: .infinity)
       .fixedSize(horizontal: false, vertical: true)
       .pretendard(.body_M_M)
@@ -117,6 +122,10 @@ struct EditValueTalkCard: View {
         if isEditing {
           focusState.wrappedValue = .answerEditor(id)
         }
+      }
+      .task {
+        try? await Task.sleep(for: .milliseconds(50))
+        viewModel.handleAction(.initializeTextEditorLayout)
       }
       
       if isEditing {
