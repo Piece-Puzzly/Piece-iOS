@@ -15,6 +15,8 @@ struct SettingsSynchronizeContactView: View {
   @Binding var isSyncingContact: Bool
   let didTapRefreshButton: () -> Void
 
+  @State private var showLottie = false
+  
   var body: some View {
     HStack {
       VStack(spacing: 8) {
@@ -48,21 +50,35 @@ struct SettingsSynchronizeContactView: View {
       .frame(maxWidth: .infinity, alignment: .leading)
       
       Button {
+        showLottie = true
         didTapRefreshButton()
       } label: {
-        if isSyncingContact {
+        if showLottie {
           PCLottieView(
             .refresh,
-            loopMode: .loop,
+            loopMode: isSyncingContact ? .loop : .playOnce,
             width: 24,
             height: 24
-          )
+          ) { completed in // animationDidFinish
+            // 애니메이션 사이클이 완료되면 이미지로 전환
+            // isSyncingContact로 분기하면 로티 애니메이션이 중간에 끊기기 때문에 위 방식으로 구현함
+            if !isSyncingContact && completed {
+              showLottie = false
+            }
+          }
         } else {
           DesignSystemAsset.Icons.refresh24.swiftUIImage
             .resizable()
             .frame(width: 24, height: 24)
             .foregroundStyle(Color.grayscaleDark2)
         }
+      }
+      .onChange(of: isSyncingContact) { _, newValue in
+        if newValue {
+          // 동기화 시작 시 즉시 로티 표시
+          showLottie = true
+        }
+        // 동기화 완료 시에는 PCLottieView의 animationDidFinish에서 처리
       }
     }
     .padding(.vertical, 16)
