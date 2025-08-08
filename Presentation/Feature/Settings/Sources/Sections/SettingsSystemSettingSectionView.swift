@@ -11,7 +11,7 @@ import SwiftUI
 struct SettingsSystemSettingSectionView: View {
   let title: String
   @Binding var isBlockingFriends: Bool
-  @Binding var date: Date?
+  @Binding var date: String
   @Binding var isSyncingContact: Bool
   let blockContactsToggled: ((Bool) -> Void)?
   let didTapRefreshButton: () -> Void

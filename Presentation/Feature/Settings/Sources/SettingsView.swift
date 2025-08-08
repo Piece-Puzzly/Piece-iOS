@@ -119,7 +119,7 @@ struct SettingsView: View {
       SettingsSystemSettingSectionView(
         title: section.title,
         isBlockingFriends: $viewModel.isBlockContactsEnabled,
-        date: $viewModel.updatedDate,
+        date: .init(projectedValue: .constant(viewModel.updatedDateString)),
         isSyncingContact: $viewModel.isSyncingContact,
         blockContactsToggled: { isEnabled in viewModel.handleAction(.blockContactsToggled(isEnabled)) },
         didTapRefreshButton: { viewModel.handleAction(.synchronizeContactsButtonTapped) }

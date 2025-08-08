@@ -11,7 +11,7 @@ import SwiftUI
 
 struct SettingsSynchronizeContactView: View {
   let title: String
-  @Binding var date: Date?
+  @Binding var date: String
   @Binding var isSyncingContact: Bool
   let didTapRefreshButton: () -> Void
 
@@ -38,11 +38,9 @@ struct SettingsSynchronizeContactView: View {
             Text("마지막 새로 고침")
               .pretendard(.caption_M_M)
               .foregroundStyle(Color.grayscaleDark3)
-            if let date {
-              Text(date, format: .dateTime)
-                .pretendard(.caption_M_M)
-                .foregroundStyle(Color.grayscaleDark1)
-            }
+            Text(date)
+              .pretendard(.caption_M_M)
+              .foregroundStyle(Color.grayscaleDark1)
             Spacer()
           }
         }

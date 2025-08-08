@@ -15,4 +15,12 @@ public extension DateFormatter {
     
     return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
   }
+  
+  static func utcDateTimeString(from date: Date?) -> String {
+    guard let date else { return "없음"}
+    let formatter = DateFormatter()
+    formatter.timeZone = TimeZone(abbreviation: "UTC")
+    formatter.dateFormat = "yyyy년 MM월 dd일 HH:mm"
+    return formatter.string(from: date)
+  }
 }

@@ -74,6 +74,15 @@ public final class PCUserDefaultsService {
       _ = PCUserDefaults.setObjectFor(key: .matchStatus, object: newValue?.rawValue)
     }
   }
+  
+  var latestSyncDate: Date? {
+    get {
+      PCUserDefaults.objectFor(key: .latestSyncDate) as? Date
+    }
+    set {
+      _ = PCUserDefaults.setObjectFor(key: .latestSyncDate, object: newValue)
+    }
+  }
 }
 
 public extension PCUserDefaultsService {
@@ -148,5 +157,15 @@ public extension PCUserDefaultsService {
   
   func setMatchStatus(_ status: MatchStatus) {
     matchStatus = status
+  }
+  
+  
+  // MARK: - 연락처 동기화 관련 get/set
+  func getLatestSyncDate() -> Date? {
+    latestSyncDate
+  }
+  
+  func setLatestSyncDate(_ date: Date) {
+    latestSyncDate = date
   }
 }
