@@ -6,6 +6,7 @@
 //
 
 import Contacts
+import LocalStorage
 
 public protocol RequestContactsPermissionUseCase {
   func execute() async throws -> Bool
@@ -30,8 +31,15 @@ final class RequestContactsPermissionUseCaseImpl: RequestContactsPermissionUseCa
     switch authorizationStatus {
     // 아직 권한 요청을 한 적이 없는 상태이므로 권한 요청 팝업 및 사용자의 응답 결과를 반환
     case .notDetermined:
-      return try await contactStore.requestAccess(for: .contacts)
-    
+      if try await contactStore.requestAccess(for: .contacts) {
+        let now = Date()
+        let utcToKst = now.addingTimeInterval(9 * 60 * 60) // UTC를 KST로 변환
+        PCUserDefaultsService.shared.setLatestSyncDate(utcToKst)
+        return true
+      } else {
+        return false
+      }
+
     // 이미 권한이 허용된 상태 (일부 허용 포함)
     case .authorized, .limited:
       return true
