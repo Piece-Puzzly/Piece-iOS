@@ -26,10 +26,12 @@ final class SettingsViewModel {
     case confirmLogoutButton
     case withdrawButtonTapped
     case clearDestination
+    case openSettings
   }
   
   var sections = [SettingSection]()
   var showLogoutAlert: Bool = false
+  var showPushNotificationAlert: Bool = false
   var isMatchingNotificationOn = false
   var isPushNotificationEnabled = false
   var isBlockContactsEnabled: Bool = false
@@ -148,6 +150,8 @@ final class SettingsViewModel {
       
     case .clearDestination:
       destination = nil
+    case .openSettings:
+      openSettings()
     }
   }
   
@@ -319,6 +323,16 @@ final class SettingsViewModel {
       _ = try await putSettingsBlockAcquaintanceUseCase.execute(isEnabled: isEnabled)
     } catch {
       print(error)
+    }
+  }
+  
+  private func openSettings() {
+    Task {
+      if let url = URL(string: UIApplication.openSettingsURLString) {
+        await MainActor.run {
+          UIApplication.shared.open(url)
+        }
+      }
     }
   }
   

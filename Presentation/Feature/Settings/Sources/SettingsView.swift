@@ -82,6 +82,19 @@ struct SettingsView: View {
       .padding(.bottom, 89) // 탭바 높이 만큼 패딩
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .alert(
+      "알림 권한이 필요합니다",
+      isPresented: $viewModel.showPushNotificationAlert
+    ) {
+      Button("취소", role: .cancel) {
+        // TODO: - 취소 누르면 PUT으로 푸시알림 끄기
+      }
+      Button("설정") {
+        viewModel.handleAction(.openSettings)
+      }
+    } message: {
+      Text("푸쉬 알림을 받으려면 설정에서 알림을 허용해주세요.")
+    }
     .pcAlert(isPresented: $viewModel.showLogoutAlert) {
       AlertView(
         title: {
