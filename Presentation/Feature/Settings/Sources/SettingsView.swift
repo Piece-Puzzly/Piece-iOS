@@ -84,16 +84,42 @@ struct SettingsView: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .alert(
       "알림 권한이 필요합니다",
-      isPresented: $viewModel.showPushNotificationAlert
+      isPresented: $viewModel.showMatchNotificationAlert
     ) {
-      Button("취소", role: .cancel) {
-        // TODO: - 취소 누르면 PUT으로 푸시알림 끄기
-      }
       Button("설정") {
         viewModel.handleAction(.openSettings)
       }
+      Button("취소") {
+        viewModel.handleAction(.matchingNotificationToggled(false))
+      }
     } message: {
-      Text("푸쉬 알림을 받으려면 설정에서 알림을 허용해주세요.")
+      Text("\"매칭 알림\" 기능을 사용하려면\n[설정]-[피스]-[알림]을 허용해주세요.")
+    }
+    .alert(
+      "알림 권한이 필요합니다",
+      isPresented: $viewModel.showNotificationAlert
+    ) {
+      Button("설정") {
+        viewModel.handleAction(.openSettings)
+      }
+      Button("취소") {
+        viewModel.handleAction(.pushNotificationToggled(false))
+      }
+    } message: {
+      Text("\"푸쉬 알림\" 기능을 사용하려면\n[설정]-[피스]-[알림]을 허용해주세요.")
+    }
+    .alert(
+      "연락처 접근 권한이 필요합니다",
+      isPresented: $viewModel.showAcquaintanceBlockAlert
+    ) {
+      Button("설정") {
+        viewModel.handleAction(.openSettings)
+      }
+      Button("취소") {
+        viewModel.handleAction(.blockContactsToggled(false))
+      }
+    } message: {
+      Text("\"아는 사람 차단\" 기능을 사용하려면\n[설정]-[피스]-[연락처 접근]을 허용해주세요.")
     }
     .pcAlert(isPresented: $viewModel.showLogoutAlert) {
       AlertView(
@@ -123,18 +149,24 @@ struct SettingsView: View {
     case .notification:
       SettingsNotificationSettingSectionView(
         title: section.title,
-        isMatchingNotificationOn: $viewModel.isMatchingNotificationOn,
-        isPushNotificationOn: $viewModel.isPushNotificationEnabled,
-        matchingNotificationToggled: { isEnabled in viewModel.handleAction(.matchingNotificationToggled(isEnabled)) },
-        pushNotificationToggled: { isEnabled in viewModel.handleAction(.pushNotificationToggled(isEnabled)) }
+        isMatchingNotificationOn: Binding(
+          get: { viewModel.isMatchNotificationEnable },
+          set: { isEnable in viewModel.handleAction(.matchingNotificationToggled(isEnable)) }
+        ),
+        isPushNotificationOn: Binding(
+          get: { viewModel.isNotificationEnabled },
+          set: { isEnable in viewModel.handleAction(.pushNotificationToggled(isEnable)) }
+        )
       )
     case .system:
       SettingsSystemSettingSectionView(
         title: section.title,
-        isBlockingFriends: $viewModel.isBlockContactsEnabled,
+        isBlockingFriends: Binding(
+          get: { viewModel.isAcquaintanceBlockEnabled },
+          set: { isEnable in viewModel.handleAction(.blockContactsToggled(isEnable))}
+        ),
         date: .init(projectedValue: .constant(viewModel.updatedDateString)),
         isSyncingContact: $viewModel.isSyncingContact,
-        blockContactsToggled: { isEnabled in viewModel.handleAction(.blockContactsToggled(isEnabled)) },
         didTapRefreshButton: { viewModel.handleAction(.synchronizeContactsButtonTapped) }
       )
     case .ask:

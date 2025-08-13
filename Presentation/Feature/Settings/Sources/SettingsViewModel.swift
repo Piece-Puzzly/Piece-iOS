@@ -31,10 +31,34 @@ final class SettingsViewModel {
   
   var sections = [SettingSection]()
   var showLogoutAlert: Bool = false
-  var showPushNotificationAlert: Bool = false
-  var isMatchingNotificationOn = false
-  var isPushNotificationEnabled = false
-  var isBlockContactsEnabled: Bool = false
+  var showMatchNotificationAlert: Bool = false
+  var showNotificationAlert: Bool = false
+  var showAcquaintanceBlockAlert: Bool = false
+  
+  // MARK: - 서버 권한 상태 (Server State)
+  private var serverMatchNotificationEnabled = false
+  private var serverNotificationEnabled = false
+  private var serverAcquaintanceBlockEnabled = false
+  
+  // MARK: - 디바이스 권한 상태 (Device Permission State)
+  private var deviceNotificationPermissionGranted = false
+  private var deviceContactsPermissionGranted = false
+  
+  /// 매칭 알림 = 서버에서 매칭알림 [true] && 디바이스 알림 권한 [true]
+  var isMatchNotificationEnable: Bool {
+    return serverMatchNotificationEnabled && deviceNotificationPermissionGranted
+  }
+
+  /// 푸쉬 알림 = 서버에서 푸쉬알림 [true] && 디바이스 알림 권한 [true]
+  var isNotificationEnabled: Bool {
+    return serverNotificationEnabled && deviceNotificationPermissionGranted
+  }
+
+  /// 아는 사람 차단 = 서버에서 아는사람차단 [true] && 디바이스 연락처 권한 [true]
+  var isAcquaintanceBlockEnabled: Bool {
+    return serverAcquaintanceBlockEnabled && deviceContactsPermissionGranted
+  }
+  
   var isSyncingContact: Bool = false
   private var updatedDate: Date? {
     get { PCUserDefaultsService.shared.getLatestSyncDate() }
@@ -171,26 +195,40 @@ final class SettingsViewModel {
   
   @objc private func willEnterForeground() {
     Task {
-      await checkPushNoficationPermission()
+      await checkNotificationPermission()
       await checkContactsPermission()
+      await changeNotificationRegisterStatusUseCase.execute(
+        isEnabled: deviceNotificationPermissionGranted && (serverNotificationEnabled || serverMatchNotificationEnabled)
+      )
     }
   }
   
   private func onAppear() {
-    fetchAppVersion()
+    fetchAppVersion()                       /// App 버전 정보 확인 - (ex. v1.0.1)
     Task {
-      await getSettingsInfo()
-      await fetchTerms()
-      await checkPushNoficationPermission()
-      await checkContactsPermission()
+      await fetchSettingsInfo()               /// (서버에서 받아온) "알림 섹션" - (["매칭 알림", "푸쉬 알림", "아는 사람 차단"]) Bool 값
+      await fetchTerms()                    /// (서버에서 받아온) "안내 섹션" - (["서비스 이용약관", " 개인정보 처리방침"])
+      await checkNotificationPermission()   /// (디바이스의) ["매칭 알림", "푸쉬 알림"] (알림)권한 관련 비즈니스 로직
+      await checkContactsPermission()       /// (디바이스의)  ["아는 사람 차단"] (연락처)권한 관련 비즈니스 로직
+      await changeNotificationRegisterStatusUseCase.execute(
+        isEnabled: deviceNotificationPermissionGranted && (serverNotificationEnabled || serverMatchNotificationEnabled)
+      )
     }
   }
   
-  private func getSettingsInfo() async {
+  private func fetchSettingsInfo() async {
     do {
       let settingsInfo = try await getSettingsInfoUseCase.execute()
-      isMatchingNotificationOn = settingsInfo.isMatchNotificationEnabled
-      isBlockContactsEnabled = settingsInfo.isAcquaintanceBlockEnabled
+      serverMatchNotificationEnabled = settingsInfo.isMatchNotificationEnabled
+      serverNotificationEnabled = settingsInfo.isNotificationEnabled
+      serverAcquaintanceBlockEnabled = settingsInfo.isAcquaintanceBlockEnabled
+      print(">>> DEBUG: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+      print(">>> DEBUG: 🔧 Settings Info Loaded:")
+      print(">>> DEBUG: ┌ 매칭 알림: \(serverMatchNotificationEnabled ? "✅" : "❌")")
+      print(">>> DEBUG: ┌ 푸시 알림: \(serverNotificationEnabled ? "✅" : "❌")")
+      print(">>> DEBUG: └ 아는 사람 차단: \(serverAcquaintanceBlockEnabled ? "✅" : "❌")")
+      print(">>> DEBUG: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+      
     } catch {
       print(error)
     }
@@ -213,116 +251,132 @@ final class SettingsViewModel {
     version = AppVersion.appVersion()
   }
   
-  private func checkPushNoficationPermission() async {
+  // MARK: - 디바이스 내 알림 권한 가져오기
+  private func checkNotificationPermission() async {
     do {
       let authorizationStatus = await checkNotificationPermissionUseCase.execute()
-      var isPushNotificationEnabled = false
       switch authorizationStatus {
       case .notDetermined, .denied:
-        isPushNotificationEnabled = false
+        deviceNotificationPermissionGranted = false
       case .authorized, .provisional:
-        isPushNotificationEnabled = true
+        deviceNotificationPermissionGranted = true
       case .ephemeral:
-        isPushNotificationEnabled = false
+        deviceNotificationPermissionGranted = false
       @unknown default:
-        isPushNotificationEnabled = false
+        deviceNotificationPermissionGranted = false
       }
-      self.isPushNotificationEnabled = isPushNotificationEnabled
     }
   }
   
+  // MARK: - 디바이스 내 연락처 권한 가져오기
   private func checkContactsPermission() async {
     let contactsAuthorizationStatus = checkContactsPermissionUseCase.execute()
-    var isBlockContactsEnabled = false
     switch contactsAuthorizationStatus {
     case .notDetermined, .restricted, .denied:
-      isBlockContactsEnabled = false
+      deviceContactsPermissionGranted = false
     case .authorized, .limited:
-      isBlockContactsEnabled = true
+      deviceContactsPermissionGranted = true
     @unknown default:
-      isBlockContactsEnabled = false
+      deviceContactsPermissionGranted = false
     }
-    self.isBlockContactsEnabled = isBlockContactsEnabled
   }
-  
+
   private func matchingNotificationToggled(isEnabled: Bool) async {
-    do {
-      _ = try await putSettingsMatchNotificationUseCase.execute(isEnabled: isEnabled)
-    } catch {
-      print(error)
-    }
-    isMatchingNotificationOn = isEnabled
-  }
-  
-  private func pushNotificationToggled(isEnabled: Bool) async {
-    var isPushNotificationEnabled = self.isPushNotificationEnabled
     if isEnabled {
       do {
       let authorizationStatus = await checkNotificationPermissionUseCase.execute()
         switch authorizationStatus {
         case .denied:
-          if let url = URL(string: UIApplication.openSettingsURLString) {
-            await MainActor.run {
-              UIApplication.shared.open(url)
-            }
-          }
+          self.showMatchNotificationAlert = true
         case .notDetermined, .ephemeral:
-          isPushNotificationEnabled = try await requestNotificationPermissionUseCase.execute()
+          self.deviceNotificationPermissionGranted = try await requestNotificationPermissionUseCase.execute()
         case .authorized, .provisional:
-          break
+          self.deviceNotificationPermissionGranted = true
         @unknown default:
-          isPushNotificationEnabled = false
+          self.deviceNotificationPermissionGranted = false
         }
       } catch {
         print(error)
-        isPushNotificationEnabled = false
+        self.deviceNotificationPermissionGranted = false
       }
     }
-    await changeNotificationRegisterStatusUseCase.execute(isEnabled: isPushNotificationEnabled)
-    self.isPushNotificationEnabled = isPushNotificationEnabled
-
+    
     do {
-      _ = try await putSettingsNotificationUseCase.execute(isEnabled: isPushNotificationEnabled)
+      _ = try await putSettingsMatchNotificationUseCase.execute(isEnabled: isEnabled)
+    } catch {
+      print(error)
+    }
+
+    Task {
+      await fetchSettingsInfo()
+      await changeNotificationRegisterStatusUseCase.execute(
+        isEnabled: deviceNotificationPermissionGranted && (isEnabled || serverNotificationEnabled)
+      )
+    }
+  }
+  
+  private func pushNotificationToggled(isEnabled: Bool) async {
+    if isEnabled {
+      do {
+      let authorizationStatus = await checkNotificationPermissionUseCase.execute()
+        switch authorizationStatus {
+        case .denied:
+          self.showNotificationAlert = true
+        case .notDetermined, .ephemeral:
+          self.deviceNotificationPermissionGranted = try await requestNotificationPermissionUseCase.execute()
+        case .authorized, .provisional:
+          self.deviceNotificationPermissionGranted = true
+        @unknown default:
+          self.deviceNotificationPermissionGranted = false
+        }
+      } catch {
+        print(error)
+        self.deviceNotificationPermissionGranted = false
+      }
+    }
+    
+    do {
+      _ = try await putSettingsNotificationUseCase.execute(isEnabled: isEnabled)
     } catch {
       print(error)
     }
     
-    // 푸시알림을 끈 경우 매칭 알림도 같이 Off 처리
-    if isPushNotificationEnabled == false {
-      await matchingNotificationToggled(isEnabled: isPushNotificationEnabled)
+    Task {
+      await fetchSettingsInfo()
+      await changeNotificationRegisterStatusUseCase.execute(
+        isEnabled: deviceNotificationPermissionGranted && (isEnabled || serverMatchNotificationEnabled)
+      )
     }
   }
   
   private func blockContactsToggled(isEnabled: Bool) async {
     if isEnabled {
-        do {
-          let authorizationStatus = checkContactsPermissionUseCase.execute()
-          switch authorizationStatus {
-          case .notDetermined:
-            isBlockContactsEnabled = try await requestContactsPermissionUseCase.execute()
-          case .restricted, .denied:
-            if let url = URL(string: UIApplication.openSettingsURLString) {
-              await MainActor.run {
-                UIApplication.shared.open(url)
-              }
-            }
-          case .authorized, .limited:
-            isBlockContactsEnabled = true
-          @unknown default:
-            isBlockContactsEnabled = try await requestContactsPermissionUseCase.execute()
-          }
-        } catch {
-          print(error)
-          self.isBlockContactsEnabled = false
+      do {
+        let authorizationStatus = checkContactsPermissionUseCase.execute()
+        switch authorizationStatus {
+        case .notDetermined:
+          self.deviceContactsPermissionGranted = try await requestContactsPermissionUseCase.execute()
+        case .restricted, .denied:
+          self.showAcquaintanceBlockAlert = true
+        case .authorized, .limited:
+          self.deviceContactsPermissionGranted = true
+        @unknown default:
+          self.deviceContactsPermissionGranted = try await requestContactsPermissionUseCase.execute()
         }
-    } else {
-      isBlockContactsEnabled = false
+      } catch {
+        print(error)
+        self.deviceContactsPermissionGranted = false
+      }
     }
     
     do {
       _ = try await putSettingsBlockAcquaintanceUseCase.execute(isEnabled: isEnabled)
     } catch {
       print(error)
+    }
+    
+    Task {
+      await fetchSettingsInfo()
     }
   }
   
@@ -337,7 +391,7 @@ final class SettingsViewModel {
   }
   
   private func synchronizeContacts() {
-    if isBlockContactsEnabled {
+    if isAcquaintanceBlockEnabled {
       Task {
         do {
           isSyncingContact = true

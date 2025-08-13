@@ -27,7 +27,7 @@ struct SettingsSynchronizeContactView: View {
         }
         VStack(spacing: 4) {
           HStack(spacing: 0) {
-            Text("내 연락처 목록을 즉시 업데이트합니다.\n연락처에 새로 추가된 지인을 차단할 수 있어요.")
+            Text("나의 연락처 목록이 즉시 업데이트돼요.\n연락처에 새로 추가된 지인을 차단할 수 있어요.")
               .pretendard(.caption_M_M)
               .foregroundStyle(Color.grayscaleDark3)
             Spacer()
