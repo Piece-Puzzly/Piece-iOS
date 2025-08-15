@@ -21,34 +21,15 @@ public final class FetchContactsUseCaseImpl: FetchContactsUseCase {
   }
   
   public func execute() async throws -> [String] {
-    var authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
-    
-    if authorizationStatus == .notDetermined {
-      let granted = try await contactStore.requestAccess(for: .contacts)
-      authorizationStatus = granted ? .authorized : .denied
-    }
-    
-    if #available(iOS 18.0, *) {
-      guard authorizationStatus == .authorized || authorizationStatus == .limited else {
-        return []
-      }
-    } else {
-      guard authorizationStatus == .authorized else {
-        return []
-      }
-    }
-    
-    var phoneNumbers: [String] = []
+    var allPhoneNumbers: [String] = []
     let keysToFetch = [CNContactPhoneNumbersKey as CNKeyDescriptor]
     let request = CNContactFetchRequest(keysToFetch: keysToFetch)
     
     try contactStore.enumerateContacts(with: request) { contact, _ in
-      let numbers = contact.phoneNumbers.map {
-        $0.value.stringValue
-      }
-      phoneNumbers.append(contentsOf: numbers)
+      let contactPhoneNumbers = contact.phoneNumbers.map { $0.value.stringValue }
+      allPhoneNumbers.append(contentsOf: contactPhoneNumbers)
     }
     
-    return phoneNumbers
+    return allPhoneNumbers
   }
 }
