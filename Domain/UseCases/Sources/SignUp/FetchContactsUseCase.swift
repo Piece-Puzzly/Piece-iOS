@@ -21,10 +21,11 @@ public final class FetchContactsUseCaseImpl: FetchContactsUseCase {
   }
   
   public func execute() async throws -> [String] {
-    let authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
+    var authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
     
     if authorizationStatus == .notDetermined {
-      _ = try await contactStore.requestAccess(for: .contacts)
+      let granted = try await contactStore.requestAccess(for: .contacts)
+      authorizationStatus = granted ? .authorized : .denied
     }
     
     if #available(iOS 18.0, *) {
