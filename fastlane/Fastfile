@@ -1,23 +1,198 @@
-# This file contains the fastlane.tools configuration
-# You can find the documentation at https://docs.fastlane.tools
-#
-# For a list of all available actions, check out
-#
-#     https://docs.fastlane.tools/actions
-#
-# For a list of all available plugins, check out
-#
-#     https://docs.fastlane.tools/plugins/available-plugins
-#
-
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
-
 default_platform(:ios)
+Dotenv.load
 
 platform :ios do
-  desc "Description of what the lane does"
-  lane :custom_lane do
-    # add actions here: https://docs.fastlane.tools/actions
+
+  desc "xcconfig 파일의 빌드 넘버 업데이트"
+  private_lane :update_xcconfig_build_number do |options|
+    build_number = options[:build_number]
+    
+    ["../Debug.xcconfig", "../Release.xcconfig"].each do |config_file|
+      next unless File.exist?(config_file)
+      
+      content = File.read(config_file)
+      updated_content = content.gsub(/APP_BUILD = \d+/, "APP_BUILD = #{build_number}")
+      File.write(config_file, updated_content)
+      puts "✅ #{config_file} APP_BUILD updated to: #{build_number}"
+    end
   end
+
+  # before_all: Lane이 시작되기 전 1회 수행되는 LifeCycle
+  before_all do 
+    clean_build_artifacts
+
+    # 0. 빌드 넘버 가져오기 (= 메인 브랜치의 커밋 개수)
+    build_number = sh("git rev-list --count origin/main").strip.to_i
+
+    # 1. 빌드 넘버 업데이트
+    update_xcconfig_build_number(build_number: build_number)
+  
+    # 2. Tuist 프로젝트 생성 (xcconfig 반영 후 빌드)
+    sh("cd .. && tuist generate")
+    
+    # 3. 버전 정보 가져오기 및 빌드 너버 업데이트
+    lane_context[:VERSION_NUMBER] = get_version_number(xcodeproj: "App/Piece-iOS.xcodeproj")
+    lane_context[:BUILD_NUMBER] = build_number
+  end
+  
+  # 4. 앱스토어 커넥트 API 키 가져오기
+  private_lane :fetch_api_key do
+    app_store_connect_api_key(
+      key_id: ENV['ASC_KEY_ID'],
+      issuer_id: ENV['ASC_ISSUER_ID'],
+      key_filepath: ENV['ASC_KEY_FILEPATH'],
+      duration: 1200,
+      in_house: false,
+    )
+  end
+
+  desc "Beta 버전 빌드 - TestFlight"
+  lane :beta do
+    build(is_deploy: false)
+
+    api_key = fetch_api_key
+
+    upload_to_testflight(
+      api_key: api_key,
+      app_identifier: ENV['APP_IDENTIFIER'],
+      team_id: ENV['TEAM_ID']
+    )
+  end
+
+  desc "Release 버전 빌드 - App Store 배포"
+  lane :deploy do
+    build(is_deploy: true)
+
+    api_key = fetch_api_key
+
+    upload_to_app_store(
+      submit_for_review: true,
+      force: true,
+      team_id: ENV['TEAM_ID'],
+      automatic_release: false,
+      skip_screenshots: true,
+      skip_metadata: true,
+      precheck_include_in_app_purchases: false
+    )
+  end
+
+  desc "앱 빌드"
+  private_lane :build do |options|
+    provisioning = options[:is_deploy] ? "puzzly_distribution" : "puzzly_adhoc"
+
+    export_method = options[:is_deploy] ? "app-store" : "ad-hoc"
+    type = options[:is_deploy] ? "release" : "beta"
+
+    # note = File.read("./metadata/ko/release_notes.txt")
+    note = "✅ TestFlight 업로드 테스트"
+
+    notify_discord(
+      type: type,
+      step: "start",
+      note: note,
+    )
+
+    build_app(
+      workspace: "Piece-iOS.xcworkspace",
+      output_directory: "./fastlane/Output",
+      scheme: "Piece-iOS-Release",
+      configuration: "Release",
+      export_method: export_method,
+      export_options: {
+        provisioningProfiles: {
+          "com.puzzly.piece" => provisioning
+        }
+      }
+    )
+  end
+
+  desc "Discord 알림 전송"
+  private_lane :notify_discord do |options|
+    type = options[:type] || "beta" # "beta", "release"
+    step = options[:step] || "start" # "start", "success"
+    note = options[:note]
+    # title = "✅ 테스트 플라이트 업로드 성공"
+    version = lane_context[:VERSION_NUMBER]
+    build = lane_context[:BUILD_NUMBER]
+    
+    message = case [type, step]
+            when ["beta", "start"]
+              "🏃‍♂️ **TestFlight 빌드 시작**\n\n**버전**: #{version}(#{build})\n**상태**: 베타 테스트용 빌드를 준비 중입니다..."
+            when ["beta", "success"]
+              "🚀 **새로운 TestFlight 빌드 배포 완료!**\n**버전**: #{version}\n**빌드**: #{build}\n**상태**: TestFlight 업로드 성공 ✅\n\n새로운 베타 빌드가 준비되었습니다! 확인해주세요."
+            when ["release", "start"]
+              "🎯 **App Store 배포 시작**\n\n**버전**: #{version}(#{build})\n**상태**: 정식 릴리즈용 빌드를 준비 중입니다..."
+            when ["release", "success"]
+              "🎉 **App Store 배포 완료!**\n**버전**: #{version}\n**빌드**: #{build}\n**상태**: App Store 제출 성공 ✅\n\n정식 버전이 App Store에 제출되었습니다! 심사를 기다려주세요."
+            else
+              "📱 **빌드 알림**\n버전: #{version}(#{build})\n상태: #{step}"
+            end
+    
+    discord_webhook_url = ENV['DISCORD_URL']
+    discord_notifier(
+      webhook_url: discord_webhook_url,
+      title: note ? "[변경사항]" : nil,
+      description: message,
+    )
+  end
+
+  after_all do |lane|
+    type = case lane
+            when :beta then "beta"
+            when :deploy then "release"
+            else "other"
+            end
+    note = "✅ TestFlight 업로드 완료 테스트"
+    # 여기 아마 nil로 들어가야됨
+    notify_discord(
+      type: type, 
+      step: "success",
+      note: note
+    )
+
+    clean_build_artifacts
+  end
+
+    error do |_, exception|
+    discord_webhook_url = ENV['DISCORD_URL']
+    title = "❌ 테스트 플라이트 업로드 실패"
+    message = exception.message
+    
+    discord_notifier(
+      webhook_url: discord_webhook_url,
+      title: title,
+      description: message,
+      success: false
+    )
+  end
+
 end
+
+
+
+
+
+
+
+
+
+  # desc "Description of what the lane does"
+  # lane :custom_lane do
+  #   # discord_webhook_url = ENV['DISCORD_URL']
+  #   # title = "푸시테스트"
+  #   # message = "Hello, World!"
+
+  #   version = lane_context[:VERSION_NUMBER]
+  #   build = lane_context[:BUILD_NUMBER]
+
+  #   discord_notifier( # ✅ 업로드 성공 시 디스코드 알림 전송
+  #     webhook_url: ENV['DISCORD_URL'],
+  #     title: "🚀 새로운 빌드 배포 완료!",
+  #     description: """
+  #       **버전**: #{version}
+  #       **빌드**: #{build}
+  #       **상태**: TestFlight 업로드 성공 ✅\n
+  #       새로운 빌드가 준비되었습니다! 확인해주세요.
+  #     """
+  #   )
+  # end

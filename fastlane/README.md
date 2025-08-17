@@ -15,13 +15,21 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
-### ios custom_lane
+### ios beta
 
 ```sh
-[bundle exec] fastlane ios custom_lane
+[bundle exec] fastlane ios beta
 ```
 
-Description of what the lane does
+Beta 버전 빌드 - TestFlight
+
+### ios deploy
+
+```sh
+[bundle exec] fastlane ios deploy
+```
+
+Release 버전 빌드 - App Store 배포
 
 ----
 
