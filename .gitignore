@@ -82,6 +82,11 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 fastlane/.env*
 
+# Build artifacts
+*.ipa
+*.app.dSYM.zip
+*.dSYM
+
 # Firebase
 App/Resources/GoogleService-Info.plist
 Utility/PCFirebase/Resources/remote_config_defaults.plist
