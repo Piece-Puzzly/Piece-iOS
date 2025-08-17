@@ -8,14 +8,27 @@
 import ProjectDescription
 
 extension Scheme {
-  public static func makeScheme(/*environment: AppEnvironment*/) -> Scheme {
+//   MARK: - 운영 서버
+  public static func makeReleaseScheme(/*environment: AppEnvironment*/) -> Scheme {
     return .scheme(
-      name: "\(AppConstants.appName)"/*-\(environment.rawValue)*/,
+      name: "\(AppConstants.appName)-Release",
       buildAction: .buildAction(targets: ["\(AppConstants.appName)"]),
-      runAction: .runAction(configuration: "Debug"),// environment.configurationName),
-      archiveAction: .archiveAction(configuration: "Release"), //environment.configurationName),
-      profileAction: .profileAction(configuration: "Release"), //environment.configurationName),
-      analyzeAction: .analyzeAction(configuration: "Debug") //environment.configurationName)
+      runAction: .runAction(configuration: "Release"),
+      archiveAction: .archiveAction(configuration: "Release"),
+      profileAction: .profileAction(configuration: "Release"),
+      analyzeAction: .analyzeAction(configuration: "Release")
+    )
+  }
+  
+  // MARK: - 개발 서버
+  public static func makeDevScheme() -> Scheme {
+    return .scheme(
+      name: "\(AppConstants.appName)-Debug"/*"\(AppConstants.devAppName)"*/,
+      buildAction: .buildAction(targets: ["\(AppConstants.appName)"]),
+      runAction: .runAction(configuration: "Debug"),
+      archiveAction: .archiveAction(configuration: "Debug"),
+      profileAction: .profileAction(configuration: "Debug"),
+      analyzeAction: .analyzeAction(configuration: "Debug")
     )
   }
 }
