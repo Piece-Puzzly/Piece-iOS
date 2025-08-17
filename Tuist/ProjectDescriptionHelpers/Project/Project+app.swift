@@ -14,16 +14,62 @@ extension Project {
     packages: [Package] = []
   ) -> Project {
     let name = AppConstants.appName
-    let target = Target.target(
+    
+    let prodTarget = Target.makeAppTarget(
       name: AppConstants.appName,
+      bundleId: AppConstants.bundleId,
+      dependencies: dependencies
+    )
+    
+    // TODO: - 추후 타겟 분리하면 씀
+//    let devTarget = Target.makeAppTarget(
+//      name: AppConstants.devAppName,
+//      bundleId: AppConstants.devBundleId,
+//      bundleDisplayName: AppConstants.devBundleDisplayName,
+//      dependencies: dependencies
+//    )
+    
+    return Project(
+      name: name,
+      organizationName: AppConstants.organizationName,
+      options: .options(
+        automaticSchemesOptions: .disabled,
+        developmentRegion: "kor"
+      ),
+      packages: packages,
+      settings: .settings(),
+      targets: [
+        prodTarget,
+        // TODO: - 추후 타겟 분리하면 씀
+//        devTarget
+      ],
+      schemes: [
+        .makeDevScheme(),
+        .makeReleaseScheme(),
+      ]
+    )
+  }
+}
+
+extension Target {
+  static func makeAppTarget(
+    name: String,
+    bundleId: String,
+    dependencies: [TargetDependency]
+  ) -> Target {
+    return Target.target(
+      name: name,
       destinations: AppConstants.destinations,
       product: .app,
-      bundleId: AppConstants.bundleId,
+      bundleId: bundleId,
       deploymentTargets: AppConstants.deploymentTargets,
       infoPlist: .extendingDefault(
         with: [
           "UIUserInterfaceStyle": "Light",
           "UILaunchStoryboardName": "LaunchScreen",
+          "UISupportedInterfaceOrientations": [
+            "UIInterfaceOrientationPortrait"
+          ],
           "UIBackgroundModes": ["remote-notification"],
           "NSCameraUsageDescription": "프로필 생성 시 사진 첨부를 위해 카메라 접근 권한이 필요합니다.",
           "NSPhotoLibraryUsageDescription": "프로필 생성 시 사진 첨부를 위해 앨범 접근 권한이 필요합니다.",
@@ -146,43 +192,19 @@ extension Project {
       dependencies: dependencies,
       settings: .settings(
         base: [
-          "OTHER_LDFLAGS": ["-ObjC"]
+          "OTHER_LDFLAGS": ["-ObjC"],
+          "CODE_SIGN_STYLE": SettingValue.string(AppConstants.codeSignStyle),
+          "DEVELOPMENT_TEAM": SettingValue.string(AppConstants.developmentTeam),
+          "MARKETING_VERSION": SettingValue.string(AppConstants.versionString),
+          "CURRENT_PROJECT_VERSION": SettingValue.string(AppConstants.buildString),
         ],
         configurations: [
-          .debug(name: "Debug", xcconfig: .relativeToRoot("Debug.xcconfig")),
-          .release(name: "Release", xcconfig: .relativeToRoot("Release.xcconfig"))
+          .configuration(environment: .Debug),
+          .configuration(environment: .Release),
         ]
-      )
-      //          .settings(
-      //        configurations: [
-      //          .configuration(environment: .dev),
-      //          .configuration(environment: .prod),
-      //        ]
-      //      )
-      ,
+      ),
       environmentVariables: [:],
       additionalFiles: []
-    )
-    
-    return Project(
-      name: name,
-      organizationName: AppConstants.organizationName,
-      options: .options(
-        automaticSchemesOptions: .disabled,
-        developmentRegion: "kor"
-      ),
-      packages: packages,
-      settings: .settings(),
-      //          .settings(configurations: [
-      //        .configuration(environment: .dev),
-      //        .configuration(environment: .prod),
-      //      ]),
-      targets: [target],
-      schemes: [
-        .makeScheme(),
-        //        .makeScheme(environment: .dev),
-        //        .makeScheme(environment: .prod),
-      ]
     )
   }
 }
