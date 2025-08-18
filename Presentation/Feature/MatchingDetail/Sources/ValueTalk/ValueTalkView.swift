@@ -14,6 +14,7 @@ struct ValueTalkView: View {
   @State var viewModel: ValueTalkViewModel
   @State private var contentOffset: CGFloat = 0
   @Environment(Router.self) private var router: Router
+  @Environment(PCToastManager.self) private var toastManager: PCToastManager
   
   private let images: [Image] = [
     DesignSystemAsset.Images.illustPuzzle01.swiftUIImage,
@@ -33,12 +34,14 @@ struct ValueTalkView: View {
   
   init(
     getMatchValueTalkUseCase: GetMatchValueTalkUseCase,
-    getMatchPhotoUseCase: GetMatchPhotoUseCase
+    getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    acceptMatchUseCase: AcceptMatchUseCase
   ) {
     _viewModel = .init(
       wrappedValue: .init(
         getMatchValueTalkUseCase: getMatchValueTalkUseCase,
-        getMatchPhotoUseCase: getMatchPhotoUseCase
+        getMatchPhotoUseCase: getMatchPhotoUseCase,
+        acceptMatchUseCase: acceptMatchUseCase
       )
     )
   }
@@ -102,8 +105,20 @@ struct ValueTalkView: View {
     .fullScreenCover(isPresented: $viewModel.isPhotoViewPresented) {
       MatchDetailPhotoView(
         nickname: viewModel.valueTalkModel?.nickname ?? "",
-        uri: viewModel.photoUri
+        uri: viewModel.photoUri,
+        onAcceptMatch: { viewModel.handleAction(.didAcceptMatch) }
       )
+    }
+    .onChange(of: viewModel.isMatchAccepted) { _, isMatchAccepted in
+      if isMatchAccepted {
+        router.popToRoot()
+        
+        toastManager.showToast(
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "인연을 수락했습니다",
+          backgroundColor: .primaryDefault
+        )
+      }
     }
   }
   

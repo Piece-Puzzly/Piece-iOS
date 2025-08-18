@@ -15,6 +15,7 @@ struct MatchingMainView: View {
   @Bindable var matchingMainViewModel: MatchingMainViewModel
   
   @Environment(Router.self) private var router: Router
+  @Environment(PCToastManager.self) private var toastManager: PCToastManager
   
   init(
     getUserInfoUseCase: GetUserInfoUseCase,
@@ -77,6 +78,11 @@ struct MatchingMainView: View {
       } secondButtonAction: {
         matchingMainViewModel.handleAction(.didAcceptMatch)
         matchingMainViewModel.isMatchAcceptAlertPresented = false
+        toastManager.showToast(
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "인연을 수락했습니다",
+          backgroundColor: .primaryDefault
+        )
       }
     }
     .pcAlert(isPresented: $matchingMainViewModel.isMatchAcceptAlertPresented) {
@@ -87,6 +93,15 @@ struct MatchingMainView: View {
         secondButtonText: "수정하기",
         secondButtonAction: { router.setRoute(.createProfile)}
       )
+    }
+    .overlay(alignment: .top) {
+      PCToast(
+        isVisible: Bindable(toastManager).isVisible,
+        icon: toastManager.icon,
+        text: toastManager.text,
+        backgroundColor: toastManager.backgroundColor
+      )
+      .padding(.top, 56)
     }
     .onChange(of: matchingMainViewModel.destination) { _, destination in
       guard let destination else { return }

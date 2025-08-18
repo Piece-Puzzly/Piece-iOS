@@ -18,15 +18,18 @@ struct MatchProfileBasicView: View {
   
   @State var viewModel: MatchProfileBasicViewModel
   @Environment(Router.self) private var router: Router
+  @Environment(PCToastManager.self) private var toastManager: PCToastManager
   
   init(
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
-    getMatchPhotoUseCase: GetMatchPhotoUseCase
+    getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    acceptMatchUseCase: AcceptMatchUseCase
   ) {
     _viewModel = .init(
       wrappedValue: .init(
         getMatchProfileBasicUseCase: getMatchProfileBasicUseCase,
-        getMatchPhotoUseCase: getMatchPhotoUseCase
+        getMatchPhotoUseCase: getMatchPhotoUseCase,
+        acceptMatchUseCase: acceptMatchUseCase
       )
     )
   }
@@ -81,8 +84,20 @@ struct MatchProfileBasicView: View {
     .fullScreenCover(isPresented: $viewModel.isPhotoViewPresented) {
       MatchDetailPhotoView(
         nickname: viewModel.matchingBasicInfoModel?.nickname ?? "",
-        uri: viewModel.photoUri
+        uri: viewModel.photoUri,
+        onAcceptMatch: { viewModel.handleAction(.didAcceptMatch) }
       )
+    }
+    .onChange(of: viewModel.isMatchAccepted) { _, isMatchAccepted in
+      if isMatchAccepted {
+        router.popToRoot()
+        
+        toastManager.showToast(
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "인연을 수락했습니다",
+          backgroundColor: .primaryDefault
+        )
+      }
     }
     .transaction { transaction in
         transaction.disablesAnimations = true
@@ -290,7 +305,8 @@ struct MatchProfileBasicView: View {
 #Preview {
   MatchProfileBasicView(
     getMatchProfileBasicUseCase: DummyGetMatchProfileUseCase(),
-    getMatchPhotoUseCase: DummyGetMatchPhotoUseCase()
+    getMatchPhotoUseCase: DummyGetMatchPhotoUseCase(),
+    acceptMatchUseCase: DummyAcceptMatchUseCase()
   )
   .environment(Router())
 }
@@ -317,3 +333,14 @@ private final class DummyGetMatchPhotoUseCase: GetMatchPhotoUseCase {
     return "https://www.thesprucepets.com/thmb/AyzHgPQM_X8OKhXEd8XTVIa-UT0=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-145577979-d97e955b5d8043fd96747447451f78b7.jpg"
   }
 }
+
+private final class DummyAcceptMatchUseCase: AcceptMatchUseCase {
+  func execute() async throws -> VoidModel {
+    VoidModel()
+  }
+  
+  func execute() async throws -> String {
+    return "https://www.thesprucepets.com/thmb/AyzHgPQM_X8OKhXEd8XTVIa-UT0=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-145577979-d97e955b5d8043fd96747447451f78b7.jpg"
+  }
+}
+

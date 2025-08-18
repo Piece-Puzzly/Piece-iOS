@@ -1,10 +1,12 @@
 import Coordinator
 import Router
 import SwiftUI
+import DesignSystem
 
 struct ContentView: View {
   @State private var router = Router()
   @State private var coordinator = Coordinator()
+  @State private var toastManager = PCToastManager()
   
   var body: some View {
     NavigationStack(path: $router.path) {
@@ -16,6 +18,7 @@ struct ContentView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     .environment(router)
+    .environment(toastManager)
   }
 }
 

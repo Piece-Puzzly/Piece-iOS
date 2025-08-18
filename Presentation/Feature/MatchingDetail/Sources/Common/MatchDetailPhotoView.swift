@@ -18,13 +18,16 @@ struct MatchDetailPhotoView: View {
   @Environment(\.dismiss) private var dismiss
   @State private var isAlertPresented: Bool = false
   @State private var isAcceptButtonEnabled: Bool
+  private let onAcceptMatch: (() -> Void)?
   
   init(
     nickname: String,
-    uri: String
+    uri: String,
+    onAcceptMatch: (() -> Void)? = nil
   ) {
     self.nickname = nickname
     self.uri = uri
+    self.onAcceptMatch = onAcceptMatch
     
     var isAcceptButtonEnabled = false
     if let matchStatus = PCUserDefaultsService.shared.getMatchStatus() {
@@ -90,7 +93,7 @@ struct MatchDetailPhotoView: View {
         isAlertPresented = false
       } secondButtonAction: {
         dismiss()
-        router.popToRoot()
+        onAcceptMatch?()
       }
     }
   }

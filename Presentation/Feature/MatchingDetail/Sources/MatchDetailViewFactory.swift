@@ -12,22 +12,26 @@ public struct MatchDetailViewFactory {
   @ViewBuilder
   public static func createMatchProfileBasicView(
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
-    getMatchPhotoUseCase: GetMatchPhotoUseCase
+    getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    acceptMatchUseCase: AcceptMatchUseCase
   ) -> some View {
     MatchProfileBasicView(
       getMatchProfileBasicUseCase: getMatchProfileBasicUseCase,
-      getMatchPhotoUseCase: getMatchPhotoUseCase
+      getMatchPhotoUseCase: getMatchPhotoUseCase,
+      acceptMatchUseCase: acceptMatchUseCase
     )
   }
   
   @ViewBuilder
   public static func createMatchValueTalkView(
     getMatchValueTalkUseCase: GetMatchValueTalkUseCase,
-    getMatchPhotoUseCase: GetMatchPhotoUseCase
+    getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    acceptMatchUseCase: AcceptMatchUseCase
   ) -> some View {
     ValueTalkView(
       getMatchValueTalkUseCase: getMatchValueTalkUseCase,
-      getMatchPhotoUseCase: getMatchPhotoUseCase
+      getMatchPhotoUseCase: getMatchPhotoUseCase,
+      acceptMatchUseCase: acceptMatchUseCase
     )
   }
   

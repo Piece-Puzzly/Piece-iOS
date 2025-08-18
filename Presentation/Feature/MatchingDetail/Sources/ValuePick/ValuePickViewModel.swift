@@ -30,6 +30,11 @@ final class ValuePickViewModel {
     case didRefuseMatch
   }
   
+  enum MatchActionType {
+      case accept
+      case refuse
+  }
+  
   init(
     getMatchValuePickUseCase: GetMatchValuePickUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
@@ -78,6 +83,7 @@ final class ValuePickViewModel {
   private(set) var differentFromMeCount: Int = 0
   private(set) var photoUri: String = ""
   private(set) var isAcceptButtonEnabled: Bool
+  private(set) var completedMatchAction: MatchActionType? = nil
   private var valuePicks: [MatchValuePickItemModel] = []
   private let getMatchValuePickUseCase: GetMatchValuePickUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
@@ -114,12 +120,20 @@ final class ValuePickViewModel {
       isMatchDeclineAlertPresented = true
       
     case .didAcceptMatch:
-      Task { await acceptMatch() }
-      isMatchAcceptAlertPresented = false
+      completedMatchAction = nil
+      Task {
+        await acceptMatch()
+        isMatchAcceptAlertPresented = false
+        completedMatchAction = .accept
+      }
       
     case .didRefuseMatch:
-      Task { await refuseMatch() }
-      isMatchDeclineAlertPresented = false
+      completedMatchAction = nil
+      Task {
+        await refuseMatch()
+        isMatchDeclineAlertPresented = false
+        completedMatchAction = .refuse
+      }
     }
   }
   
