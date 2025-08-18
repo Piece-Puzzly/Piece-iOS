@@ -14,6 +14,7 @@ final class MatchProfileBasicViewModel {
   enum Action {
     case didTapMoreButton
     case didTapPhotoButton
+    case didAcceptMatch
   }
   
   private enum Constant {
@@ -30,15 +31,19 @@ final class MatchProfileBasicViewModel {
   private(set) var error: Error?
   private(set) var matchingBasicInfoModel: BasicInfoModel?
   private(set) var photoUri: String = ""
+  private(set) var isMatchAccepted: Bool = false
   private let getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
+  private let acceptMatchUseCase: AcceptMatchUseCase
   
   init(
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
-    getMatchPhotoUseCase: GetMatchPhotoUseCase
+    getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    acceptMatchUseCase: AcceptMatchUseCase
   ) {
     self.getMatchProfileBasicUseCase = getMatchProfileBasicUseCase
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
+    self.acceptMatchUseCase = acceptMatchUseCase
     
     Task {
       await fetchMatchingBasicInfo()
@@ -52,6 +57,11 @@ final class MatchProfileBasicViewModel {
       isBottomSheetPresented = true
     case .didTapPhotoButton:
       isPhotoViewPresented = true
+    case .didAcceptMatch:
+      Task {
+        await acceptMatch()
+        isMatchAccepted = true
+      }
     }
   }
   
@@ -81,6 +91,14 @@ final class MatchProfileBasicViewModel {
     do {
       let uri = try await getMatchPhotoUseCase.execute()
       photoUri = uri
+    } catch {
+      self.error = error
+    }
+  }
+  
+  private func acceptMatch() async {
+    do {
+      _ = try await acceptMatchUseCase.execute()
     } catch {
       self.error = error
     }

@@ -91,7 +91,8 @@ struct ValuePickView: View {
     .fullScreenCover(isPresented: $viewModel.isPhotoViewPresented) {
       MatchDetailPhotoView(
         nickname: viewModel.valuePickModel?.nickname ?? "",
-        uri: viewModel.photoUri
+        uri: viewModel.photoUri,
+        onAcceptMatch: { viewModel.handleAction(.didAcceptMatch) }
       )
     }
     .pcAlert(isPresented: $viewModel.isMatchAcceptAlertPresented) {

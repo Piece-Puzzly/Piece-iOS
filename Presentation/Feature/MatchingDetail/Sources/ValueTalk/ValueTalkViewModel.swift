@@ -21,14 +21,17 @@ final class ValueTalkViewModel {
     case contentOffsetDidChange(CGFloat)
     case didTapMoreButton
     case didTapPhotoButton
+    case didAcceptMatch
   }
   
   init(
     getMatchValueTalkUseCase: GetMatchValueTalkUseCase,
-    getMatchPhotoUseCase: GetMatchPhotoUseCase
+    getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    acceptMatchUseCase: AcceptMatchUseCase
   ) {
     self.getMatchValueTalkUseCase = getMatchValueTalkUseCase
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
+    self.acceptMatchUseCase = acceptMatchUseCase
     
     Task {
       await fetchMatchValueTalk()
@@ -46,8 +49,10 @@ final class ValueTalkViewModel {
   private(set) var isLoading = true
   private(set) var error: Error?
   private(set) var photoUri: String = ""
+  private(set) var isMatchAccepted: Bool = false
   private let getMatchValueTalkUseCase: GetMatchValueTalkUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
+  private let acceptMatchUseCase: AcceptMatchUseCase
   
   func handleAction(_ action: Action) {
     switch action {
@@ -60,6 +65,12 @@ final class ValueTalkViewModel {
       
     case .didTapPhotoButton:
       isPhotoViewPresented = true
+      
+    case .didAcceptMatch:
+      Task {
+        await acceptMatch()
+        isMatchAccepted = true
+      }
     }
   }
   
@@ -91,6 +102,14 @@ final class ValueTalkViewModel {
     do {
       let uri = try await getMatchPhotoUseCase.execute()
       photoUri = uri
+    } catch {
+      self.error = error
+    }
+  }
+  
+  private func acceptMatch() async {
+    do {
+      _ = try await acceptMatchUseCase.execute()
     } catch {
       self.error = error
     }

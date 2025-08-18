@@ -142,18 +142,22 @@ public struct Coordinator {
       let matchesRepository = repositoryFactory.createMatchesRepository()
       let getMatchProfileBasicUseCase = UseCaseFactory.createGetMatchProfileBasicUseCase(repository: matchesRepository)
       let getMatchPhotoUseCase = UseCaseFactory.createGetMatchPhotoUseCase(repository: matchesRepository)
+      let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
       MatchDetailViewFactory.createMatchProfileBasicView(
         getMatchProfileBasicUseCase: getMatchProfileBasicUseCase,
-        getMatchPhotoUseCase: getMatchPhotoUseCase
+        getMatchPhotoUseCase: getMatchPhotoUseCase,
+        acceptMatchUseCase: acceptMatchUseCase,
       )
       
     case .matchValueTalk:
       let matchesRepository = repositoryFactory.createMatchesRepository()
       let getMatchValueTalkUseCase = UseCaseFactory.createGetMatchValueTalkUseCase(repository: matchesRepository)
       let getMatchPhotoUseCase = UseCaseFactory.createGetMatchPhotoUseCase(repository: matchesRepository)
+      let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
       MatchDetailViewFactory.createMatchValueTalkView(
         getMatchValueTalkUseCase: getMatchValueTalkUseCase,
-        getMatchPhotoUseCase: getMatchPhotoUseCase
+        getMatchPhotoUseCase: getMatchPhotoUseCase,
+        acceptMatchUseCase: acceptMatchUseCase
       )
       
     case .matchValuePick:
