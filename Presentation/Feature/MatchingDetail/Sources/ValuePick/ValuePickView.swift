@@ -107,7 +107,6 @@ struct ValuePickView: View {
         viewModel.isMatchAcceptAlertPresented = false
       } secondButtonAction: {
         viewModel.handleAction(.didAcceptMatch)
-        router.popToRoot()
       }
     }
     .pcAlert(isPresented: $viewModel.isMatchDeclineAlertPresented) {
@@ -125,7 +124,26 @@ struct ValuePickView: View {
         viewModel.isMatchDeclineAlertPresented = false
       } secondButtonAction: {
         viewModel.handleAction(.didRefuseMatch)
-        router.popToRoot()
+      }
+    }
+    .onChange(of: viewModel.completedMatchAction) { _, actionType in
+      guard let actionType else { return }
+
+      router.popToRoot()
+      
+      switch actionType {
+      case .accept:
+        toastManager.showToast(
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "매칭을 수락했습니다",
+          backgroundColor: .primaryDefault
+        )
+      case .refuse:
+        toastManager.showToast(
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "매칭을 거절했습니다",
+          backgroundColor: .primaryDefault
+        )
       }
     }
     .sheet(isPresented: $viewModel.isBottomSheetPresented) { // TODO: - 바텀시트 커스텀 컴포넌트화

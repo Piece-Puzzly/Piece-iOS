@@ -89,6 +89,15 @@ struct MatchingMainView: View {
         secondButtonAction: { router.setRoute(.createProfile)}
       )
     }
+    .overlay(alignment: .top) {
+      PCToast(
+        isVisible: Bindable(toastManager).isVisible,
+        icon: toastManager.icon,
+        text: toastManager.text,
+        backgroundColor: toastManager.backgroundColor
+      )
+      .padding(.top, 56)
+    }
     .onChange(of: matchingMainViewModel.destination) { _, destination in
       guard let destination else { return }
       router.push(to: destination)
