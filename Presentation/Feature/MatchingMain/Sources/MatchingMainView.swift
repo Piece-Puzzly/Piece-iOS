@@ -78,6 +78,11 @@ struct MatchingMainView: View {
       } secondButtonAction: {
         matchingMainViewModel.handleAction(.didAcceptMatch)
         matchingMainViewModel.isMatchAcceptAlertPresented = false
+        toastManager.showToast(
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "매칭을 수락했습니다",
+          backgroundColor: .primaryDefault
+        )
       }
     }
     .pcAlert(isPresented: $matchingMainViewModel.isMatchAcceptAlertPresented) {

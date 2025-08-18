@@ -131,7 +131,7 @@ final class MatchingMainViewModel {
   func handleAction(_ action: Action) {
     switch action {
     case .tapProfileInfo:
-      destination = .matchProfileBasic
+      handleProfileInfoTap()
       
     case .tapMatchingButton:
       handleMatchingButtonTap()
@@ -151,6 +151,17 @@ final class MatchingMainViewModel {
       case .pending, .checkContact, .responseComplete:
         return
       }
+    }
+  }
+  
+  private func handleProfileInfoTap() {
+    destination = .matchProfileBasic
+    
+    switch matchingButtonState {
+    case .checkMatchingPiece:
+      Task { await patchCheckMatchingPiece() }
+    case .pending, .checkContact, .responseComplete, .acceptMatching:
+      return
     }
   }
   
