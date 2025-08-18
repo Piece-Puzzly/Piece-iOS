@@ -80,7 +80,7 @@ struct MatchingMainView: View {
         matchingMainViewModel.isMatchAcceptAlertPresented = false
         toastManager.showToast(
           icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
-          text: "매칭을 수락했습니다",
+          text: "인연을 수락했습니다",
           backgroundColor: .primaryDefault
         )
       }
