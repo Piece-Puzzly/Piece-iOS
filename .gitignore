@@ -75,5 +75,18 @@ Derived/
 ### Tuist managed dependencies ###
 Tuist/.build
 
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+fastlane/.env*
+
+# Build artifacts
+*.ipa
+*.app.dSYM.zip
+*.dSYM
+
+# Firebase
 App/Resources/GoogleService-Info.plist
 Utility/PCFirebase/Resources/remote_config_defaults.plist
