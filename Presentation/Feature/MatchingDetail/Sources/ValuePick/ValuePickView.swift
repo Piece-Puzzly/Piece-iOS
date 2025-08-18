@@ -21,7 +21,8 @@ struct ValuePickView: View {
   @State var viewModel: ValuePickViewModel
   @State private var contentOffset: CGFloat = 0
   @Environment(Router.self) private var router: Router
-  
+  @Environment(PCToastManager.self) private var toastManager: PCToastManager
+
   init(
     getMatchValuePickUseCase: GetMatchValuePickUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,

@@ -15,6 +15,7 @@ struct MatchingMainView: View {
   @Bindable var matchingMainViewModel: MatchingMainViewModel
   
   @Environment(Router.self) private var router: Router
+  @Environment(PCToastManager.self) private var toastManager: PCToastManager
   
   init(
     getUserInfoUseCase: GetUserInfoUseCase,

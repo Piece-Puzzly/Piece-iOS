@@ -84,6 +84,35 @@ extension PCToast {
   }
 }
 
+@MainActor
+@Observable
+public final class PCToastManager {
+  public var isVisible: Bool = false
+  public private(set) var icon: Image? = nil
+  public private(set) var text: String? = nil
+  public private(set) var textColor: Color = .grayscaleWhite
+  public private(set) var backgroundColor: Color = .grayscaleDark2
+  
+  public init() {}
+  
+  public func showToast(
+    icon: Image? = nil,
+    text: String?,
+    textColor: Color = .grayscaleWhite,
+    backgroundColor: Color = .grayscaleDark2
+  ) {
+    self.icon = icon
+    self.text = text
+    self.textColor = textColor
+    self.backgroundColor = backgroundColor
+    self.isVisible = true
+  }
+  
+  public func hideToast() {
+    self.isVisible = false
+  }
+}
+
 #Preview {
   PCToast(
     isVisible: .constant(true),
