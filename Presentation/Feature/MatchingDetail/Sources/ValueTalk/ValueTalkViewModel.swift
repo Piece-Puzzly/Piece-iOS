@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import LocalStorage
 import Observation
 import UseCases
 
@@ -21,17 +22,40 @@ final class ValueTalkViewModel {
     case contentOffsetDidChange(CGFloat)
     case didTapMoreButton
     case didTapPhotoButton
+    case didTapAcceptButton
+    case didTapRefuseButton
     case didAcceptMatch
+    case didRefuseMatch
+  }
+  
+  enum MatchActionType {
+      case accept
+      case refuse
   }
   
   init(
     getMatchValueTalkUseCase: GetMatchValueTalkUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase
+    acceptMatchUseCase: AcceptMatchUseCase,
+    refuseMatchUseCase: RefuseMatchUseCase
   ) {
     self.getMatchValueTalkUseCase = getMatchValueTalkUseCase
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
+    self.refuseMatchUseCase = refuseMatchUseCase
+    
+    var isAcceptButtonEnabled = false
+    if let matchStatus = PCUserDefaultsService.shared.getMatchStatus() {
+      switch matchStatus {
+      case .BEFORE_OPEN: isAcceptButtonEnabled = true
+      case .WAITING: isAcceptButtonEnabled = true
+      case .REFUSED: isAcceptButtonEnabled = false
+      case .RESPONDED: isAcceptButtonEnabled = false
+      case .GREEN_LIGHT: isAcceptButtonEnabled = true
+      case .MATCHED: isAcceptButtonEnabled = false
+      }
+    }
+    self.isAcceptButtonEnabled = isAcceptButtonEnabled
     
     Task {
       await fetchMatchValueTalk()
@@ -42,6 +66,8 @@ final class ValueTalkViewModel {
   let navigationTitle: String = Constant.navigationTitle
   var isPhotoViewPresented: Bool = false
   var isBottomSheetPresented: Bool = false
+  var isMatchAcceptAlertPresented: Bool = false
+  var isMatchDeclineAlertPresented: Bool = false
 
   private(set) var valueTalkModel: ValueTalkModel?
   private(set) var contentOffset: CGFloat = 0
@@ -49,10 +75,12 @@ final class ValueTalkViewModel {
   private(set) var isLoading = true
   private(set) var error: Error?
   private(set) var photoUri: String = ""
-  private(set) var isMatchAccepted: Bool = false
+  private(set) var isAcceptButtonEnabled: Bool
+  private(set) var completedMatchAction: MatchActionType? = nil
   private let getMatchValueTalkUseCase: GetMatchValueTalkUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
+  private let refuseMatchUseCase: RefuseMatchUseCase
   
   func handleAction(_ action: Action) {
     switch action {
@@ -66,10 +94,26 @@ final class ValueTalkViewModel {
     case .didTapPhotoButton:
       isPhotoViewPresented = true
       
+    case .didTapAcceptButton:
+      isMatchAcceptAlertPresented = true
+      
+    case .didTapRefuseButton:
+      isMatchDeclineAlertPresented = true
+      
     case .didAcceptMatch:
+      completedMatchAction = nil
       Task {
         await acceptMatch()
-        isMatchAccepted = true
+        isMatchAcceptAlertPresented = false
+        completedMatchAction = .accept
+      }
+
+    case .didRefuseMatch:
+      completedMatchAction = nil
+      Task {
+        await refuseMatch()
+        isMatchDeclineAlertPresented = false
+        completedMatchAction = .refuse
       }
     }
   }
@@ -110,6 +154,14 @@ final class ValueTalkViewModel {
   private func acceptMatch() async {
     do {
       _ = try await acceptMatchUseCase.execute()
+    } catch {
+      self.error = error
+    }
+  }
+  
+  private func refuseMatch() async {
+    do {
+      _ = try await refuseMatchUseCase.execute()
     } catch {
       self.error = error
     }

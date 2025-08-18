@@ -9,8 +9,15 @@ import DesignSystem
 import Router
 import SwiftUI
 import UseCases
+import LocalStorage
 
 struct ValueTalkView: View {
+  private enum Constant {
+    static let horizontalPadding: CGFloat = 20
+    static let accepetButtonText = "인연 수락하기"
+    static let refuseButtonText = "인연 거절하기"
+  }
+  
   @State var viewModel: ValueTalkViewModel
   @State private var contentOffset: CGFloat = 0
   @Environment(Router.self) private var router: Router
@@ -35,13 +42,15 @@ struct ValueTalkView: View {
   init(
     getMatchValueTalkUseCase: GetMatchValueTalkUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase
+    acceptMatchUseCase: AcceptMatchUseCase,
+    refuseMatchUseCase: RefuseMatchUseCase
   ) {
     _viewModel = .init(
       wrappedValue: .init(
         getMatchValueTalkUseCase: getMatchValueTalkUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
-        acceptMatchUseCase: acceptMatchUseCase
+        acceptMatchUseCase: acceptMatchUseCase,
+        refuseMatchUseCase: refuseMatchUseCase
       )
     )
   }
@@ -90,18 +99,22 @@ struct ValueTalkView: View {
           viewModel.contentOffset
         }, set: { offset in
           viewModel.handleAction(.contentOffsetDidChange(offset))
-        }),
-        content: {
+        })) {
           talkCards(valueTalkModel: valueTalkModel)
-        })
-      .scrollIndicators(.never)
-      .padding(.horizontal, 20)
-    }
-    .background(Color.grayscaleLight3)
-    .animation(.easeOut(duration: 0.3), value: viewModel.isNameViewVisible)
-    .overlay(alignment: .bottom) {
+          
+          refuseButton
+          
+          Spacer()
+            .frame(height: 60)
+        }
+        .scrollIndicators(.never)
+        .frame(maxWidth: .infinity)
+        .background(Color.grayscaleLight3)
+
       buttons
     }
+    .toolbar(.hidden)
+    .animation(.easeOut(duration: 0.3), value: viewModel.isNameViewVisible)
     .fullScreenCover(isPresented: $viewModel.isPhotoViewPresented) {
       MatchDetailPhotoView(
         nickname: viewModel.valueTalkModel?.nickname ?? "",
@@ -109,13 +122,54 @@ struct ValueTalkView: View {
         onAcceptMatch: { viewModel.handleAction(.didAcceptMatch) }
       )
     }
-    .onChange(of: viewModel.isMatchAccepted) { _, isMatchAccepted in
-      if isMatchAccepted {
-        router.popToRoot()
-        
+    .pcAlert(isPresented: $viewModel.isMatchAcceptAlertPresented) {
+      AlertView(
+        title: {
+          Text("\(viewModel.valueTalkModel?.nickname ?? "")").foregroundStyle(Color.primaryDefault) +
+          Text("님과의\n인연을 이어갈까요?").foregroundStyle(Color.grayscaleBlack)
+        },
+        message: "서로 수락하면 연락처가 공개돼요.",
+        firstButtonText: "뒤로",
+        secondButtonText: Constant.accepetButtonText
+      ) {
+        viewModel.isMatchAcceptAlertPresented = false
+      } secondButtonAction: {
+        viewModel.handleAction(.didAcceptMatch)
+      }
+    }
+    .pcAlert(isPresented: $viewModel.isMatchDeclineAlertPresented) {
+      AlertView(
+        title: {
+          Text("\(viewModel.valueTalkModel?.nickname ?? "")님과의\n").foregroundStyle(Color.grayscaleBlack) +
+          Text("인연을 ").foregroundStyle(Color.grayscaleBlack) +
+          Text("거절").foregroundStyle(Color.systemError) +
+          Text("할까요?").foregroundStyle(Color.grayscaleBlack)
+        },
+        message: "매칭을 거절하면 이후에 되돌릴 수 없으니\n신중히 선택해 주세요.",
+        firstButtonText: "뒤로",
+        secondButtonText: Constant.refuseButtonText
+      ) {
+        viewModel.isMatchDeclineAlertPresented = false
+      } secondButtonAction: {
+        viewModel.handleAction(.didRefuseMatch)
+      }
+    }
+    .onChange(of: viewModel.completedMatchAction) { _, actionType in
+      guard let actionType else { return }
+
+      router.popToRoot()
+      
+      switch actionType {
+      case .accept:
         toastManager.showToast(
           icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
           text: "인연을 수락했습니다",
+          backgroundColor: .primaryDefault
+        )
+      case .refuse:
+        toastManager.showToast(
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "인연을 거절했습니다",
           backgroundColor: .primaryDefault
         )
       }
@@ -135,11 +189,31 @@ struct ValueTalkView: View {
           image: images[index % images.count]
         )
       }
-      Spacer()
-        .frame(height: 64)
     }
+    .padding(.horizontal, 20)
     .padding(.top, 20)
     .padding(.bottom, 60)
+  }
+  
+  // MARK: - 매칭 거절하기 버튼
+  
+  private var shouldShowRefuseButton: Bool {
+    guard let matchStatus = PCUserDefaultsService.shared.getMatchStatus() else { return false }
+    switch matchStatus {
+    case .BEFORE_OPEN, .WAITING, .GREEN_LIGHT: return true
+    default: return false
+    }
+  }
+  
+  private var refuseButton: some View {
+    Group {
+      if shouldShowRefuseButton {
+        PCTextButton(content: Constant.refuseButtonText)
+          .onTapGesture {
+            viewModel.handleAction(.didTapRefuseButton)
+          }
+      }
+    }
   }
   
   // MARK: - 하단 버튼
@@ -149,10 +223,11 @@ struct ValueTalkView: View {
       photoButton
       Spacer()
       backButton
-      nextButton
+      acceptButton
     }
     .padding(.horizontal, 20)
     .padding(.top, 12)
+    .padding(.bottom, 10)
     .background(Color.grayscaleLight3)
   }
   
@@ -172,12 +247,17 @@ struct ValueTalkView: View {
       action: { router.pop() }
     )
   }
-  
-  private var nextButton: some View {
-    CircleButton(
-      type: .solid_primary,
-      icon: DesignSystemAsset.Icons.arrowRight32.swiftUIImage,
-      action: { router.push(to: .matchValuePick) }
+
+  private var acceptButton: some View {
+    RoundedButton(
+      type: viewModel.isAcceptButtonEnabled ? .solid : .disabled,
+      buttonText: Constant.accepetButtonText,
+      icon: nil,
+      rounding: true,
+      action: {
+        if viewModel.isAcceptButtonEnabled { viewModel.handleAction(.didTapAcceptButton)
+        }
+      }
     )
   }
   

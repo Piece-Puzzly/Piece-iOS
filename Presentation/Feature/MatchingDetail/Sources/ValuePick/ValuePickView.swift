@@ -12,12 +12,6 @@ import SwiftUI
 import UseCases
 
 struct ValuePickView: View {
-  private enum Constant {
-    static let horizontalPadding: CGFloat = 20
-    static let accepetButtonText = "인연 수락하기"
-    static let refuseButtonText = "인연 거절하기"
-  }
-  
   @State var viewModel: ValuePickViewModel
   @State private var contentOffset: CGFloat = 0
   @Environment(Router.self) private var router: Router
@@ -26,15 +20,13 @@ struct ValuePickView: View {
   init(
     getMatchValuePickUseCase: GetMatchValuePickUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase,
-    refuseMatchUseCase: RefuseMatchUseCase
+    acceptMatchUseCase: AcceptMatchUseCase
   ) {
     _viewModel = .init(
       wrappedValue: .init(
         getMatchValuePickUseCase: getMatchValuePickUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
-        acceptMatchUseCase: acceptMatchUseCase,
-        refuseMatchUseCase: refuseMatchUseCase
+        acceptMatchUseCase: acceptMatchUseCase
       )
     )
   }
@@ -77,9 +69,6 @@ struct ValuePickView: View {
           viewModel.handleAction(.contentOffsetDidChange(offset))
         })) {
           pickCards
-          refuseButton
-          Spacer()
-            .frame(height: 60)
         }
         .scrollIndicators(.never)
         .frame(maxWidth: .infinity)
@@ -95,54 +84,13 @@ struct ValuePickView: View {
         onAcceptMatch: { viewModel.handleAction(.didAcceptMatch) }
       )
     }
-    .pcAlert(isPresented: $viewModel.isMatchAcceptAlertPresented) {
-      AlertView(
-        title: {
-          Text("\(viewModel.valuePickModel?.nickname ?? "")").foregroundStyle(Color.primaryDefault) +
-          Text("님과의\n인연을 이어갈까요?").foregroundStyle(Color.grayscaleBlack)
-        },
-        message: "서로 수락하면 연락처가 공개돼요.",
-        firstButtonText: "뒤로",
-        secondButtonText: Constant.accepetButtonText
-      ) {
-        viewModel.isMatchAcceptAlertPresented = false
-      } secondButtonAction: {
-        viewModel.handleAction(.didAcceptMatch)
-      }
-    }
-    .pcAlert(isPresented: $viewModel.isMatchDeclineAlertPresented) {
-      AlertView(
-        title: {
-          Text("\(viewModel.valuePickModel?.nickname ?? "")님과의\n").foregroundStyle(Color.grayscaleBlack) +
-          Text("인연을 ").foregroundStyle(Color.grayscaleBlack) +
-          Text("거절").foregroundStyle(Color.systemError) +
-          Text("할까요?").foregroundStyle(Color.grayscaleBlack)
-        },
-        message: "매칭을 거절하면 이후에 되돌릴 수 없으니\n신중히 선택해 주세요.",
-        firstButtonText: "뒤로",
-        secondButtonText: Constant.refuseButtonText
-      ) {
-        viewModel.isMatchDeclineAlertPresented = false
-      } secondButtonAction: {
-        viewModel.handleAction(.didRefuseMatch)
-      }
-    }
-    .onChange(of: viewModel.completedMatchAction) { _, actionType in
-      guard let actionType else { return }
-
-      router.popToRoot()
-      
-      switch actionType {
-      case .accept:
+    .onChange(of: viewModel.isMatchAccepted) { _, isMatchAccepted in
+      if isMatchAccepted {
+        router.popToRoot()
+        
         toastManager.showToast(
           icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
           text: "인연을 수락했습니다",
-          backgroundColor: .primaryDefault
-        )
-      case .refuse:
-        toastManager.showToast(
-          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
-          text: "인연을 거절했습니다",
           backgroundColor: .primaryDefault
         )
       }
@@ -210,17 +158,9 @@ struct ValuePickView: View {
         ValuePickCard(valuePick: valuePick)
       }
     }
-    .padding(.horizontal, Constant.horizontalPadding)
+    .padding(.horizontal, 20)
     .padding(.top, 20)
     .padding(.bottom, 60)
-  }
-  
-  // MARK: - 매칭 거절하기 버튼
-  private var refuseButton: some View {
-    PCTextButton(content: Constant.refuseButtonText)
-      .onTapGesture {
-        viewModel.handleAction(.didTapRefuseButton)
-      }
   }
   
   // MARK: - 하단 버튼
@@ -230,7 +170,7 @@ struct ValuePickView: View {
       photoButton
       Spacer()
       backButton
-      acceptButton
+      nextButton
     }
     .frame(maxWidth: .infinity)
     .padding(.horizontal, 20)
@@ -257,15 +197,11 @@ struct ValuePickView: View {
     }
   }
   
-  private var acceptButton: some View {
-    RoundedButton(
-      type: viewModel.isAcceptButtonEnabled ? .solid : .disabled,
-      buttonText: Constant.accepetButtonText,
-      icon: nil,
-      rounding: true,
-      action: {
-        if viewModel.isAcceptButtonEnabled { viewModel.handleAction(.didTapAcceptButton) }
-      }
+  private var nextButton: some View {
+    CircleButton(
+      type: .solid_primary,
+      icon: DesignSystemAsset.Icons.arrowRight32.swiftUIImage,
+      action: { router.push(to: .matchValueTalk) }
     )
   }
   

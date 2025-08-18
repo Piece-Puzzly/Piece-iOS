@@ -260,9 +260,7 @@ struct MatchProfileBasicView: View {
     CircleButton(
       type: .solid_primary,
       icon: DesignSystemAsset.Icons.arrowRight32.swiftUIImage,
-      action: {
-        router.push(to: .matchValueTalk)
-      }
+      action: { router.push(to: .matchValuePick) }
     )
   }
   
