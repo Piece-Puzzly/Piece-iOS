@@ -8,7 +8,15 @@
 import SwiftUI
 
 public struct Jobs {
-  public static let all: [String] = ["학생", "직장인", "전문직", "사업가", "프리랜서", "기타"]
+  public static let all: [String] = [
+    "학생",
+    "직장인",
+    "전문직",
+    "공무원",
+    "사업가",
+    "프리랜서",
+    "기타"
+  ]
   
   public init() { }
 }
