@@ -10,6 +10,7 @@ import DTO
 import PCNetwork
 import Entities
 import RepositoryInterfaces
+import LocalStorage
 
 public final class BlockContactsRepository: BlockContactsRepositoryInterface {
   private let networkService: NetworkService
@@ -22,6 +23,10 @@ public final class BlockContactsRepository: BlockContactsRepositoryInterface {
     let requestDto = phoneNumbers.toDTO()
     let endpoint = BlockEndpoint.postBlockContacts(body: requestDto)
     let responseDTO: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
+    
+    let now = Date()
+    let utcToKst = now.addingTimeInterval(9 * 60 * 60) // UTC를 KST로 변환
+    PCUserDefaultsService.shared.setLatestSyncDate(utcToKst)
     return responseDTO.toDomain()
   }
 }
