@@ -9,7 +9,7 @@ import Foundation
 
 let model0 = NotificationItemModel(
   id: 0,
-  type: .matchingAccept,
+  type: .matchAccepted,
   title: "매칭이 성사되었습니다",
   body: "매칭이 성사되었습니다. 상대방과 대화를 시작해보세요.",
   dateTime: Date().description,
@@ -26,7 +26,7 @@ let model1 = NotificationItemModel(
 
 let model2 = NotificationItemModel(
   id: 2,
-  type: .matchingSuccess,
+  type: .matchCompleted,
   title: "매칭이 성사되었습니다",
   body: "매칭이 성사되었습니다. 상대방과 대화를 시작해보세요.",
   dateTime: Date().description,
