@@ -22,12 +22,12 @@ extension NotificationType: Decodable {
             self = .profileImageApproved
         case "PROFILE_IMAGE_REJECTED":
             self = .profileImageRejected
-        case "MATCHING_NEW":
-            self = .matchingNew
-        case "MATCHING_ACCEPT":
-            self = .matchingAccept
-        case "MATCHING_SUCCESS":
-            self = .matchingSuccess
+        case "MATCH_NEW":
+            self = .matchNew
+        case "MATCH_ACCEPTED":
+            self = .matchAccepted
+        case "MATCH_COMPLETED":
+            self = .matchCompleted
         default:
             throw DecodingError.dataCorruptedError(
                 in: container,

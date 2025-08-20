@@ -24,9 +24,9 @@ struct NotificationItemModel: Identifiable {
     case .profileRejected: DesignSystemAsset.Icons.profileSolid24.swiftUIImage
     case .profileImageApproved: DesignSystemAsset.Icons.profileSolid24.swiftUIImage
     case .profileImageRejected: DesignSystemAsset.Icons.profileSolid24.swiftUIImage
-    case .matchingNew: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage
-    case .matchingAccept: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage
-    case .matchingSuccess: DesignSystemAsset.Icons.heartPuzzle24.swiftUIImage
+    case .matchNew: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage
+    case .matchAccepted: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage
+    case .matchCompleted: DesignSystemAsset.Icons.heartPuzzle24.swiftUIImage
     }
   }
   
@@ -36,9 +36,9 @@ struct NotificationItemModel: Identifiable {
     case .profileRejected: .subDefault
     case .profileImageApproved: .primaryDefault
     case .profileImageRejected: .subDefault
-    case .matchingNew: .primaryDefault
-    case .matchingAccept: .primaryDefault
-    case .matchingSuccess: .primaryDefault
+    case .matchNew: .primaryDefault
+    case .matchAccepted: .primaryDefault
+    case .matchCompleted: .primaryDefault
     }
   }
 }

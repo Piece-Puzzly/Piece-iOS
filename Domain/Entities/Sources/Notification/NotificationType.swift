@@ -10,7 +10,7 @@ public enum NotificationType {
   case profileRejected
   case profileImageApproved
   case profileImageRejected
-  case matchingNew
-  case matchingAccept
-  case matchingSuccess
+  case matchNew
+  case matchAccepted
+  case matchCompleted
 }
