@@ -147,7 +147,11 @@ public final class PCNotificationService: NSObject, UNUserNotificationCenterDele
     print("  - Action Identifier: \(response.actionIdentifier)")
     print("  - UserInfo: \(userInfo)")
     
-    // TODO: - 필요 시 딥링크 처리 로직 추가
+    NotificationCenter.default.post(
+      name: .deepLinkHome,
+      object: nil,
+      userInfo: nil
+    )
   }
   
   // MARK: - MessagingDelegate
