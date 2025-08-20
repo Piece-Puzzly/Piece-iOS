@@ -19,6 +19,23 @@ struct ContentView: View {
     }
     .environment(router)
     .environment(toastManager)
+    .onAppear {
+      setupPushNotificationObserver()
+    }
+  }
+  
+  // MARK: - 푸쉬 알림 observer 설정
+  private func setupPushNotificationObserver() {
+    NotificationCenter.default.addObserver(
+      forName: .deepLinkHome,
+      object: nil,
+      queue: .main
+    ) { _ in
+      print(">>> DEBUG: 🔗 푸쉬 알림으로 홈 이동")
+      router.setRoute(.home)
+    }
+    
+    print(">>> DEBUG: ✅ 푸쉬 알림 observer 등록 완료")
   }
 }
 
