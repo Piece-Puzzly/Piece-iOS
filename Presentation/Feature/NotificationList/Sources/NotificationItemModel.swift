@@ -22,6 +22,8 @@ struct NotificationItemModel: Identifiable {
     switch type {
     case .profileApproved: DesignSystemAsset.Icons.profileSolid24.swiftUIImage
     case .profileRejected: DesignSystemAsset.Icons.profileSolid24.swiftUIImage
+    case .profileImageApproved: DesignSystemAsset.Icons.profileSolid24.swiftUIImage
+    case .profileImageRejected: DesignSystemAsset.Icons.profileSolid24.swiftUIImage
     case .matchingNew: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage
     case .matchingAccept: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage
     case .matchingSuccess: DesignSystemAsset.Icons.heartPuzzle24.swiftUIImage
@@ -32,6 +34,8 @@ struct NotificationItemModel: Identifiable {
     switch type {
     case .profileApproved: .primaryDefault
     case .profileRejected: .subDefault
+    case .profileImageApproved: .primaryDefault
+    case .profileImageRejected: .subDefault
     case .matchingNew: .primaryDefault
     case .matchingAccept: .primaryDefault
     case .matchingSuccess: .primaryDefault
