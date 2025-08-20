@@ -14,6 +14,7 @@ final class NotificationListViewModel {
   enum Action {
     case loadNotifications
     case onDisappear
+    case didTapNotificationItem(NotificationItemModel)
   }
   
   private(set) var notifications: [NotificationItemModel] = []
@@ -39,6 +40,9 @@ final class NotificationListViewModel {
       
     case .onDisappear:
       readNotifications()
+      
+    case .didTapNotificationItem(let item):
+      readNotifications(for: item)
     }
   }
   
@@ -75,6 +79,29 @@ final class NotificationListViewModel {
         } catch {
           self.error = error
         }
+      }
+    }
+  }
+  
+  private func readNotifications(for item: NotificationItemModel) {
+    guard !item.isRead else { return }
+    
+    Task {
+      do {
+        _ = try await readNotificationUseCase.execute(id: item.id)
+        
+        if let index = notifications.firstIndex(where: { $0.id == item.id }) {
+          notifications[index] = NotificationItemModel(
+            id: notifications[index].id,
+            type: notifications[index].type,
+            title: notifications[index].title,
+            body: notifications[index].body,
+            dateTime: notifications[index].dateTime,
+            isRead: true
+          )
+        }
+      } catch {
+        self.error = error
       }
     }
   }

@@ -10,9 +10,14 @@ import SwiftUI
 
 struct NotificationItem: View {
   let model: NotificationItemModel
+  let onTap: ((NotificationItemModel) -> Void)?
   
-  init(model: NotificationItemModel) {
+  init(
+    model: NotificationItemModel,
+    onTap: ((NotificationItemModel) -> Void)? = nil
+  ) {
     self.model = model
+    self.onTap = onTap
   }
   
   var body: some View {
@@ -29,6 +34,11 @@ struct NotificationItem: View {
     .padding(.horizontal, 20)
     .padding(.vertical, 16)
     .background(model.isRead ? Color.grayscaleWhite : Color.primaryLight)
+    .onTapGesture {
+      if !model.isRead {
+        onTap?(model)
+      }
+    }
   }
   
   private var icon: some View {
