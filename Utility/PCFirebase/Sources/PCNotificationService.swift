@@ -120,6 +120,7 @@ public final class PCNotificationService: NSObject, UNUserNotificationCenterDele
   // MARK: - UserNotificationCenterDelegate
   
   // Foreground 상태에서 푸시 알림을 받았을 때 호출되는 메소드
+  @MainActor
   public func userNotificationCenter(
     _ center: UNUserNotificationCenter,
     willPresent notification: UNNotification
@@ -136,6 +137,7 @@ public final class PCNotificationService: NSObject, UNUserNotificationCenterDele
   }
   
   // Background 상태에서 푸시 알림을 받았을 때 호출되는 메소드
+  @MainActor
   public func userNotificationCenter(
     _ center: UNUserNotificationCenter,
     didReceive response: UNNotificationResponse
@@ -144,6 +146,8 @@ public final class PCNotificationService: NSObject, UNUserNotificationCenterDele
     print("🔔 Background에서 알림 응답:")
     print("  - Action Identifier: \(response.actionIdentifier)")
     print("  - UserInfo: \(userInfo)")
+    
+    // TODO: - 필요 시 딥링크 처리 로직 추가
   }
   
   // MARK: - MessagingDelegate
