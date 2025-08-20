@@ -18,6 +18,10 @@ extension NotificationType: Decodable {
             self = .profileApproved
         case "PROFILE_REJECTED":
             self = .profileRejected
+        case "PROFILE_IMAGE_APPROVED":
+            self = .profileImageApproved
+        case "PROFILE_IMAGE_REJECTED":
+            self = .profileImageRejected
         case "MATCHING_NEW":
             self = .matchingNew
         case "MATCHING_ACCEPT":
