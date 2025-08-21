@@ -51,6 +51,8 @@ struct ReportUserView: View {
       }
       
       bottomButton
+        .padding(.horizontal, 20)
+        .padding(.bottom, 10)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .toolbar(.hidden)
@@ -116,13 +118,14 @@ struct ReportUserView: View {
         set: { viewModel.handleAction(.didSelectReportReason($0 ? reason : nil)) }
       ))
       .animation(.easeInOut, value: viewModel.selectedReportReason)
+      .padding(1)
       
       Text(reason.rawValue)
         .pretendard(.body_M_R)
         .foregroundStyle(.grayscaleBlack)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
-    .padding(.vertical, 12)
+    .padding(.vertical, 14)
   }
 
   private var reportReasonEditor: some View {
