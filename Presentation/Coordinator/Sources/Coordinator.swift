@@ -87,7 +87,6 @@ public struct Coordinator {
       let blockContactsUseCase = UseCaseFactory.createBlockContactsUseCase(repository: blockContactsRepository)
       let getContactsSyncTimeUseCase = UseCaseFactory.createGetContactsSyncTimeUseCase(repository: settingsRepository)
       let putSettingsNotificationUseCase = UseCaseFactory.createPutSettingsNotificationUseCase(repository: settingsRepository)
-      let putSettingsMatchNotificationUseCase = UseCaseFactory.createPutSettingsMatchNotificationUseCase(repository: settingsRepository)
       let putSettingsBlockAcquaintanceUseCase = UseCaseFactory.createPutSettingsBlockAcquaintanceUseCase(repository: settingsRepository)
       let patchLogoutUseCase = UseCaseFactory.createLogoutUseCase(repository: settingsRepository)
       HomeViewFactory.createHomeView(
@@ -108,7 +107,6 @@ public struct Coordinator {
         blockContactsUseCase: blockContactsUseCase,
         getContactsSyncTimeUseCase: getContactsSyncTimeUseCase,
         putSettingsNotificationUseCase: putSettingsNotificationUseCase,
-        putSettingsMatchNotificationUseCase: putSettingsMatchNotificationUseCase,
         putSettingsBlockAcquaintanceUseCase: putSettingsBlockAcquaintanceUseCase,
         patchLogoutUseCase: patchLogoutUseCase
       )

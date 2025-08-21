@@ -26,7 +26,6 @@ struct SettingsView: View {
     blockContactsUseCase: BlockContactsUseCase,
     getContactsSyncTimeUseCase: GetContactsSyncTimeUseCase,
     putSettingsNotificationUseCase: PutSettingsNotificationUseCase,
-    putSettingsMatchNotificationUseCase: PutSettingsMatchNotificationUseCase,
     putSettingsBlockAcquaintanceUseCase: PutSettingsBlockAcquaintanceUseCase,
     patchLogoutUseCase: PatchLogoutUseCase
   ) {
@@ -43,7 +42,6 @@ struct SettingsView: View {
         blockContactsUseCase: blockContactsUseCase,
         getContactsSyncTimeUseCase: getContactsSyncTimeUseCase,
         putSettingsNotificationUseCase: putSettingsNotificationUseCase,
-        putSettingsMatchNotificationUseCase: putSettingsMatchNotificationUseCase,
         putSettingsBlockAcquaintanceUseCase: putSettingsBlockAcquaintanceUseCase,
         patchLogoutUseCase: patchLogoutUseCase
       )
@@ -53,7 +51,7 @@ struct SettingsView: View {
   var body: some View {
     VStack(spacing: 0) {
       HomeNavigationBar(
-        title: "Settings",
+        title: "Setting",
         foregroundColor: .grayscaleBlack
       )
       Divider(weight: .normal, isVertical: false)
@@ -82,19 +80,6 @@ struct SettingsView: View {
       .padding(.bottom, 89) // 탭바 높이 만큼 패딩
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .alert(
-      "알림 권한이 필요합니다",
-      isPresented: $viewModel.showMatchNotificationAlert
-    ) {
-      Button("설정") {
-        viewModel.handleAction(.openSettings)
-      }
-      Button("취소") {
-        viewModel.handleAction(.matchingNotificationToggled(false))
-      }
-    } message: {
-      Text("\"매칭 알림\" 기능을 사용하려면\n[설정]-[피스]-[알림]을 허용해주세요.")
-    }
     .alert(
       "알림 권한이 필요합니다",
       isPresented: $viewModel.showNotificationAlert
@@ -149,10 +134,6 @@ struct SettingsView: View {
     case .notification:
       SettingsNotificationSettingSectionView(
         title: section.title,
-        isMatchingNotificationOn: Binding(
-          get: { viewModel.isMatchNotificationEnable },
-          set: { isEnable in viewModel.handleAction(.matchingNotificationToggled(isEnable)) }
-        ),
         isPushNotificationOn: Binding(
           get: { viewModel.isNotificationEnabled },
           set: { isEnable in viewModel.handleAction(.pushNotificationToggled(isEnable)) }

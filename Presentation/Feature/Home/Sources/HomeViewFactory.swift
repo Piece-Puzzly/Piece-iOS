@@ -31,7 +31,6 @@ public struct HomeViewFactory {
     blockContactsUseCase: BlockContactsUseCase,
     getContactsSyncTimeUseCase: GetContactsSyncTimeUseCase,
     putSettingsNotificationUseCase: PutSettingsNotificationUseCase,
-    putSettingsMatchNotificationUseCase: PutSettingsMatchNotificationUseCase,
     putSettingsBlockAcquaintanceUseCase: PutSettingsBlockAcquaintanceUseCase,
     patchLogoutUseCase: PatchLogoutUseCase
   ) -> some View {
@@ -56,7 +55,6 @@ public struct HomeViewFactory {
       blockContactsUseCase: blockContactsUseCase,
       getContactsSyncTimeUseCase: getContactsSyncTimeUseCase,
       putSettingsNotificationUseCase: putSettingsNotificationUseCase,
-      putSettingsMatchNotificationUseCase: putSettingsMatchNotificationUseCase,
       putSettingsBlockAcquaintanceUseCase: putSettingsBlockAcquaintanceUseCase,
       patchLogoutUseCase: patchLogoutUseCase
     )

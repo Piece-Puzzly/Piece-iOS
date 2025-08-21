@@ -12,7 +12,6 @@ import LocalStorage
 public enum SettingsEndpoint: TargetType {
   case settingsInfo
   case notification(SettingsNotificationRequestDTO)
-  case matchNotification(SettingsMatchNotificationRequestDTO)
   case blockAcquaintance(SettingsBlockAcquaintanceRequestDTO)
   case fetchBlockContactsSyncTime
   case patchLogout
@@ -22,11 +21,6 @@ public enum SettingsEndpoint: TargetType {
     case .settingsInfo:
       [NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")]
     case .notification:
-      [
-        NetworkHeader.contentType: NetworkHeader.applicationJson,
-        NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
-      ]
-    case .matchNotification:
       [
         NetworkHeader.contentType: NetworkHeader.applicationJson,
         NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
@@ -47,7 +41,6 @@ public enum SettingsEndpoint: TargetType {
     switch self {
     case .settingsInfo: .get
     case .notification: .put
-    case .matchNotification: .put
     case .blockAcquaintance: .put
     case .fetchBlockContactsSyncTime: .get
     case .patchLogout: .patch
@@ -58,7 +51,6 @@ public enum SettingsEndpoint: TargetType {
     switch self {
     case .settingsInfo: "api/settings/infos"
     case .notification: "api/settings/notification"
-    case .matchNotification: "api/settings/notification/match"
     case .blockAcquaintance: "api/settings/block/acquaintance"
     case .fetchBlockContactsSyncTime: "api/settings/blocks/contacts/sync-time"
     case .patchLogout: "api/logout"
@@ -69,7 +61,6 @@ public enum SettingsEndpoint: TargetType {
     switch self {
     case .settingsInfo: .plain
     case let .notification(dto): .body(dto)
-    case let .matchNotification(dto): .body(dto)
     case let .blockAcquaintance(dto): .body(dto)
     case .fetchBlockContactsSyncTime: .plain
     case .patchLogout: .plain
