@@ -59,6 +59,9 @@ struct ReportUserView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .toolbar(.hidden)
+    .onTapGesture {
+      isEditingReportReason = false
+    }
     .pcAlert(isPresented: $viewModel.showBlockAlert) {
       AlertView(
         title: {
@@ -123,7 +126,12 @@ struct ReportUserView: View {
     HStack(alignment: .center, spacing: 12) {
       PCRadio(isSelected: Binding(
         get: { viewModel.selectedReportReason == reason },
-        set: { viewModel.handleAction(.didSelectReportReason($0 ? reason : nil)) }
+        set: {
+          if $0 {
+            viewModel.handleAction(.didSelectReportReason($0 ? reason : nil))
+            isEditingReportReason = false
+          }
+        }
       ))
       .padding(1)
       
