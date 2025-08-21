@@ -213,10 +213,6 @@ public struct UseCaseFactory {
     PutSettingsNotificationUseCaseImpl(repository: repository)
   }
   
-  public static func createPutSettingsMatchNotificationUseCase(repository: SettingsRepositoryInterface) -> PutSettingsMatchNotificationUseCase {
-    PutSettingsMatchNotificationUseCaseImpl(repository: repository)
-  }
-  
   public static func createPutSettingsBlockAcquaintanceUseCase(repository: SettingsRepositoryInterface) -> PutSettingsBlockAcquaintanceUseCase {
     PutSettingsBlockAcquaintanceUseCaseImpl(repository: repository)
   }

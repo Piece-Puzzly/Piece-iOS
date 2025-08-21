@@ -17,7 +17,6 @@ import Router
 final class SettingsViewModel {
   enum Action {
     case onAppear
-    case matchingNotificationToggled(Bool)
     case pushNotificationToggled(Bool)
     case blockContactsToggled(Bool)
     case synchronizeContactsButtonTapped
@@ -31,12 +30,10 @@ final class SettingsViewModel {
   
   var sections = [SettingSection]()
   var showLogoutAlert: Bool = false
-  var showMatchNotificationAlert: Bool = false
   var showNotificationAlert: Bool = false
   var showAcquaintanceBlockAlert: Bool = false
   
   // MARK: - 서버 권한 상태 (Server State)
-  private var serverMatchNotificationEnabled = false
   private var serverNotificationEnabled = false
   private var serverAcquaintanceBlockEnabled = false
   
@@ -44,11 +41,6 @@ final class SettingsViewModel {
   private var deviceNotificationPermissionGranted = false
   private var deviceContactsPermissionGranted = false
   
-  /// 매칭 알림 = 서버에서 매칭알림 [true] && 디바이스 알림 권한 [true]
-  var isMatchNotificationEnable: Bool {
-    return serverMatchNotificationEnabled && deviceNotificationPermissionGranted
-  }
-
   /// 푸쉬 알림 = 서버에서 푸쉬알림 [true] && 디바이스 알림 권한 [true]
   var isNotificationEnabled: Bool {
     return serverNotificationEnabled && deviceNotificationPermissionGranted
@@ -86,7 +78,6 @@ final class SettingsViewModel {
   private let blockContactsUseCase: BlockContactsUseCase
   private let getContactsSyncTimeUseCase: GetContactsSyncTimeUseCase
   private let putSettingsNotificationUseCase: PutSettingsNotificationUseCase
-  private let putSettingsMatchNotificationUseCase: PutSettingsMatchNotificationUseCase
   private let putSettingsBlockAcquaintanceUseCase: PutSettingsBlockAcquaintanceUseCase
   private let patchLogoutUseCase: PatchLogoutUseCase
   private(set) var tappedTermItem: SettingsTermsItem?
@@ -104,7 +95,6 @@ final class SettingsViewModel {
     blockContactsUseCase: BlockContactsUseCase,
     getContactsSyncTimeUseCase: GetContactsSyncTimeUseCase,
     putSettingsNotificationUseCase: PutSettingsNotificationUseCase,
-    putSettingsMatchNotificationUseCase: PutSettingsMatchNotificationUseCase,
     putSettingsBlockAcquaintanceUseCase: PutSettingsBlockAcquaintanceUseCase,
     patchLogoutUseCase: PatchLogoutUseCase
   ) {
@@ -119,7 +109,6 @@ final class SettingsViewModel {
     self.blockContactsUseCase = blockContactsUseCase
     self.getContactsSyncTimeUseCase = getContactsSyncTimeUseCase
     self.putSettingsNotificationUseCase = putSettingsNotificationUseCase
-    self.putSettingsMatchNotificationUseCase = putSettingsMatchNotificationUseCase
     self.putSettingsBlockAcquaintanceUseCase = putSettingsBlockAcquaintanceUseCase
     self.patchLogoutUseCase = patchLogoutUseCase
     addObserver()
@@ -140,11 +129,6 @@ final class SettingsViewModel {
         .init(id: .information),
         .init(id: .etc),
       ]
-      
-    case let .matchingNotificationToggled(isEnabled):
-      Task {
-        await matchingNotificationToggled(isEnabled: isEnabled)
-      }
       
     case let .pushNotificationToggled(isEnabled):
       Task {
@@ -198,7 +182,7 @@ final class SettingsViewModel {
       await checkNotificationPermission()
       await checkContactsPermission()
       await changeNotificationRegisterStatusUseCase.execute(
-        isEnabled: deviceNotificationPermissionGranted && (serverNotificationEnabled || serverMatchNotificationEnabled)
+        isEnabled: deviceNotificationPermissionGranted && serverNotificationEnabled
       )
     }
   }
@@ -206,12 +190,12 @@ final class SettingsViewModel {
   private func onAppear() {
     fetchAppVersion()                       /// App 버전 정보 확인 - (ex. v1.0.1)
     Task {
-      await fetchSettingsInfo()               /// (서버에서 받아온) "알림 섹션" - (["매칭 알림", "푸쉬 알림", "아는 사람 차단"]) Bool 값
+      await fetchSettingsInfo()               /// (서버에서 받아온) "알림 섹션" - (["매칭 알림(Deprecated)", "푸쉬 알림", "아는 사람 차단"]) Bool 값
       await fetchTerms()                    /// (서버에서 받아온) "안내 섹션" - (["서비스 이용약관", " 개인정보 처리방침"])
-      await checkNotificationPermission()   /// (디바이스의) ["매칭 알림", "푸쉬 알림"] (알림)권한 관련 비즈니스 로직
+      await checkNotificationPermission()   /// (디바이스의) ["매칭 알림(Deprecated)", "푸쉬 알림"] (알림)권한 관련 비즈니스 로직
       await checkContactsPermission()       /// (디바이스의)  ["아는 사람 차단"] (연락처)권한 관련 비즈니스 로직
       await changeNotificationRegisterStatusUseCase.execute(
-        isEnabled: deviceNotificationPermissionGranted && (serverNotificationEnabled || serverMatchNotificationEnabled)
+        isEnabled: deviceNotificationPermissionGranted && serverNotificationEnabled
       )
     }
   }
@@ -219,12 +203,10 @@ final class SettingsViewModel {
   private func fetchSettingsInfo() async {
     do {
       let settingsInfo = try await getSettingsInfoUseCase.execute()
-      serverMatchNotificationEnabled = settingsInfo.isMatchNotificationEnabled
       serverNotificationEnabled = settingsInfo.isNotificationEnabled
       serverAcquaintanceBlockEnabled = settingsInfo.isAcquaintanceBlockEnabled
       print(">>> DEBUG: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
       print(">>> DEBUG: 🔧 Settings Info Loaded:")
-      print(">>> DEBUG: ┌ 매칭 알림: \(serverMatchNotificationEnabled ? "✅" : "❌")")
       print(">>> DEBUG: ┌ 푸시 알림: \(serverNotificationEnabled ? "✅" : "❌")")
       print(">>> DEBUG: └ 아는 사람 차단: \(serverAcquaintanceBlockEnabled ? "✅" : "❌")")
       print(">>> DEBUG: ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
@@ -281,40 +263,6 @@ final class SettingsViewModel {
     }
   }
 
-  private func matchingNotificationToggled(isEnabled: Bool) async {
-    if isEnabled {
-      do {
-      let authorizationStatus = await checkNotificationPermissionUseCase.execute()
-        switch authorizationStatus {
-        case .denied:
-          self.showMatchNotificationAlert = true
-        case .notDetermined, .ephemeral:
-          self.deviceNotificationPermissionGranted = try await requestNotificationPermissionUseCase.execute()
-        case .authorized, .provisional:
-          self.deviceNotificationPermissionGranted = true
-        @unknown default:
-          self.deviceNotificationPermissionGranted = false
-        }
-      } catch {
-        print(error)
-        self.deviceNotificationPermissionGranted = false
-      }
-    }
-    
-    do {
-      _ = try await putSettingsMatchNotificationUseCase.execute(isEnabled: isEnabled)
-    } catch {
-      print(error)
-    }
-
-    Task {
-      await fetchSettingsInfo()
-      await changeNotificationRegisterStatusUseCase.execute(
-        isEnabled: deviceNotificationPermissionGranted && (isEnabled || serverNotificationEnabled)
-      )
-    }
-  }
-  
   private func pushNotificationToggled(isEnabled: Bool) async {
     if isEnabled {
       do {
@@ -344,7 +292,7 @@ final class SettingsViewModel {
     Task {
       await fetchSettingsInfo()
       await changeNotificationRegisterStatusUseCase.execute(
-        isEnabled: deviceNotificationPermissionGranted && (isEnabled || serverMatchNotificationEnabled)
+        isEnabled: deviceNotificationPermissionGranted && isEnabled
       )
     }
   }

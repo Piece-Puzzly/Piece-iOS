@@ -35,7 +35,6 @@ struct HomeView: View {
     blockContactsUseCase: BlockContactsUseCase,
     getContactsSyncTimeUseCase: GetContactsSyncTimeUseCase,
     putSettingsNotificationUseCase: PutSettingsNotificationUseCase,
-    putSettingsMatchNotificationUseCase: PutSettingsMatchNotificationUseCase,
     putSettingsBlockAcquaintanceUseCase: PutSettingsBlockAcquaintanceUseCase,
     patchLogoutUseCase: PatchLogoutUseCase
   ) {
@@ -58,7 +57,6 @@ struct HomeView: View {
         blockContactsUseCase: blockContactsUseCase,
         getContactsSyncTimeUseCase: getContactsSyncTimeUseCase,
         putSettingsNotificationUseCase: putSettingsNotificationUseCase,
-        putSettingsMatchNotificationUseCase: putSettingsMatchNotificationUseCase,
         putSettingsBlockAcquaintanceUseCase: putSettingsBlockAcquaintanceUseCase,
         patchLogoutUseCase: patchLogoutUseCase
       )
@@ -113,7 +111,6 @@ struct HomeView: View {
         blockContactsUseCase: viewModel.blockContactsUseCase,
         getContactsSyncTimeUseCase: viewModel.getContactsSyncTimeUseCase,
         putSettingsNotificationUseCase: viewModel.putSettingsNotificationUseCase,
-        putSettingsMatchNotificationUseCase: viewModel.putSettingsMatchNotificationUseCase,
         putSettingsBlockAcquaintanceUseCase: viewModel.putSettingsBlockAcquaintanceUseCase,
         patchLogoutUseCase: viewModel.patchLogoutUseCase
       )

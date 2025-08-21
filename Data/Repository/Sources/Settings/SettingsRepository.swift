@@ -30,13 +30,6 @@ final class SettingsRepository: SettingsRepositoryInterface {
     return response.toDomain()
   }
   
-  func putSettingsMatchNotification(isEnabled: Bool) async throws -> VoidModel {
-    let requestDto = SettingsMatchNotificationRequestDTO(toggle: isEnabled)
-    let endpoint = SettingsEndpoint.matchNotification(requestDto)
-    let response: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
-    return response.toDomain()
-  }
-  
   func putSettingsBlockAcquaintance(isEnabled: Bool) async throws -> VoidModel {
     let requestDto = SettingsBlockAcquaintanceRequestDTO(toggle: isEnabled)
     let endpoint = SettingsEndpoint.blockAcquaintance(requestDto)

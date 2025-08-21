@@ -42,7 +42,6 @@ final class HomeViewModel {
     blockContactsUseCase: BlockContactsUseCase,
     getContactsSyncTimeUseCase: GetContactsSyncTimeUseCase,
     putSettingsNotificationUseCase: PutSettingsNotificationUseCase,
-    putSettingsMatchNotificationUseCase: PutSettingsMatchNotificationUseCase,
     putSettingsBlockAcquaintanceUseCase: PutSettingsBlockAcquaintanceUseCase,
     patchLogoutUseCase: PatchLogoutUseCase
   ) {
@@ -66,7 +65,6 @@ final class HomeViewModel {
     self.blockContactsUseCase = blockContactsUseCase
     self.getContactsSyncTimeUseCase = getContactsSyncTimeUseCase
     self.putSettingsNotificationUseCase = putSettingsNotificationUseCase
-    self.putSettingsMatchNotificationUseCase = putSettingsMatchNotificationUseCase
     self.putSettingsBlockAcquaintanceUseCase = putSettingsBlockAcquaintanceUseCase
     self.patchLogoutUseCase = patchLogoutUseCase
   }
@@ -91,7 +89,6 @@ final class HomeViewModel {
   let blockContactsUseCase: BlockContactsUseCase
   let getContactsSyncTimeUseCase: GetContactsSyncTimeUseCase
   let putSettingsNotificationUseCase: PutSettingsNotificationUseCase
-  let putSettingsMatchNotificationUseCase: PutSettingsMatchNotificationUseCase
   let putSettingsBlockAcquaintanceUseCase: PutSettingsBlockAcquaintanceUseCase
   let patchLogoutUseCase: PatchLogoutUseCase
   
