@@ -124,16 +124,8 @@ struct ReportUserView: View {
   
   private func reportItem(reason: ReportReason) -> some View {
     HStack(alignment: .center, spacing: 12) {
-      PCRadio(isSelected: Binding(
-        get: { viewModel.selectedReportReason == reason },
-        set: {
-          if $0 {
-            viewModel.handleAction(.didSelectReportReason($0 ? reason : nil))
-            isEditingReportReason = false
-          }
-        }
-      ))
-      .padding(1)
+      PCRadio(isSelected: .constant(viewModel.selectedReportReason == reason))
+        .padding(1)
       
       Text(reason.rawValue)
         .pretendard(.body_M_R)
@@ -141,6 +133,11 @@ struct ReportUserView: View {
     }
     .frame(maxWidth: .infinity, alignment: .leading)
     .padding(.vertical, 14)
+    .contentShape(Rectangle())
+    .onTapGesture {
+      viewModel.handleAction(.didSelectReportReason(reason))
+      isEditingReportReason = false
+    }
   }
 
   private var reportReasonEditor: some View {
