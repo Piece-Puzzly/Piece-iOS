@@ -12,9 +12,13 @@ import UseCases
 
 struct ReportUserView: View {
   @State private var viewModel: ReportUserViewModel
+  @State private var keyboardHeight: CGFloat = 0
   @FocusState private var isEditingReportReason: Bool
   @Environment(Router.self) private var router
   @Namespace private var textEditorId
+  
+  private let keyboardWillShowNotificationPublisher = NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
+  private let keyboardWillHideNotificationPublisher = NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)
   
   init(nickname: String, reportUserUseCase: ReportUserUseCase) {
     _viewModel = .init(
@@ -36,16 +40,15 @@ struct ReportUserView: View {
             .frame(height: 40)
           reportReasons
           reportReasonEditor
+          Spacer()
+            .frame(height: keyboardHeight)
         }
         .scrollIndicators(.hidden)
-        .onChange(of: isEditingReportReason) { _, newValue in
-          guard newValue else { return }
-          Task {
-            try? await Task.sleep(for: .milliseconds(50))
-            withAnimation {
-              proxy.scrollTo(textEditorId, anchor: .top)
-            }
-          }
+        .onReceive(keyboardWillShowNotificationPublisher) { notification in
+          handleKeyboardWillShow(notification, proxy: proxy)
+        }
+        .onReceive(keyboardWillHideNotificationPublisher) { _ in
+          handleKeyboardWillHide()
         }
         .padding(.horizontal, 20)
       }
@@ -107,7 +110,12 @@ struct ReportUserView: View {
   
   private var reportReasons: some View {
     ForEach(viewModel.reportReasons) { reason in
-      reportItem(reason: reason)
+      if reason == .other {
+        reportItem(reason: reason)
+          .id(textEditorId)
+      } else {
+        reportItem(reason: reason)
+      }
     }
   }
   
@@ -117,7 +125,6 @@ struct ReportUserView: View {
         get: { viewModel.selectedReportReason == reason },
         set: { viewModel.handleAction(.didSelectReportReason($0 ? reason : nil)) }
       ))
-      .animation(.easeInOut, value: viewModel.selectedReportReason)
       .padding(1)
       
       Text(reason.rawValue)
@@ -164,7 +171,6 @@ struct ReportUserView: View {
       RoundedRectangle(cornerRadius: 8)
         .foregroundStyle(Color.grayscaleLight3)
     )
-    .id(textEditorId)
     .opacity(viewModel.showReportReasonEditor ? 1 : 0)
   }
   
@@ -175,6 +181,26 @@ struct ReportUserView: View {
       width: .maxWidth
     ) {
       viewModel.handleAction(.didTapNextButton)
+    }
+  }
+}
+
+// MARK: Keyboard Notification Func
+extension ReportUserView {
+  private func handleKeyboardWillShow(_ notification: Notification, proxy: ScrollViewProxy) {
+    guard let userInfo = notification.userInfo,
+          let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+          let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
+    let keyBoardAnimation = Animation.easeInOut(duration: duration)
+    self.keyboardHeight = keyboardFrame.height
+    withAnimation(keyBoardAnimation) {
+      proxy.scrollTo(textEditorId, anchor: .top)
+    }
+  }
+  
+  private func handleKeyboardWillHide() {
+    withAnimation {
+      self.keyboardHeight = 0
     }
   }
 }
