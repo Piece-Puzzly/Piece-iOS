@@ -186,6 +186,7 @@ struct ReportUserView: View {
       buttonText: "다음",
       width: .maxWidth
     ) {
+      isEditingReportReason = false
       viewModel.handleAction(.didTapNextButton)
     }
   }
