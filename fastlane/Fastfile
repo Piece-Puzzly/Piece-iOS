@@ -78,9 +78,11 @@ platform :ios do
 
   desc "앱 빌드"
   private_lane :build do |options|
-    provisioning = options[:is_deploy] ? "puzzly_distribution" : "puzzly_adhoc"
+    # provisioning = options[:is_deploy] ? "Puzzly_Distribution" : "Puzzly_Adhoc"
+    provisioning = "Puzzly_Distribution"
 
-    export_method = options[:is_deploy] ? "app-store" : "ad-hoc"
+    # export_method = options[:is_deploy] ? "app-store" : "ad-hoc"
+    export_method = "app-store"
     type = options[:is_deploy] ? "release" : "beta"
 
     # note = File.read("./metadata/ko/release_notes.txt")
@@ -167,32 +169,3 @@ platform :ios do
   end
 
 end
-
-
-
-
-
-
-
-
-
-  # desc "Description of what the lane does"
-  # lane :custom_lane do
-  #   # discord_webhook_url = ENV['DISCORD_URL']
-  #   # title = "푸시테스트"
-  #   # message = "Hello, World!"
-
-  #   version = lane_context[:VERSION_NUMBER]
-  #   build = lane_context[:BUILD_NUMBER]
-
-  #   discord_notifier( # ✅ 업로드 성공 시 디스코드 알림 전송
-  #     webhook_url: ENV['DISCORD_URL'],
-  #     title: "🚀 새로운 빌드 배포 완료!",
-  #     description: """
-  #       **버전**: #{version}
-  #       **빌드**: #{build}
-  #       **상태**: TestFlight 업로드 성공 ✅\n
-  #       새로운 빌드가 준비되었습니다! 확인해주세요.
-  #     """
-  #   )
-  # end
