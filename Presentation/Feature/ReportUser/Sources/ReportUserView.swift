@@ -43,6 +43,7 @@ struct ReportUserView: View {
           Spacer()
             .frame(height: keyboardHeight)
         }
+        .scrollDismissesKeyboard(.interactively)
         .scrollIndicators(.hidden)
         .onReceive(keyboardWillShowNotificationPublisher) { notification in
           handleKeyboardWillShow(notification, proxy: proxy)
