@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-public struct AlertView<Title: View>: View {
+public struct AlertView<Title: View, Message: View>: View {
   public init(
     icon: Image? = nil,
     @ViewBuilder title: () -> Title,
-    message: String,
+    @ViewBuilder message: () -> Message,
     firstButtonText: String? = nil,
     secondButtonText: String,
     firstButtonAction: (() -> Void)? = nil,
@@ -19,7 +19,7 @@ public struct AlertView<Title: View>: View {
   ) {
     self.icon = icon
     self.title = title()
-    self.message = message
+    self.message = message()
     self.firstButtonText = firstButtonText
     self.secondButtonText = secondButtonText
     self.firstButtonAction = firstButtonAction
@@ -27,7 +27,7 @@ public struct AlertView<Title: View>: View {
   }
   
   public var body: some View {
-    VStack {
+    VStack(spacing: 0) {
       AlertTopView(
         icon: icon,
         title: title,
@@ -56,14 +56,14 @@ public struct AlertView<Title: View>: View {
   
   private let icon: Image?
   private let title: Title
-  private let message: String
+  private let message: Message
   private let firstButtonText: String?
   private let secondButtonText: String
   private let firstButtonAction: (() -> Void)?
   private let secondButtonAction: () -> Void
 }
 
-private struct AlertTopView<Title: View>: View {
+private struct AlertTopView<Title: View, Message: View>: View {
   var body: some View {
     VStack(spacing: 8) {
       if let icon {
@@ -71,7 +71,7 @@ private struct AlertTopView<Title: View>: View {
       }
       title
         .pretendard(.heading_M_SB)
-      Text(message)
+      message
         .pretendard(.body_S_M)
         .foregroundColor(.grayscaleDark2)
     }
@@ -83,7 +83,7 @@ private struct AlertTopView<Title: View>: View {
   
   let icon: Image?
   let title: Title
-  let message: String
+  let message: Message
 }
 
 private struct AlertBottomView: View {
@@ -118,6 +118,29 @@ private struct AlertBottomView: View {
   let secondButtonText: String
   let firstButtonAction: (() -> Void)?
   let secondButtonAction: () -> Void
+}
+
+// TODO: - 추후 이거 제거하고 모든 AlertView를 <Text, Text>에 맞게 이니셜라이저 고쳐야함
+extension AlertView where Message == Text {
+  public init(
+    icon: Image? = nil,
+    @ViewBuilder title: () -> Title,
+    message: String,
+    firstButtonText: String? = nil,
+    secondButtonText: String,
+    firstButtonAction: (() -> Void)? = nil,
+    secondButtonAction: @escaping () -> Void
+  ) {
+    self.init(
+      icon: icon,
+      title: title,
+      message: { Text(message) },
+      firstButtonText: firstButtonText,
+      secondButtonText: secondButtonText,
+      firstButtonAction: firstButtonAction,
+      secondButtonAction: secondButtonAction
+    )
+  }
 }
 
 #Preview {

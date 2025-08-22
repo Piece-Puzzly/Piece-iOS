@@ -131,7 +131,7 @@ struct EditValueTalkView: View {
     }
   }
   
-  private var valueTalkExitAlert: AlertView<Text> {
+  private var valueTalkExitAlert: AlertView<Text, Text> {
     AlertView(
       icon: DesignSystemAsset.Icons.notice40.swiftUIImage,
       title: { Text("작성한 내용이 사라져요!") },
