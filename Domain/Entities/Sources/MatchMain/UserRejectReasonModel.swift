@@ -8,12 +8,13 @@
 import SwiftUI
 
 public struct UserRejectReasonModel {
-  public let profileStatus: String
   public let reasonImage: Bool
   public let reasonValues: Bool
   
-  public init(profileStatus: String, reasonImage: Bool, reasonValues: Bool) {
-    self.profileStatus = profileStatus
+  public init(
+    reasonImage: Bool,
+    reasonValues: Bool
+  ) {
     self.reasonImage = reasonImage
     self.reasonValues = reasonValues
   }

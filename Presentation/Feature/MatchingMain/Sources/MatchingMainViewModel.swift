@@ -74,12 +74,6 @@ final class MatchingMainViewModel {
   var isProfileRejectAlertPresented: Bool {
     rejectReasonImage || rejectReasonValues
   }
-  var profileRejectAlertMessage: String {
-    var messages: [String] = []
-    if rejectReasonImage { messages.append("얼굴이 잘 나온 사진으로 변경해주세요") }
-    if rejectReasonValues { messages.append("가치관 talk을 좀 더 정성스럽게 써주세요") }
-    return messages.joined(separator: "\n")
-  }
   
   private(set) var name: String = ""
   private(set) var description: String = ""
@@ -88,7 +82,6 @@ final class MatchingMainViewModel {
   private(set) var job: String = ""
   private(set) var tags: [String] = []
   private(set) var error: Error?
-  private(set) var profileStatus: String = ""
   private(set) var rejectReasonImage: Bool = false
   private(set) var rejectReasonValues: Bool = false
   private let getUserInfoUseCase: GetUserInfoUseCase
@@ -249,12 +242,10 @@ final class MatchingMainViewModel {
     }
   }
   
-  
   private func fetchUserRejectState() async {
     do {
       let userRejectState = try await getUserRejectUseCase.execute()
       
-      profileStatus = userRejectState.profileStatus
       rejectReasonImage = userRejectState.reasonImage
       rejectReasonValues = userRejectState.reasonValues
     } catch {
