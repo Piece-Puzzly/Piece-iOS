@@ -85,12 +85,12 @@ struct MatchingMainView: View {
         )
       }
     }
-    .pcAlert(isPresented: $matchingMainViewModel.isMatchAcceptAlertPresented) {
+    .pcAlert(isPresented: .constant(matchingMainViewModel.isProfileRejectAlertPresented)) {
       AlertView(
-        icon: DesignSystemAsset.Icons.matchingModeCheck20.swiftUIImage,
+        icon: DesignSystemAsset.Icons.notice40.swiftUIImage,
         title: { Text("프로필을 수정해주세요") },
-        message: matchingMainViewModel.profileRejectAlertMessage,
-        secondButtonText: "수정하기",
+        message: { profileRejectAlertMessageView },
+        secondButtonText: "프로필 수정하기",
         secondButtonAction: { router.setRoute(.createProfile)}
       )
     }
@@ -282,6 +282,21 @@ struct MatchingMainView: View {
         }
       }
     )
+  }
+  
+  private var profileRejectAlertMessageView: some View {
+    VStack(spacing: 4) {
+      if matchingMainViewModel.rejectReasonImage {
+        Text("얼굴이 잘 보이는 사진").foregroundColor(.subDefault) + Text("으로 변경해주세요")
+      }
+      if matchingMainViewModel.rejectReasonValues {
+        Text("가치관 talk을 좀 더 ") + Text("정성스럽게 ").foregroundStyle(.subDefault) + Text("써주세요")
+      }
+    }
+    .foregroundColor(.grayscaleDark3)
+    .padding(.vertical, 12)
+    .frame(maxWidth: .infinity)
+    .background(Color.grayscaleLight3)
   }
 }
 //
