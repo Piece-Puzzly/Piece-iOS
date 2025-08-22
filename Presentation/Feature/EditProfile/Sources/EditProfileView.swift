@@ -514,7 +514,7 @@ struct EditProfileView: View {
     }
   }
   
-  private var profileExitAlert: AlertView<Text> {
+  private var profileExitAlert: AlertView<Text, Text> {
     AlertView(
       icon: DesignSystemAsset.Icons.notice40.swiftUIImage,
       title: { Text("작성한 내용이 사라져요!") },
@@ -526,7 +526,7 @@ struct EditProfileView: View {
     )
   }
 
-  private var imageReexaminationAlert: AlertView<Text> {
+  private var imageReexaminationAlert: AlertView<Text, Text> {
     AlertView(
       icon: DesignSystemAsset.Icons.notice40.swiftUIImage,
       title: { Text("수정된 사진은 심사가 필요해요!") },

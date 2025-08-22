@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-public struct AlertModifier<Title: View>: ViewModifier {
+public struct AlertModifier<Title: View, Message: View>: ViewModifier {
   @Binding var isPresented: Bool
   
-  let alert: AlertView<Title>
+  let alert: AlertView<Title, Message>
   
   public func body(content: Content) -> some View {
     content
@@ -24,9 +24,9 @@ public struct AlertModifier<Title: View>: ViewModifier {
 }
 
 public extension View {
-  func pcAlert<Title: View>(
+  func pcAlert<Title: View, Message: View>(
     isPresented: Binding<Bool>,
-    alert: @escaping () -> AlertView<Title>
+    alert: @escaping () -> AlertView<Title, Message>
   ) -> some View {
     return modifier(AlertModifier(isPresented: isPresented, alert: alert()))
   }
