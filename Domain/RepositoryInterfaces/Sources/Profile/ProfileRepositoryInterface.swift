@@ -10,6 +10,7 @@ import SwiftUI
 
 public protocol ProfileRepositoryInterface {
   func postProfile(_ profile: ProfileModel) async throws -> PostProfileResultModel
+  func putProfile(_ profile: ProfileModel) async throws -> VoidModel
   func getProfileBasic() async throws -> ProfileBasicModel
   func updateProfileBasic(_ profile: ProfileBasicModel) async throws -> ProfileBasicModel
   func getProfileValueTalks() async throws -> [ProfileValueTalkModel]

@@ -64,6 +64,22 @@ public struct SignUpViewFactory {
     )
   }
   
+  public static func createEditRejectedProfileContainerView(
+    getProfileBasicUseCase: GetProfileBasicUseCase,
+    checkNicknameUseCase: CheckNicknameUseCase,
+    uploadProfileImageUseCase: UploadProfileImageUseCase,
+    getProfileValueTalksUseCase: GetProfileValueTalksUseCase,
+    getProfileValuePicksUseCase: GetProfileValuePicksUseCase
+  ) -> some View {
+    CreateEditRejectedProfileContainerView(
+      getProfileBasicUseCase: getProfileBasicUseCase,
+      checkNicknameUseCase: checkNicknameUseCase,
+      uploadProfileImageUseCase: uploadProfileImageUseCase,
+      getProfileValueTalksUseCase: getProfileValueTalksUseCase,
+      getProfileValuePicksUseCase: getProfileValuePicksUseCase
+    )
+  }
+  
   public static func createWaitingAISummaryView(
     profile: ProfileModel,
     createProfileUseCase: CreateProfileUseCase
@@ -74,7 +90,21 @@ public struct SignUpViewFactory {
     )
   }
   
+  public static func createEditRejectedWaitingAISummaryView(
+    profile: ProfileModel,
+    putProfileUseCase: PutProfileUseCase
+  ) -> some View {
+    EditRejectedWaitingAISummaryView(
+      profile: profile,
+      putProfileUseCase: putProfileUseCase
+    )
+  }
+  
   public static func createCompleteCreateProfileView() -> some View {
     CompleteCreateProfileView()
+  }
+  
+  public static func createCompleteEditRejectedProfileView() -> some View {
+    CompleteEditRejectedProfileView()
   }
 }

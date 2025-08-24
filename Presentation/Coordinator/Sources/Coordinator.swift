@@ -245,6 +245,24 @@ public struct Coordinator {
         getValuePicksUseCase: getValuePicksUseCase
       )
       
+    case .editRejectedProfile:
+      /// 전체 프로필
+      let profileRepository = repositoryFactory.createProfileRepository()
+      let checkNicknameRepositoty = repositoryFactory.createCheckNicknameRepository()
+      let getProfileBasicUseCase = UseCaseFactory.createGetProfileUseCase(repository: profileRepository)
+      let checkNicknameUseCase = UseCaseFactory.createCheckNicknameUseCase(repository: checkNicknameRepositoty)
+      let uploadProfileImageUseCase = UseCaseFactory.createUploadProfileImageUseCase(repository: profileRepository)
+      let getProfileValueTalksUseCase = UseCaseFactory.createGetProfileValueTalksUseCase(repository: profileRepository)
+      let getProfileValuePicksUseCase = UseCaseFactory.createGetProfileValuePicksUseCase(repository: profileRepository)
+
+      SignUpViewFactory.createEditRejectedProfileContainerView(
+        getProfileBasicUseCase: getProfileBasicUseCase,
+        checkNicknameUseCase: checkNicknameUseCase,
+        uploadProfileImageUseCase: uploadProfileImageUseCase,
+        getProfileValueTalksUseCase: getProfileValueTalksUseCase,
+        getProfileValuePicksUseCase: getProfileValuePicksUseCase
+      )
+      
     case let .waitingAISummary(profile):
       let profileRepository = repositoryFactory.createProfileRepository()
       let createProfileUseCase = UseCaseFactory.createProfileUseCase(repository: profileRepository)
@@ -253,8 +271,19 @@ public struct Coordinator {
         createProfileUseCase: createProfileUseCase
       )
       
+    case let .editRejectedWaitingAISummary(profile: profile):
+      let profileRepository = repositoryFactory.createProfileRepository()
+      let putProfileUseCase = UseCaseFactory.createEditRejectedProfileUseCase(repository: profileRepository)
+      SignUpViewFactory.createEditRejectedWaitingAISummaryView(
+        profile: profile,
+        putProfileUseCase: putProfileUseCase
+      )
+      
     case .completeCreateProfile:
       SignUpViewFactory.createCompleteCreateProfileView()
+      
+    case .completeEditRejectedProfile:
+      SignUpViewFactory.createCompleteEditRejectedProfileView()
       
       // MARK: - Profile
     case .editValueTalk:

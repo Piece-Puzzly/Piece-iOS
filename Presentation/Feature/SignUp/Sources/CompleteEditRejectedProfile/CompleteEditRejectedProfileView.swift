@@ -1,21 +1,21 @@
 //
-//  CompleteCreateProfileView.swift
+//  CompleteEditRejectedProfileView.swift
 //  SignUp
 //
-//  Created by summercat on 2/16/25.
+//  Created by 홍승완 on 8/24/25.
 //
 
 import DesignSystem
 import Router
 import SwiftUI
 
-struct CompleteCreateProfileView: View {
+struct CompleteEditRejectedProfileView: View {
   @Environment(Router.self) private var router
   
   var body: some View {
     VStack(alignment: .center) {
       Spacer()
-        .frame(height: 60) // NavigationBar만큼 여백
+        .frame(height: 60)
       titleArea
       Spacer()
         .frame(maxHeight: .infinity)
@@ -43,7 +43,7 @@ struct CompleteCreateProfileView: View {
   }
   
   private var title: some View {
-    Text("프로필 생성을 완료했어요!")
+    Text("프로필 수정을 완료했어요!")
       .pretendard(.heading_L_SB)
       .foregroundStyle(.grayscaleBlack)
   }
@@ -75,7 +75,7 @@ struct CompleteCreateProfileView: View {
 }
 
 #Preview {
-  CompleteCreateProfileView()
+  CompleteEditRejectedProfileView()
     .environment(Router())
 }
 

@@ -20,7 +20,7 @@ final class ProfileRepository: ProfileRepositoryInterface {
   }
   
   func postProfile(_ profile: ProfileModel) async throws -> PostProfileResultModel {
-    let dto = profile.toDto()
+    let dto: PostProfileRequestDTO = profile.toDto()
     let endpoint = ProfileEndpoint.postProfile(dto)
     let responseDto: PostProfileResponseDTO = try await networkService.request(endpoint: endpoint)
     PCKeychainManager.shared.save(.accessToken, value: responseDto.accessToken)
@@ -30,6 +30,14 @@ final class ProfileRepository: ProfileRepositoryInterface {
     return responseDto.toDomain()
   }
   
+  func putProfile(_ profile: ProfileModel) async throws -> VoidModel {
+    let dto: PutProfileRequestDTO = profile.toDto()
+    let endpoint = ProfileEndpoint.putProfile(dto)
+    let responseDto: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
+    
+    return responseDto.toDomain()
+  }
+
   func getProfileBasic() async throws -> ProfileBasicModel {
     let endpoint = ProfileEndpoint.getProfileBasic
     let responseDto: ProfileBasicResponseDTO = try await networkService.request(endpoint: endpoint)

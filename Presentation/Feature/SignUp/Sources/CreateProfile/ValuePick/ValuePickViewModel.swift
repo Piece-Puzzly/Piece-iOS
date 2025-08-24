@@ -13,17 +13,17 @@ import Observation
 final class ValuePickViewModel {
   enum Action {
     case didTapBottomButton
-    case updateValuePick(ProfileValuePickModel)
+    case updateValuePick(ValuePickModel)
   }
   
   let profileCreator: ProfileCreator
   var showToast: Bool = false
-  var valuePicks: [ProfileValuePickModel] = []
+  var valuePicks: [ValuePickModel] = []
   private(set) var isNextButtonEnabled: Bool = false
   
   init(
     profileCreator: ProfileCreator,
-    initialValuePicks: [ProfileValuePickModel]
+    initialValuePicks: [ValuePickModel]
   ) {
     self.profileCreator = profileCreator
     

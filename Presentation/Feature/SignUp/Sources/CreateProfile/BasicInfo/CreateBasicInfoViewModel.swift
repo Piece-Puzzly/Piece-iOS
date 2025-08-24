@@ -70,7 +70,7 @@ final class CreateBasicInfoViewModel {
   var isValidHeight: Bool {
     (2...3).contains(height.count) && height.allSatisfy(\.isNumber)
   }
-  var isVaildWeight: Bool {
+  var isValidWeight: Bool {
     (2...3).contains(weight.count) && weight.allSatisfy(\.isNumber)
   }
   var isContactsValid: Bool {
@@ -83,7 +83,7 @@ final class CreateBasicInfoViewModel {
     isValidBirthDate &&
     !location.isEmpty &&
     isValidHeight &&
-    isVaildWeight &&
+    isValidWeight &&
     !job.isEmpty &&
     isContactsValid
   }
@@ -230,7 +230,7 @@ final class CreateBasicInfoViewModel {
       break
     }
     
-    if profileImageData == nil || !nicknameState.isEnableNextButton || !isDescriptionValid || birthDate.isEmpty || location.isEmpty || height.isEmpty || weight.isEmpty || job.isEmpty || !isContactsValid {
+    if !isValidProfileImage || !nicknameState.isEnableNextButton || !isDescriptionValid || !isValidBirthDate || location.isEmpty || !isValidHeight || !isValidWeight || job.isEmpty || !isContactsValid {
       didTapnextButton = true
       profileCreator.isBasicInfoValid(false)
       await isToastVisible()
