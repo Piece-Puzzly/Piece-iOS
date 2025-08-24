@@ -10,6 +10,7 @@ import Foundation
 
 public struct ProfileValueTalkResponseDTO: Decodable {
   public let profileValueTalkId: Int
+  public let valueTalkId: Int
   public let title: String
   public let category: String
   public let summary: String
@@ -22,6 +23,7 @@ public extension ProfileValueTalkResponseDTO {
   func toDomain() -> ProfileValueTalkModel {
     ProfileValueTalkModel(
       id: profileValueTalkId,
+      valueTalkId: valueTalkId,
       title: title,
       category: category,
       summary: summary,
