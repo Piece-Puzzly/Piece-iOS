@@ -64,6 +64,8 @@ final class SplashViewModel {
     Task {
       do {
         await checkForceUpdate()
+        guard !showNeedsForceUpdateAlert else { return }
+        
         guard checkOnboarding() else { return }
         checkAccesstoken()
         try await setRoute()
