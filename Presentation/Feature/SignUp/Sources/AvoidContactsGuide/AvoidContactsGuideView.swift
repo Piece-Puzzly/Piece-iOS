@@ -75,8 +75,14 @@ struct AvoidContactsGuideView: View {
         .animation(.easeInOut(duration: 0.3), value: viewModel.showToast)
     }
     .toolbar(.hidden)
+    .allowsHitTesting(!viewModel.isProcessingShowToast)
+    .onAppear {
+      viewModel.handleAction(.onAppear)
+    }
     .onChange(of: viewModel.moveToCompleteSignUp) { _, newValue in
-      router.push(to: .completeSignUp)
+      if newValue {
+        router.push(to: .completeSignUp)
+      }
     }
   }
   
