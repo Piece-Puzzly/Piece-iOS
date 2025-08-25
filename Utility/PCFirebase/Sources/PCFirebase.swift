@@ -33,7 +33,12 @@ public final class PCFirebase {
     
     let remoteConfig = RemoteConfig.remoteConfig()
     let settings = RemoteConfigSettings()
+    #if DEBUG
+    settings.minimumFetchInterval = 0
+    #else
     settings.minimumFetchInterval = 43_200
+    #endif
+    
     remoteConfig.configSettings = settings
     
     if let path = Bundle.module.path(forResource: "remote_config_defaults", ofType: "plist"),
@@ -71,6 +76,10 @@ public final class PCFirebase {
   
   public func minimumVersion() -> String {
     return string(forKey: .minimumVersion)
+  }
+  
+  public func minimumVersionDebug() -> String {
+    return string(forKey: .minimumVersionDebug)
   }
   
   public func needsForceUpdate() -> Bool {

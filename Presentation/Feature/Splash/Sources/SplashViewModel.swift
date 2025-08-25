@@ -64,6 +64,8 @@ final class SplashViewModel {
     Task {
       do {
         await checkForceUpdate()
+        guard !showNeedsForceUpdateAlert else { return }
+        
         guard checkOnboarding() else { return }
         checkAccesstoken()
         try await setRoute()
@@ -117,12 +119,19 @@ final class SplashViewModel {
     do {
       try await PCFirebase.shared.fetchRemoteConfigValues()
       let currentVersion = AppVersion.appVersion()
+      
+      #if DEBUG
+      let minimumVersion = PCFirebase.shared.minimumVersionDebug()
+      #else
       let minimumVersion = PCFirebase.shared.minimumVersion()
+      #endif
+
       let needsForceUpdate = currentVersion.compare(minimumVersion, options: .numeric) == .orderedAscending
       
-      print("currentVersion: \(currentVersion)")
-      print("minimumVersion: \(minimumVersion)")
-      print("needsForceUpdate: \(needsForceUpdate)")
+      NSLog(needsForceUpdate ? ">>> LOG:🚨 강제 업데이트 필요합니다." : ">>> LOG: 🔹 업데이트가 없습니다.")
+      NSLog(">>> LOG: 🔔 currentVersion(\(currentVersion))")
+      NSLog(">>> LOG: 🔔 minimumVersion(\(minimumVersion))")
+      NSLog(">>> LOG: 🔔 needsForceUpdate(\(needsForceUpdate))")
       showNeedsForceUpdateAlert = needsForceUpdate
     } catch {
       print("🔥 Failed to check for updates: \(error.localizedDescription)")
@@ -150,7 +159,7 @@ final class SplashViewModel {
   }
   
   private func openAppStore() {
-    let appId = "6740155700"
+    let appId = "6742348014"
     let appStoreUrl = "itms-apps://itunes.apple.com/app/apple-store/\(appId)"
     guard let url = URL(string: appStoreUrl) else { return }
     if UIApplication.shared.canOpenURL(url) {
