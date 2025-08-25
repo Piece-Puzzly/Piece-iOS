@@ -120,10 +120,10 @@ final class SplashViewModel {
       try await PCFirebase.shared.fetchRemoteConfigValues()
       let currentVersion = AppVersion.appVersion()
       
-      #if RELEASE
-      let minimumVersion = PCFirebase.shared.minimumVersion()
-      #else
+      #if DEBUG
       let minimumVersion = PCFirebase.shared.minimumVersionDebug()
+      #else
+      let minimumVersion = PCFirebase.shared.minimumVersion()
       #endif
 
       let needsForceUpdate = currentVersion.compare(minimumVersion, options: .numeric) == .orderedAscending
