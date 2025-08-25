@@ -27,6 +27,7 @@ final class PermissionRequestViewModel {
   private let requestNotificationPermissionUseCase: RequestNotificationPermissionUseCase
   
   enum Action {
+    case onAppear
     case showShettingAlert
     case tapNextButton
     case cancelAlert
@@ -46,18 +47,34 @@ final class PermissionRequestViewModel {
   
   func handleAction(_ action: Action) {
     switch action {
+    case .onAppear:
+      resetNavigationState()
+      
     case .showShettingAlert:
       openSettings()
+      
     case .cancelAlert:
       Task { await resetAlertState() }
+      
     case .tapNextButton:
-      showToAvoidContactsView = true
+      navigateToAvoidContactsView()
     }
   }
   
   func checkPermissions() async {
     await fetchPermissions()
     await updateSettingsAlertState()
+  }
+}
+
+// MARK: 네비게이팅
+private extension PermissionRequestViewModel {
+  func navigateToAvoidContactsView() {
+    showToAvoidContactsView = true
+  }
+  
+  func resetNavigationState() {
+    showToAvoidContactsView = false
   }
 }
 
