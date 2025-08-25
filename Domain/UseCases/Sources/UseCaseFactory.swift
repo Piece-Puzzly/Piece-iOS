@@ -117,6 +117,10 @@ public struct UseCaseFactory {
     CreateProfileUseCaseImpl(repository: repository)
   }
   
+  public static func createEditRejectedProfileUseCase(repository: ProfileRepositoryInterface) -> PutProfileUseCase {
+    PutProfileUseCaseImpl(repository: repository)
+  }
+  
   public static func createGetValueTalksUseCase(repository: ValueTalksRepositoryInterface) -> GetValueTalksUseCase {
     GetValueTalksUseCaseImpl(repository: repository)
   }

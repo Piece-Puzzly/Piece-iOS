@@ -35,7 +35,8 @@ public extension ValuePickResponseDTO {
       question: question,
       answers: answers.map {
         ValuePickAnswerModel(number: $0.number, content: $0.content)
-      }
+      },
+      selectedAnswer: nil
     )
   }
 }

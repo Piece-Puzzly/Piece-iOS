@@ -10,6 +10,7 @@ import Foundation
 
 public struct ProfileValuePickResponseDTO: Decodable {
   public let profileValuePickId: Int
+  public let valuePickId: Int
   public let category: String
   public let question: String
   public let answers: [ValuePickAnswerResponseDTO]
@@ -20,6 +21,7 @@ public extension ProfileValuePickResponseDTO {
   func toDomain() -> ProfileValuePickModel {
     return ProfileValuePickModel(
       id: profileValuePickId,
+      valuePickId: valuePickId,
       category: category,
       question: question,
       answers: answers.map {

@@ -12,6 +12,7 @@ import LocalStorage
 
 public enum ProfileEndpoint: TargetType {
   case postProfile(PostProfileRequestDTO)
+  case putProfile(PutProfileRequestDTO)
   case postCheckNickname(String)
   case postUploadImage(Data)
   case getProfileBasic
@@ -25,6 +26,7 @@ public enum ProfileEndpoint: TargetType {
   public var method: HTTPMethod {
     switch self {
     case .postProfile: .post
+    case .putProfile: .put
     case .postCheckNickname: .post
     case .postUploadImage: .post
     case .getProfileBasic: .get
@@ -40,6 +42,7 @@ public enum ProfileEndpoint: TargetType {
   public var path: String {
     switch self {
     case .postProfile: "api/profiles"
+    case .putProfile: "api/profiles"
     case .postCheckNickname: "api/profiles/check-nickname"
     case .postUploadImage: "api/profiles/images"
     case .getProfileBasic, .updateProfileBasic: "api/profiles/basic"
@@ -54,6 +57,11 @@ public enum ProfileEndpoint: TargetType {
   public var headers: [String : String] {
     switch self {
     case .postProfile:
+      [
+        NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? ""),
+        NetworkHeader.contentType: NetworkHeader.applicationJson,
+      ]
+    case .putProfile:
       [
         NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? ""),
         NetworkHeader.contentType: NetworkHeader.applicationJson,
@@ -104,6 +112,7 @@ public enum ProfileEndpoint: TargetType {
   public var requestType: RequestType {
     switch self {
     case let .postProfile(dto): .body(dto)
+    case let .putProfile(dto): .body(dto)
     case let .postCheckNickname(string): .query([URLQueryItem(name: "nickname", value: string)])
     case let .postUploadImage(data): .multipart(data)
     case .getProfileBasic: .plain

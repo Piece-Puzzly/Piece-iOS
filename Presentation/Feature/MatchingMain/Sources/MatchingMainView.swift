@@ -91,7 +91,7 @@ struct MatchingMainView: View {
         title: { Text("프로필을 수정해주세요") },
         message: { profileRejectAlertMessageView },
         secondButtonText: "프로필 수정하기",
-        secondButtonAction: { router.setRoute(.createProfile)}
+        secondButtonAction: { router.setRoute(.editRejectedProfile) }
       )
     }
     .overlay(alignment: .top) {

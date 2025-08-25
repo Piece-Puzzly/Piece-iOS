@@ -10,16 +10,19 @@ public struct ValuePickModel: Hashable, Identifiable {
     id: Int,
     category: String,
     question: String,
-    answers: [ValuePickAnswerModel]
+    answers: [ValuePickAnswerModel],
+    selectedAnswer: Int?
   ) {
     self.id = id
     self.category = category
     self.question = question
     self.answers = answers
+    self.selectedAnswer = selectedAnswer
   }
   
   public let id: Int
   public let category: String
   public let question: String
   public let answers: [ValuePickAnswerModel]
+  public var selectedAnswer: Int?
 }

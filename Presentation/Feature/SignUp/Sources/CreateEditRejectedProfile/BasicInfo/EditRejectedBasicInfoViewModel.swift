@@ -1,8 +1,8 @@
 //
-//  CreateBasicInfoViewModel.swift
+//  EditRejectedBasicInfoViewModel.swift
 //  SignUp
 //
-//  Created by eunseou on 2/1/25.
+//  Created by 홍승완 on 8/24/25.
 //
 
 import SwiftUI
@@ -13,8 +13,9 @@ import PCFoundationExtension
 import PCImagePicker
 
 @Observable
-final class CreateBasicInfoViewModel {
+final class EditRejectedBasicInfoViewModel {
   enum Action {
+    case onAppear
     case tapNextButton
     case tapVaildNickName
     case selectCamera
@@ -32,25 +33,32 @@ final class CreateBasicInfoViewModel {
   }
   
   init(
-    profileCreator: ProfileCreator,
+    editRejectedProfileCreator: EditRejectedProfileCreator,
+    getProfileBasicUseCase: GetProfileBasicUseCase,
     checkNicknameUseCase: CheckNicknameUseCase,
     uploadProfileImageUseCase: UploadProfileImageUseCase
   ) {
-    self.profileCreator = profileCreator
+    self.getProfileBasicUseCase = getProfileBasicUseCase
+    self.editRejectedProfileCreator = editRejectedProfileCreator
     self.checkNicknameUseCase = checkNicknameUseCase
     self.uploadProfileImageUseCase = uploadProfileImageUseCase
     self.jobItems = Jobs.all.map { BottomSheetTextItem(text: $0) }
-    
-    setupJobItemsWithEtc()
   }
   
+  private let getProfileBasicUseCase: GetProfileBasicUseCase
   private let checkNicknameUseCase: CheckNicknameUseCase
   private let uploadProfileImageUseCase: UploadProfileImageUseCase
-  let profileCreator: ProfileCreator
-  var nicknameState: NicknameState = .empty
+  
+  /// 초기 패치해온 프로필 데이터
+  private var initialProfile: ProfileBasicModel?
+  
+  let editRejectedProfileCreator: EditRejectedProfileCreator
+  var imageState: ImageState = .normal
+  var nicknameState: NicknameState = .success
   
   // TextField Bind
   var profileImageData: Data? = nil
+  var profileImageUrl: String = ""
   var nickname: String = ""
   var description: String = ""
   var birthDate: String = ""
@@ -62,7 +70,6 @@ final class CreateBasicInfoViewModel {
   var contacts: [ContactModel] = [ContactModel(type: .kakao, value: "")]
   
   // isValid
-  var isValidProfileImage: Bool { profileImageData != nil }
   var isDescriptionValid: Bool {
     !description.isEmpty && description.count <= 20
   }
@@ -77,7 +84,6 @@ final class CreateBasicInfoViewModel {
     return contacts.allSatisfy { !$0.value.isEmpty }
   }
   var isNextButtonEnabled: Bool {
-    return isValidProfileImage &&
     nicknameState.isEnableNextButton &&
     isDescriptionValid &&
     isValidBirthDate &&
@@ -158,7 +164,6 @@ final class CreateBasicInfoViewModel {
   var selectedSNSContactType: ContactModel.ContactType? = nil
   var prevSelectedContact: ContactModel? = nil
   var isContactTypeChangeSheetPresented: Bool = false
-  var didCheckDuplicates: Bool = false
   var didTapnextButton: Bool = false
   
   var locationItems: [BottomSheetTextItem] = Locations.all.map { BottomSheetTextItem(text: $0) }
@@ -175,21 +180,22 @@ final class CreateBasicInfoViewModel {
   var isContactSheetPresented: Bool = false
   var isProfileImageSheetPresented: Bool = false
   var showToast: Bool = false
-  
+
   func handleAction(_ action: Action) {
     switch action {
-    case .tapNextButton:
+    case .onAppear:
       Task {
-        await handleTapNextButton()
+        await getBasicProfile()
+        setupJobItemsWithEtc()
       }
+    case .tapNextButton:
+      Task { await handleTapNextButton() }
     case .selectCamera:
       imagePickerSource = .camera
     case .selectPhotoLibrary:
       imagePickerSource = .photoLibrary
     case .tapVaildNickName:
-      Task {
-        await handleTapVaildNicknameButton()
-      }
+      Task { await handleTapVaildNicknameButton() }
     case .tapLocation:
       isLocationSheetPresented = true
       updateLocationBottomSheetItems()
@@ -216,7 +222,54 @@ final class CreateBasicInfoViewModel {
     case .updateNickname(let value):
       handleUpdateNickname(value)
     case .setImageFromImagePicker(let imageData):
-      self.profileImageData = imageData
+      updateProfileImageData(imageData)
+    }
+  }
+  
+  private func uploadProfileImageIfNeeded() async {
+    guard let imageData = self.profileImageData else {
+      print("DEBUG: 업로드할 이미지 없음")
+      return
+    }
+    
+    do {
+      let imageURL = try await uploadProfileImageUseCase.execute(image: imageData)
+      self.profileImageUrl = imageURL.absoluteString
+      self.profileImageData = nil
+      self.imageState = .normal
+      print("DEBUG: 이미지 업로드 성공: \(imageURL)")
+    } catch {
+      print("DEBUG: 이미지 업로드 중 오류 발생: \(error.localizedDescription)")
+    }
+  }
+  
+  func updateProfileImageData(_ imageData: Data?) {
+    self.profileImageData = imageData
+    self.imageState = .editing
+  }
+  
+  @MainActor
+  private func getBasicProfile() async {
+    do {
+      let profile = try await getProfileBasicUseCase.execute()
+      // 초기 프로필 저장
+      initialProfile = profile
+      
+      // 현재 데이터 바인딩
+      nickname = profile.nickname
+      description = profile.description
+      birthDate = profile.birthdate.toCompactDateString
+      location = profile.location
+      height = String(profile.height)
+      weight = String(profile.weight)
+      smokingStatus = profile.smokingStatus
+      snsActivityLevel = profile.snsActivityLevel
+      job = profile.job
+      contacts = profile.contacts
+      profileImageUrl = profile.imageUri
+
+    } catch {
+      print(error.localizedDescription)
     }
   }
   
@@ -229,40 +282,30 @@ final class CreateBasicInfoViewModel {
     default:
       break
     }
-    
-    if !isValidProfileImage || !nicknameState.isEnableNextButton || !isDescriptionValid || !isValidBirthDate || location.isEmpty || !isValidHeight || !isValidWeight || job.isEmpty || !isContactsValid {
+    if !nicknameState.isEnableNextButton || !isDescriptionValid || !isValidBirthDate || location.isEmpty || !isValidHeight || !isValidWeight || job.isEmpty || !isContactsValid {
       didTapnextButton = true
-      profileCreator.isBasicInfoValid(false)
+      editRejectedProfileCreator.isBasicInfoValid(false)
       await isToastVisible()
-    } else if isNextButtonEnabled {
-      do {
-        guard let profileImageData else { return }
-        
-        let imageURL = try await uploadProfileImageUseCase.execute(image: profileImageData)
-        print("이미지 업로드 성공: \(imageURL)")
-        
-        let basicInfo = ProfileBasicModel(
-          nickname: nickname,
-          description: description,
-          birthdate: birthDate,
-          height: Int(height) ?? 0,
-          weight: Int(weight) ?? 0,
-          job: job,
-          location: location,
-          smokingStatus: smokingStatus,
-          snsActivityLevel: snsActivityLevel,
-          imageUri: imageURL.absoluteString,
-          pendingImageUrl: nil,
-          contacts: contacts
-        )
-        
-        profileCreator.updateBasicInfo(basicInfo)
-        profileCreator.isBasicInfoValid(true)
-        print("ProfileCreator에 기본 정보 주입 완료")
-      } catch {
-        profileCreator.isBasicInfoValid(false)
-        print(error.localizedDescription)
-      }
+    } else {
+      await uploadProfileImageIfNeeded()
+      
+      let basicInfo = ProfileBasicModel(
+        nickname: nickname,
+        description: description,
+        birthdate: birthDate,
+        height: Int(height) ?? 0,
+        weight: Int(weight) ?? 0,
+        job: job,
+        location: location,
+        smokingStatus: smokingStatus,
+        snsActivityLevel: snsActivityLevel,
+        imageUri: profileImageUrl,
+        pendingImageUrl: nil,
+        contacts: contacts
+      )
+      
+      editRejectedProfileCreator.updateBasicInfo(basicInfo)
+      editRejectedProfileCreator.isBasicInfoValid(true)
     }
   }
   
@@ -303,10 +346,13 @@ final class CreateBasicInfoViewModel {
       return
     }
     
-    nicknameState = determineNicknameState(nickname: nickname)
+    guard let initial = initialProfile else { return }
+    
+    nicknameState = determineNicknameState(initial: initial)
   }
   
-  private func determineNicknameState(nickname: String) -> NicknameState {
+  private func determineNicknameState(initial: ProfileBasicModel) -> NicknameState {
+    guard nickname != initial.nickname else { return .success }
     guard !nickname.isEmpty else { return .empty }
     guard nickname.count <= 6 else { return .overLength }
     
@@ -315,7 +361,7 @@ final class CreateBasicInfoViewModel {
 }
 
 // MARK: - Location
-extension CreateBasicInfoViewModel {
+extension EditRejectedBasicInfoViewModel {
   var isLocationBottomSheetButtonEnable: Bool {
     locationItems.contains(where: { $0.state == .selected })
   }
@@ -353,7 +399,7 @@ extension CreateBasicInfoViewModel {
 }
 
 // MARK: - Job
-extension CreateBasicInfoViewModel {
+extension EditRejectedBasicInfoViewModel {
   /// "etcText"는 저장된 "job"에 종속됨
   private func initializeEtcTextFromJob() {
     if !job.isEmpty && !(jobItems.contains { item in
@@ -379,6 +425,8 @@ extension CreateBasicInfoViewModel {
     if let index = jobItems.firstIndex(where: { $0.text == "기타" }) {
       jobItems[index] = etcItem
     }
+    
+    initializeEtcTextFromJob()
   }
   
   var isJobBottomSheetButtonEnable: Bool {
@@ -437,7 +485,7 @@ extension CreateBasicInfoViewModel {
 }
 
 // MARK: - Contact
-extension CreateBasicInfoViewModel {
+extension EditRejectedBasicInfoViewModel {
   var isContactBottomSheetButtonEnable: Bool {
     contactBottomSheetItems.contains(where: { $0.state == .selected })
   }
@@ -524,23 +572,29 @@ extension CreateBasicInfoViewModel {
 }
 
 // MARK: Constant
-extension CreateBasicInfoViewModel {
+extension EditRejectedBasicInfoViewModel {
   private enum Constant {
     static let contactModelCount: Int = 4
   }
   
+  enum ImageState {
+    case normal // 서버로부터 받아온 이미지 url 상태
+    case editing // 이미지 수정하여 Data 상태
+  }
+  
   enum NicknameState {
     case empty // 비어있을 때, 텍스트 입력 시 지정 가능
-    case emptyError // 비어있을 때 다음버튼 눌렀을 때
-    case editing // 수정중이며 중복검사 안했을 때, 텍스트 입력 시 지정 가능
+    case emptyError
+    case normal // 초기와 같음, 텍스트 입력 시 지정 가능
+    case editing // 초기와 다름, 텍스트 입력 시 지정 가능
     case overLength // 6글자 초과, 텍스트 입력 시 지정 가능
     case duplicated // 중복된 상태, 중복버튼 누를 때 지정 가능
-    case success // 가능한 닉네임, 중복버튼 누를 떄 지정 가능
-    case unchecked // 수정은 했지만 중복검사 안함, 다음버튼 누를 시 editing -> unchecked로 넘어감
+    case success // 가능한 닉네임, 중복버튼 누를 떄 지정 가능, 기본적으로 success
+    case unchecked // 수정은 했지만 중복검사 안함, 저장버튼 누를 때만 지정 가능 (저장버튼 누를때 editing인 경우 unchecked로 넘어감)
     
     var infoText: String {
       switch self {
-      case .empty, .editing:
+      case .normal, .editing, .empty:
         return ""
       case .emptyError:
         return "필수 항목을 입력해 주세요."
@@ -557,7 +611,7 @@ extension CreateBasicInfoViewModel {
     
     var infoTextColor: Color {
       switch self {
-      case .editing, .empty:
+      case .normal, .editing, .empty:
         return Color.clear
       case .emptyError, .duplicated, .overLength, .unchecked:
         return Color.systemError
@@ -570,7 +624,7 @@ extension CreateBasicInfoViewModel {
       switch self {
       case .editing, .unchecked, .duplicated:
         return true
-      case .empty, .emptyError, .success, .overLength:
+      case .empty, .emptyError, .normal, .success, .overLength:
         return false
       }
     }
@@ -579,7 +633,7 @@ extension CreateBasicInfoViewModel {
       switch self {
       case .success:
         return true
-      case .empty, .emptyError, .editing, .duplicated, .overLength, .unchecked:
+      case .editing, .normal, .empty, .emptyError, .duplicated, .overLength, .unchecked:
         return false
       }
     }

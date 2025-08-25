@@ -72,15 +72,7 @@ final class CreateProfileContainerViewModel {
       
       let (fetchedTalks, fetchedPicks) = try await (talks, picks)
       self.valueTalks = fetchedTalks
-      let valuePicks = fetchedPicks.map {
-        ProfileValuePickModel(
-          id: $0.id,
-          category: $0.category,
-          question: $0.question,
-          answers: $0.answers,
-          selectedAnswer: nil
-        )
-      }
+      let valuePicks = fetchedPicks
       self.valuePickViewModel = ValuePickViewModel(
         profileCreator: profileCreator,
         initialValuePicks: valuePicks

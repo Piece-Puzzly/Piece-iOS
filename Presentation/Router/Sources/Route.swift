@@ -37,8 +37,11 @@ public enum Route: Hashable {
   
   // MARK: - 프로필 생성
   case createProfile
+  case editRejectedProfile
   case waitingAISummary(profile: ProfileModel)
+  case editRejectedWaitingAISummary(profile: ProfileModel)
   case completeCreateProfile
+  case completeEditRejectedProfile
   
   // MARK: - 프로필 미리보기
   case previewProfileBasic

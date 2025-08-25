@@ -1,13 +1,13 @@
 //
-//  ProfileCreator.swift
+//  EditRejectedProfileCreator.swift
 //  SignUp
 //
-//  Created by summercat on 2/10/25.
+//  Created by 홍승완 on 8/24/25.
 //
 
 import Entities
 
-final class ProfileCreator {
+final class EditRejectedProfileCreator {
   private(set) var basicInfo: ProfileBasicModel = ProfileBasicModel.empty
   private(set) var valueTalks: [ValueTalkModel] = []
   private(set) var valuePicks: [ValuePickModel] = []
@@ -46,7 +46,7 @@ final class ProfileCreator {
     isBasicInfoValid && isValuePicksValid && isValueTalksValid
   }
   
-  func createProfile() -> ProfileModel {
+  func createEditRejectedProfile() -> ProfileModel {
     return ProfileModel(
       nickname: basicInfo.nickname,
       description: basicInfo.description,
@@ -64,3 +64,4 @@ final class ProfileCreator {
     )
   }
 }
+

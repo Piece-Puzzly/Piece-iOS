@@ -1,8 +1,8 @@
 //
-//  ValuePickViewModel.swift
+//  EditRejectedValuePickViewModel.swift
 //  SignUp
 //
-//  Created by summercat on 2/10/25.
+//  Created by 홍승완 on 8/24/25.
 //
 
 import Combine
@@ -10,22 +10,22 @@ import Entities
 import Observation
 
 @Observable
-final class ValuePickViewModel {
+final class EditRejectedValuePickViewModel {
   enum Action {
     case didTapBottomButton
     case updateValuePick(ValuePickModel)
   }
   
-  let profileCreator: ProfileCreator
+  let editRejectedProfileCreator: EditRejectedProfileCreator
   var showToast: Bool = false
   var valuePicks: [ValuePickModel] = []
   private(set) var isNextButtonEnabled: Bool = false
   
   init(
-    profileCreator: ProfileCreator,
+    editRejectedProfileCreator: EditRejectedProfileCreator,
     initialValuePicks: [ValuePickModel]
   ) {
-    self.profileCreator = profileCreator
+    self.editRejectedProfileCreator = editRejectedProfileCreator
     
     // 초기 데이터는 항상 전달받은 initialValuePicks 사용
     self.valuePicks = initialValuePicks
@@ -38,11 +38,11 @@ final class ValuePickViewModel {
       isNextButtonEnabled = isValid
       print("📌 isValid: \(isValid)")
       if isValid {
-        profileCreator.updateValuePicks(valuePicks)
-        profileCreator.isValuePicksValid(true)
+        editRejectedProfileCreator.updateValuePicks(valuePicks)
+        editRejectedProfileCreator.isValuePicksValid(true)
       } else {
         showToast = true
-        profileCreator.isValuePicksValid(false)
+        editRejectedProfileCreator.isValuePicksValid(false)
       }
       
     case let .updateValuePick(model):

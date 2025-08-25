@@ -12,8 +12,8 @@ import SwiftUI
 struct ValuePickCard: View {
   @State var viewModel: ValuePickCardViewModel
   init(
-    valuePick: ProfileValuePickModel,
-    onModelUpdate: @escaping (ProfileValuePickModel) -> Void
+    valuePick: ValuePickModel,
+    onModelUpdate: @escaping (ValuePickModel) -> Void
   ) {
     _viewModel = .init(
       wrappedValue: .init(

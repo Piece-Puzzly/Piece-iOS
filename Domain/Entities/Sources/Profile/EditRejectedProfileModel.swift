@@ -1,13 +1,13 @@
 //
-//  ProfileModel.swift
+//  EditRejectedProfileModel.swift
 //  Entities
 //
-//  Created by summercat on 1/30/25.
+//  Created by 홍승완 on 8/24/25.
 //
 
 import Foundation
 
-public struct ProfileModel: Hashable {
+public struct EditRejectedProfileModel: Hashable {
   public init(
     nickname: String,
     description: String,
@@ -22,7 +22,7 @@ public struct ProfileModel: Hashable {
     imageUri: String,
     contacts: [ContactModel],
     valueTalks: [ValueTalkModel],
-    valuePicks: [ValuePickModel]
+    valuePicks: [ProfileValuePickModel]
   ) {
     self.nickname = nickname
     self.description = description
@@ -53,24 +53,5 @@ public struct ProfileModel: Hashable {
   public let imageUri: String
   public let contacts: [ContactModel]
   public let valueTalks: [ValueTalkModel]
-  public let valuePicks: [ValuePickModel]
-}
-
-public extension ProfileModel {
-  static let empty = ProfileModel(
-    nickname: "",
-    description: "",
-    age: 0,
-    birthdate: "",
-    height: 0,
-    weight: 0,
-    job: "",
-    location: "",
-    smokingStatus: "",
-    snsActivityLevel: "",
-    imageUri: "",
-    contacts: [],
-    valueTalks: [],
-    valuePicks: []
-  )
+  public let valuePicks: [ProfileValuePickModel]
 }
