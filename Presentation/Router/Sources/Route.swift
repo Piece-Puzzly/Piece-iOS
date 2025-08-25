@@ -16,7 +16,7 @@ public enum Route: Hashable {
   
   // MARK: - 회원가입
   case verifyContact
-  case AvoidContactsGuide
+  case avoidContactsGuide
   case termsAgreement
   case termsWebView(term: TermModel)
   case checkPremission

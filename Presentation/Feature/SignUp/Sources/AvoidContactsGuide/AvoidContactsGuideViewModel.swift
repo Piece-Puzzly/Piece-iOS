@@ -14,12 +14,15 @@ import Entities
 @Observable
 final class AvoidContactsGuideViewModel {
   enum Action {
+    case onAppear
+    case tapDenyButton
     case tapAcceptButton
     case showShettingAlert
     case cancelAlert
   }
   
   private(set) var showToast = false
+  private(set) var isProcessingShowToast = false
   private(set) var moveToCompleteSignUp: Bool = false
   var isPresentedAlert: Bool = false
   private let requestContactsPermissionUseCase: RequestContactsPermissionUseCase
@@ -38,12 +41,20 @@ final class AvoidContactsGuideViewModel {
   
   func handleAction(_ action: Action) {
     switch action {
+    case .onAppear:
+      initializeState()
+
+    case .tapDenyButton:
+      moveToCompleteSignUp = true
+      
     case .tapAcceptButton:
       Task {
         await handleAcceptButtonTap()
       }
+      
     case .showShettingAlert:
       openSettings()
+      
     case .cancelAlert:
       isPresentedAlert = false
     }
@@ -69,10 +80,14 @@ final class AvoidContactsGuideViewModel {
   @MainActor
   private func isToastVisible() async {
     showToast = true
+    isProcessingShowToast = true /// Showing Toast
+    
     try? await Task.sleep(for: .seconds(2))
     showToast = false
     try? await Task.sleep(for: .seconds(0.3)) // 토스트가 사라지는 애니메이션 이후 화면 전환하기 위함
-    moveToCompleteSignUp = true
+    
+    moveToCompleteSignUp = true /// Hiding Toast
+    isProcessingShowToast = false
   }
   
   private func openSettings() {
@@ -80,5 +95,12 @@ final class AvoidContactsGuideViewModel {
           UIApplication.shared.canOpenURL(url) else { return }
     
     UIApplication.shared.open(url)
+  }
+  
+  private func initializeState() {
+    showToast = false
+    moveToCompleteSignUp = false
+    isPresentedAlert = false
+    isProcessingShowToast = false
   }
 }

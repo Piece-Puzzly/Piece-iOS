@@ -75,8 +75,14 @@ struct AvoidContactsGuideView: View {
         .animation(.easeInOut(duration: 0.3), value: viewModel.showToast)
     }
     .toolbar(.hidden)
+    .allowsHitTesting(!viewModel.isProcessingShowToast)
+    .onAppear {
+      viewModel.handleAction(.onAppear)
+    }
     .onChange(of: viewModel.moveToCompleteSignUp) { _, newValue in
-      router.push(to: .completeSignUp)
+      if newValue {
+        router.push(to: .completeSignUp)
+      }
     }
   }
   
@@ -99,7 +105,7 @@ struct AvoidContactsGuideView: View {
   private var denyButton: some View {
     PCTextButton(content: Constant.denyButtonText)
       .onTapGesture {
-        router.push(to: .completeSignUp)
+        viewModel.handleAction(.tapDenyButton)
       }
       .padding(.bottom, 20)
   }

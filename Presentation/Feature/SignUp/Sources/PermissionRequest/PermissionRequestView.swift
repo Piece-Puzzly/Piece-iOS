@@ -80,6 +80,9 @@ struct PermissionRequestView: View {
     .task {
       await viewModel.checkPermissions()
     }
+    .onAppear {
+      viewModel.handleAction(.onAppear)
+    }
     .onChange(of: scenePhase) {
       if scenePhase == .active {
         Task {
@@ -88,7 +91,9 @@ struct PermissionRequestView: View {
       }
     }
     .onChange(of: viewModel.showToAvoidContactsView) { _, newValue in
-      router.push(to: .AvoidContactsGuide)
+      if newValue {
+        router.push(to: .avoidContactsGuide)
+      }
     }
     .alert("필수 권한 요청", isPresented: $viewModel.shouldShowSettingsAlert) {
       Button("설정으로 이동") {

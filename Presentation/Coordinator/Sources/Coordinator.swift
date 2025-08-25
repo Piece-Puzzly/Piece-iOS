@@ -214,7 +214,7 @@ public struct Coordinator {
         requestNotificationPermissionUseCase: requestNotificationPermissionUseCase
       )
       
-    case .AvoidContactsGuide:
+    case .avoidContactsGuide:
       let blockcontactsrepository = repositoryFactory.createBlockContactsRepository()
       let checkContactsPermissionUseCase = UseCaseFactory.createCheckContactsPermissionUseCase()
       let requestContactsPermissionUseCase = UseCaseFactory.createRequestContactsPermissionUseCase(checkContactsPermissionUseCase: checkContactsPermissionUseCase)
