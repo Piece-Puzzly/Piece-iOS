@@ -105,7 +105,7 @@ struct AvoidContactsGuideView: View {
   private var denyButton: some View {
     PCTextButton(content: Constant.denyButtonText)
       .onTapGesture {
-        router.push(to: .completeSignUp)
+        viewModel.handleAction(.tapDenyButton)
       }
       .padding(.bottom, 20)
   }

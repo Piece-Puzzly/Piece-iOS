@@ -15,6 +15,7 @@ import Entities
 final class AvoidContactsGuideViewModel {
   enum Action {
     case onAppear
+    case tapDenyButton
     case tapAcceptButton
     case showShettingAlert
     case cancelAlert
@@ -43,6 +44,9 @@ final class AvoidContactsGuideViewModel {
     case .onAppear:
       initializeState()
 
+    case .tapDenyButton:
+      moveToCompleteSignUp = true
+      
     case .tapAcceptButton:
       Task {
         await handleAcceptButtonTap()
@@ -91,5 +95,12 @@ final class AvoidContactsGuideViewModel {
           UIApplication.shared.canOpenURL(url) else { return }
     
     UIApplication.shared.open(url)
+  }
+  
+  private func initializeState() {
+    showToast = false
+    moveToCompleteSignUp = false
+    isPresentedAlert = false
+    isProcessingShowToast = false
   }
 }
