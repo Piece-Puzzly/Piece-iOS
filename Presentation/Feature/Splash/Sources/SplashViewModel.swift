@@ -117,12 +117,19 @@ final class SplashViewModel {
     do {
       try await PCFirebase.shared.fetchRemoteConfigValues()
       let currentVersion = AppVersion.appVersion()
+      
+      #if RELEASE
       let minimumVersion = PCFirebase.shared.minimumVersion()
+      #else
+      let minimumVersion = PCFirebase.shared.minimumVersionDebug()
+      #endif
+
       let needsForceUpdate = currentVersion.compare(minimumVersion, options: .numeric) == .orderedAscending
       
-      print("currentVersion: \(currentVersion)")
-      print("minimumVersion: \(minimumVersion)")
-      print("needsForceUpdate: \(needsForceUpdate)")
+      NSLog(needsForceUpdate ? ">>> LOG:🚨 강제 업데이트 필요합니다." : ">>> LOG: 🔹 업데이트가 없습니다.")
+      NSLog(">>> LOG: 🔔 currentVersion(\(currentVersion))")
+      NSLog(">>> LOG: 🔔 minimumVersion(\(minimumVersion))")
+      NSLog(">>> LOG: 🔔 needsForceUpdate(\(needsForceUpdate))")
       showNeedsForceUpdateAlert = needsForceUpdate
     } catch {
       print("🔥 Failed to check for updates: \(error.localizedDescription)")

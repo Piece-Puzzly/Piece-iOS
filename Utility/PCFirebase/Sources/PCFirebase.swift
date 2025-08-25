@@ -73,6 +73,10 @@ public final class PCFirebase {
     return string(forKey: .minimumVersion)
   }
   
+  public func minimumVersionDebug() -> String {
+    return string(forKey: .minimumVersionDebug)
+  }
+  
   public func needsForceUpdate() -> Bool {
     return bool(forKey: .needsForceUpdate)
   }
