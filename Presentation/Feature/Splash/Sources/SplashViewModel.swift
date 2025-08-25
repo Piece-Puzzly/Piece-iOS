@@ -150,7 +150,7 @@ final class SplashViewModel {
   }
   
   private func openAppStore() {
-    let appId = "6740155700"
+    let appId = "6742348014"
     let appStoreUrl = "itms-apps://itunes.apple.com/app/apple-store/\(appId)"
     guard let url = URL(string: appStoreUrl) else { return }
     if UIApplication.shared.canOpenURL(url) {
