@@ -28,6 +28,7 @@ public struct PCTextField<FocusField: Hashable>: View {
           .padding(.leading, 16)
           .padding(.trailing, trailingPadding)
           .frame(minWidth: 202, maxWidth: 335)
+          .frame(height: 52)
           .background(
             Rectangle()
               .foregroundStyle(backgroundColor)
@@ -37,7 +38,6 @@ public struct PCTextField<FocusField: Hashable>: View {
               .overlay(rightTextView, alignment: .trailing)
               .overlay(rightImageRutton, alignment: .trailing)
           )
-          .frame(height: 52)
         
         if let button {
           button
