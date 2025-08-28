@@ -241,13 +241,19 @@ struct CreateBasicInfoView: View {
   }
   
   private func profileEditButton(_ image: Image) -> some View {
-    image
+    var profileEditButtonColor: Color {
+      (viewModel.profileImageData == nil && viewModel.didTapnextButton)
+      ? Color.systemError
+      : Color.primaryDefault
+    }
+    
+    return image
       .renderingMode(.template)
       .foregroundStyle(Color.grayscaleWhite)
       .background(
         Circle()
           .frame(width: 36, height: 36)
-          .foregroundStyle(Color.primaryDefault)
+          .foregroundStyle(profileEditButtonColor)
           .overlay(
             Circle()
               .stroke(Color.white, style: StrokeStyle(lineWidth: 3, lineCap: .round, lineJoin: .round))
