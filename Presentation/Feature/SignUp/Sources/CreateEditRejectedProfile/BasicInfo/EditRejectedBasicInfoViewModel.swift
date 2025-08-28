@@ -157,6 +157,13 @@ final class EditRejectedBasicInfoViewModel {
       return ""
     }
   }
+  var contactInfoText: String {
+    if !isContactsValid && didTapnextButton {
+      return "필수 항목을 입력해 주세요."
+    } else {
+      return ""
+    }
+  }
   
   // temp
   var smokingStatus: String = ""

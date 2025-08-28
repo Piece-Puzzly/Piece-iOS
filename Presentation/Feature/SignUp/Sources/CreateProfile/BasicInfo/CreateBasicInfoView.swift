@@ -453,6 +453,10 @@ struct CreateBasicInfoView: View {
         .foregroundStyle(Color.grayscaleDark3)
       
       CreateContactContainer(viewModel: viewModel, focusField: $focusField)
+      
+      Text(viewModel.contactInfoText)
+        .pretendard(.body_S_M)
+        .foregroundStyle(Color.systemError)
     }
   }
   
