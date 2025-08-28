@@ -112,13 +112,15 @@ struct MatchingMainView: View {
   private var matchingNoDataCard: some View {
     VStack {
       VStack(alignment: .center, spacing: 8) {
-        Text("진중한 만남을 위한\n")
-          .foregroundStyle(Color.grayscaleBlack) +
-        Text("매칭 조각")
-          .foregroundStyle(Color.primary) +
-        Text("이 곧 도착할 거예요!")
-          .foregroundStyle(Color.grayscaleBlack)
-        Text("매일 밤 10시에 매칭 조각이 도착해요\n생성한 프로필을 검토하며 기다려 주세요.")
+        Group {
+          Text("오늘의 인연")
+            .foregroundStyle(Color.primaryDefault) +
+          Text("이 곧 도착할 거예요!")
+            .foregroundStyle(Color.grayscaleBlack)
+        }
+        .pretendard(.heading_M_SB)
+        
+        Text("내 운명의 상대를 찾을지도 몰라요.\n놓치지 않도록 푸쉬 알림을 켜주세요!")
           .pretendard(.body_S_M)
           .foregroundStyle(Color.grayscaleDark3)
       }

@@ -17,7 +17,7 @@ final class PreviewProfileBasicViewModel {
   
   private enum Constant {
     static let navigationTitle = ""
-    static let title = "오늘의 매칭 조각"
+    static let title = "오늘의 인연"
   }
 
   let navigationTitle = Constant.navigationTitle
