@@ -154,12 +154,23 @@ final class WithdrawConfirmViewModel: NSObject {
   }
   
   private func initialize() {
-    print("✅ Initialize started")
-    PCKeychainManager.shared.deleteAll()
-    print("✅ Keychain deleted")
-    PCUserDefaultsService.shared.initialize()
-    print("✅ UserDefaults initialized")
+    print("✅ Withdraw started")
+    clearUserDataPreservingFCMToken()
+    
     destination = .splash
-    print("✅ splash로 이동")
+    print("✅ Withdraw completed - moved to splash")
+  }
+  
+  private func clearUserDataPreservingFCMToken() {
+    let fcmToken = PCKeychainManager.shared.read(.fcmToken)
+    PCKeychainManager.shared.deleteAll()
+    PCUserDefaultsService.shared.initialize()
+    
+    if let fcmToken {
+      PCKeychainManager.shared.save(.fcmToken, value: fcmToken)
+      print("✅ User data cleared with FCM token preserved")
+    } else {
+      print("✅ User data cleared")
+    }
   }
 }

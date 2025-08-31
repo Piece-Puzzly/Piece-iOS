@@ -368,9 +368,25 @@ final class SettingsViewModel {
     }
     showLogoutAlert = false
     
-    PCKeychainManager.shared.deleteAll()
-    PCUserDefaultsService.shared.initialize()
+    print("✅ Logout started")
+    // fcm 토큰 제외 모두 지우기 (앱을 종료하지 않고 바로 다시 로그인하는 경우 fcm 토큰을 서버에 등록해야함)
+    clearUserDataPreservingFCMToken()
+    
     // 로그아웃 시 splash로 이동
     destination = .splash
+    print("✅ Logout completed - moved to splash")
+  }
+  
+  private func clearUserDataPreservingFCMToken() {
+    let fcmToken = PCKeychainManager.shared.read(.fcmToken)
+    PCKeychainManager.shared.deleteAll()
+    PCUserDefaultsService.shared.initialize()
+    
+    if let fcmToken {
+      PCKeychainManager.shared.save(.fcmToken, value: fcmToken)
+      print("✅ User data cleared with FCM token preserved")
+    } else {
+      print("✅ User data cleared")
+    }
   }
 }
