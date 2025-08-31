@@ -67,7 +67,7 @@ final class SplashViewModel {
         guard !showNeedsForceUpdateAlert else { return }
         
         guard checkOnboarding() else { return }
-        checkAccesstoken()
+        guard checkAccesstoken() else { return }
         try await setRoute()
       } catch let error as NetworkError {
         var destination: Route = .login
@@ -148,14 +148,15 @@ final class SplashViewModel {
     return true
   }
   
-  private func checkAccesstoken() {
+  private func checkAccesstoken() -> Bool {
     // 로그인 여부 확인 ( AccessToken 유무 확인 )
     guard let accessToken = PCKeychainManager.shared.read(.accessToken) else {
       print("AccessToken이 없어서 로그인 화면으로 이동")
       destination = .login
-      return
+      return false
     }
     print("SplashView AccessToken: \(accessToken)")
+    return true
   }
   
   private func openAppStore() {
