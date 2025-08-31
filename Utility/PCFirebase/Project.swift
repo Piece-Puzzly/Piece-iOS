@@ -11,9 +11,6 @@ import ProjectDescriptionHelpers
 let project = Project.dynamicResourceFramework(
   name: Modules.Utility.PCFirebase.rawValue,
   dependencies: [
-    .data(target: .PCNetwork),
-    .data(target: .Repository),
-    .domain(target: .UseCases),
     .externalDependency(dependency: .FirebaseAnalytics),
     .externalDependency(dependency: .FirebaseCore),
     .externalDependency(dependency: .FirebaseMessaging),
