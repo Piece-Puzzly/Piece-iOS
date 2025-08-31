@@ -10,6 +10,7 @@ import Entities
 import LocalStorage
 import PCNetwork
 import RepositoryInterfaces
+import Foundation
 
 public final class LoginRepository: LoginRepositoryInterface {
 
@@ -29,6 +30,12 @@ public final class LoginRepository: LoginRepositoryInterface {
     PCKeychainManager.shared.save(.accessToken, value: responseDTO.accessToken)
     PCKeychainManager.shared.save(.refreshToken, value: responseDTO.refreshToken)
     networkService.updateCredentials()
+    
+    if let fcmToken = PCKeychainManager.shared.read(.fcmToken) {
+      let dataDict: [String: String] = ["token": fcmToken]
+      NotificationCenter.default.post(name: .fcmToken, object: nil, userInfo: dataDict)
+    }
+
     return responseDTO.toDomain()
   }
   
