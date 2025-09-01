@@ -9,6 +9,10 @@
 import PCFirebase
 import UIKit
 import Network
+import PCNetwork
+import LocalStorage
+import Repository
+import UseCases
 
 final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
   
@@ -24,6 +28,14 @@ final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
     
     // 네트워크 모니터링 시작
     startNetworkMonitoring()
+    
+    // FCM 토큰 알림 구독
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleFCMTokenNotification),
+      name: .fcmToken,
+      object: nil
+    )
     
     // Firebase 설정
     do {
@@ -90,6 +102,36 @@ final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
       }
     }
     networkMonitor.start(queue: networkQueue)
+  }
+  
+  @objc private func handleFCMTokenNotification(_ notification: Notification) {
+    guard let fcmToken = notification.userInfo?["token"] as? String else { return }
+    
+    // KeyChain에 FCMToken 저장
+    PCKeychainManager.shared.save(.fcmToken, value: fcmToken)
+    
+    // Access Token이 있는지 확인
+    guard let accessToken = PCKeychainManager.shared.read(.accessToken), !accessToken.isEmpty else {
+      print("🔥 Access Token이 없어서 FCM 토큰 전송을 건너뜁니다")
+      return
+    }
+    
+    // 서버에 FCM 토큰을 전송하는 로직
+    print("🔥 서버에 FCM 토큰 전송 시작...")
+    let repositoryFactory = RepositoryFactory(
+      networkService: NetworkService.shared,
+      sseService: SSEService.shared
+    )
+    let loginRepository = repositoryFactory.createLoginRepository()
+    let registerFcmTokenUseCase = UseCaseFactory.createRegisterFcmTokenUseCase(repository: loginRepository)
+    Task {
+      do {
+        _ = try await registerFcmTokenUseCase.execute(token: fcmToken)
+        print("🔥 서버에 FCM 토큰 전송 성공")
+      } catch {
+        print("🔥 서버에 FCM 토큰 전송 실패: \(error)")
+      }
+    }
   }
   
   // 앱이 종료된 상태에서 푸시 알림을 받았을 때 호출되는 메소드

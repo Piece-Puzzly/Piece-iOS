@@ -6,10 +6,8 @@
 //
 
 import FirebaseMessaging
-import PCNetwork
-import Repository
+import PCFoundationExtension
 import UIKit
-import UseCases
 
 public final class PCNotificationService: NSObject, UNUserNotificationCenterDelegate, MessagingDelegate {
   public static let shared = PCNotificationService()
@@ -171,28 +169,12 @@ public final class PCNotificationService: NSObject, UNUserNotificationCenterDele
     didReceiveRegistrationToken fcmToken: String?
   ) {
     if let fcmToken {
+      let dataDict: [String: String] = ["token": fcmToken]
+      
+      NotificationCenter.default.post(name: .fcmToken, object: nil, userInfo: dataDict)
+      
       print("🔥 Firebase FCM 토큰 수신: \(fcmToken)")
       print("🔥 토큰 길이: \(fcmToken.count) 문자")
-      
-      let dataDict: [String: String] = ["token": fcmToken]
-      NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil, userInfo: dataDict)
-      
-      // 서버에 FCM 토큰을 전송하는 로직
-      print("🔥 서버에 FCM 토큰 전송 시작...")
-      let repositoryFactory = RepositoryFactory(
-        networkService: NetworkService.shared,
-        sseService: SSEService.shared
-      )
-      let loginRepository = repositoryFactory.createLoginRepository()
-      let registerFcmTokenUseCase = UseCaseFactory.createRegisterFcmTokenUseCase(repository: loginRepository)
-      Task {
-        do {
-          _ = try await registerFcmTokenUseCase.execute(token: fcmToken)
-          print("🔥 서버에 FCM 토큰 전송 성공")
-        } catch {
-          print("🔥 서버에 FCM 토큰 전송 실패: \(error)")
-        }
-      }
     } else {
       print("🔥 FCM 토큰이 nil입니다")
     }

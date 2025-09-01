@@ -10,4 +10,5 @@ import Foundation
 public enum PCKeychain: String, CaseIterable {
   case accessToken
   case refreshToken
+  case fcmToken
 }
