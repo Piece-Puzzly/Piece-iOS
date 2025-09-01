@@ -214,22 +214,38 @@ public struct PCBottomSheet<T: BottomSheetItemRepresentable>: View {
   }
 
   public var body: some View {
-    VStack(alignment: .leading, spacing: 0) {
-      header
-        .padding(.vertical, 8)
-      
-      Spacer()
-        .frame(maxHeight: 12)
-      
-      content
-      
-      Spacer()
-      
-      button
-        .padding(.bottom, 10)
+    ScrollViewReader { proxy in
+      ScrollView {
+        VStack(alignment: .leading, spacing: 0) {
+          header
+            .padding(.vertical, 8)
+          
+          Spacer()
+            .frame(maxHeight: 12)
+          
+          content
+          
+          Spacer()
+          
+          button
+            .padding(.bottom, 10)
+            .id("bottomButton")
+        }
+        .padding(.top, 28)
+        .padding(.horizontal, 20)
+      }
+      .scrollIndicators(.hidden)
+      .scrollDisabled(true)
+      .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardDidShowNotification)) { _ in
+        Task {
+          await MainActor.run {
+            withAnimation(.easeInOut(duration: 0.3)) {
+              proxy.scrollTo("bottomButton", anchor: .top)
+            }
+          }
+        }
+      }
     }
-    .padding(.top, 28)
-    .padding(.horizontal, 20)
   }
 
   private var header: some View {
