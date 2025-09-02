@@ -326,6 +326,7 @@ struct EditProfileView: View {
       color: viewModel.nicknameState.infoTextColor
     )
     .textMaxLength(6)
+    .showClearButton(true)
     .onSubmit {
       focusField = "description"
     }
@@ -347,6 +348,7 @@ struct EditProfileView: View {
       color: .systemError
     )
     .textMaxLength(20)
+    .showClearButton(true)
     .onSubmit {
       focusField = "birthDate"
     }
@@ -367,6 +369,7 @@ struct EditProfileView: View {
       viewModel.birthDateInfoText,
       color: .systemError
     )
+    .showClearButton(true)
     .onChange { newValue in
       viewModel.birthDate = String(newValue.filter { $0.isNumber }.prefix(8))
       viewModel.handleAction(.updateEditingState)

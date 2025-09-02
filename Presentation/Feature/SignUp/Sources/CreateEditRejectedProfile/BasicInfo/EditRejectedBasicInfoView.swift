@@ -301,6 +301,7 @@ struct EditRejectedBasicInfoView: View {
       color: viewModel.nicknameState.infoTextColor
     )
     .textMaxLength(6)
+    .showClearButton(true)
     .onSubmit {
       focusField = "description"
     }
@@ -322,6 +323,7 @@ struct EditRejectedBasicInfoView: View {
       color: .systemError
     )
     .textMaxLength(20)
+    .showClearButton(true)
     .onSubmit {
       focusField = "birthDate"
     }
@@ -339,6 +341,7 @@ struct EditRejectedBasicInfoView: View {
       viewModel.birthDateInfoText,
       color: .systemError
     )
+    .showClearButton(true)
     .onChange { newValue in
       viewModel.birthDate = String(newValue.filter { $0.isNumber }.prefix(8))
     }

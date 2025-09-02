@@ -85,6 +85,7 @@ public enum BottomSheetItemType {
 }
 
 public struct BottomSheetTextItem: BottomSheetItemRepresentable {
+  @State private var hasValue: Bool = false
   @Binding public var value: String
   
   public var id: UUID
@@ -115,7 +116,7 @@ public struct BottomSheetTextItem: BottomSheetItemRepresentable {
           .frame(maxHeight: 19)
         
         if state == .selected {
-          textField
+          PCBottomSheetTextFieldRow(value: $value)
           
           Spacer()
         }
@@ -136,21 +137,7 @@ public struct BottomSheetTextItem: BottomSheetItemRepresentable {
       }
     }
   }
-  private var textField: some View {
-    TextField("자유롭게 작성해주세요", text: $value)
-      .autocorrectionDisabled()
-      .multilineTextAlignment(.leading)
-      .textInputAutocapitalization(.none)
-      .pretendard(.body_M_M)
-      .frame(height: 52)
-      .padding(.horizontal, 16)
-      .background(.grayscaleLight3)
-      .cornerRadius(8)
-      .onAppear {
-        UITextField.appearance().clearButtonMode = .whileEditing
-      }
-  }
-
+  
   public func hash(into hasher: inout Hasher) {
       hasher.combine(id)
   }
@@ -180,6 +167,44 @@ public struct BottomSheetTextItem: BottomSheetItemRepresentable {
     self.type = .custom(text)
     self.state = state
     self._value = value
+  }
+}
+
+fileprivate struct PCBottomSheetTextFieldRow: View {
+  @Binding var value: String
+  @State private var hasValue: Bool = false
+
+  var body: some View {
+    ZStack {
+      RoundedRectangle(cornerRadius: 8)
+        .fill(Color.grayscaleLight3)
+
+      HStack(spacing: 0) {
+        TextField("자유롭게 작성해주세요", text: $value)
+          .autocorrectionDisabled()
+          .multilineTextAlignment(.leading)
+          .textInputAutocapitalization(.none)
+          .pretendard(.body_M_M)
+          .onChange(of: value) { _, newValue in
+            hasValue = !newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+          }
+
+        if hasValue {
+          Button {
+            value = ""
+          } label: {
+            DesignSystemAsset.Icons.deletCircle20.swiftUIImage
+              .renderingMode(.template)
+              .foregroundStyle(Color.grayscaleLight1)
+          }
+        }
+      }
+      .padding(.horizontal, 16)
+      .onAppear {
+        hasValue = !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+      }
+    }
+    .frame(height: 52)
   }
 }
 
