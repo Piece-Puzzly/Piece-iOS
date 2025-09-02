@@ -77,7 +77,7 @@ public struct PCTextField<FocusField: Hashable>: View {
   
   @ViewBuilder
   private var clearButton: some View {
-    if showClearButton && ( !text.isEmpty || focusState.wrappedValue == focusField) {
+    if showClearButton && (!text.isEmpty || focusState.wrappedValue == focusField) {
       Button {
         text = ""
       } label: {

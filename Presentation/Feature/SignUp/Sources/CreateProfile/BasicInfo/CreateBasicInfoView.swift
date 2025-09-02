@@ -288,6 +288,7 @@ struct CreateBasicInfoView: View {
       color: viewModel.nicknameState.infoTextColor
     )
     .textMaxLength(6)
+    .showClearButton(true)
     .onSubmit {
       focusField = "description"
     }
@@ -309,6 +310,7 @@ struct CreateBasicInfoView: View {
       color: .systemError
     )
     .textMaxLength(20)
+    .showClearButton(true)
     .onSubmit {
       focusField = "birthDate"
     }
@@ -326,6 +328,7 @@ struct CreateBasicInfoView: View {
       viewModel.birthDateInfoText,
       color: .systemError
     )
+    .showClearButton(true)
     .onChange { newValue in
       viewModel.birthDate = String(newValue.filter { $0.isNumber }.prefix(8))
     }
