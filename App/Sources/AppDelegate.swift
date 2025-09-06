@@ -66,9 +66,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
     PCNotificationService.shared.setDelegate()
     PCNotificationService.shared.enableAutoInit()
     
-    // 알림 권한 요청
-    PCNotificationService.shared.requestPushPermission()
-    
     // 현재 알림 권한 상태 확인 (비동기)
     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
       PCNotificationService.shared.checkNotificationPermission()
