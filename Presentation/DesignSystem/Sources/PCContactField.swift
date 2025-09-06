@@ -90,7 +90,7 @@ public struct PCContactField: View {
       }
 
       if contact.type == .openKakao, estimatedLineCount >= 2 {
-        Spacer()
+        Spacer(minLength: 0)
       }
     }
   }
@@ -112,6 +112,15 @@ public struct PCContactField: View {
               }
           }
         )
+        .onAppear {
+          Task {
+            await MainActor.run {
+              let copy = contact.value
+              contact.value = copy
+            }
+          }
+        }
+
     default:
       TextField("", text: $contact.value)
         .pretendard(.body_M_M)
