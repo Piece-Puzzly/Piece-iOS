@@ -43,8 +43,8 @@ struct PermissionRequestView: View {
           
           PermissionItem(
             icon: DesignSystemAsset.Icons.cameraLine32.swiftUIImage,
-            title: "사진, 카메라",
-            description: "프로필 생성 시 사진 첨부를 위해 필요해요.",
+            title: "사진",
+            description: "프로필 사진 첨부를 위해 필요해요.",
             isRequired: true
           )
           
@@ -53,7 +53,7 @@ struct PermissionRequestView: View {
           PermissionItem(
             icon: DesignSystemAsset.Icons.alarm32.swiftUIImage,
             title: "알림",
-            description: "매칭 현황 등 중요 메세지 수신을 위해 필요해요.",
+            description: "중요 메세지 수신을 위해 꼭 필요해요.",
             isRequired: false
           )
           
@@ -62,7 +62,7 @@ struct PermissionRequestView: View {
           PermissionItem(
             icon: DesignSystemAsset.Icons.cellLine32.swiftUIImage,
             title: "연락처",
-            description: "지인을 수집하기 위해 필요해요.",
+            description: "아는 사람 차단하기 기능을 위해 필요해요.",
             isRequired: false
           )
         }
@@ -101,7 +101,7 @@ struct PermissionRequestView: View {
         viewModel.handleAction(.cancelAlert)
       }
     } message: {
-      Text("사진, 카메라 권한이 필요합니다. 설정에서 권한을 허용해주세요.")
+      Text("[사진] 권한이 필요합니다. 설정에서 [사진] 권한을 허용해주세요.")
     }
   }
   
