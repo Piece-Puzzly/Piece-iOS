@@ -16,14 +16,12 @@ struct PermissionRequestView: View {
   @Environment(Router.self) private var router: Router
   
   init(
-    cameraPermissionUseCase: CameraPermissionUseCase,
     photoPermissionUseCase: PhotoPermissionUseCase,
     requestContactsPermissionUseCase: RequestContactsPermissionUseCase,
     requestNotificationPermissionUseCase: RequestNotificationPermissionUseCase
   ) {
     _viewModel = .init(
       wrappedValue: .init(
-        cameraPermissionUseCase: cameraPermissionUseCase,
         photoPermissionUseCase: photoPermissionUseCase,
         requestContactsPermissionUseCase: requestContactsPermissionUseCase,
         requestNotificationPermissionUseCase: requestNotificationPermissionUseCase

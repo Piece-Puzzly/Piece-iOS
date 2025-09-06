@@ -203,12 +203,10 @@ public struct Coordinator {
       
     case .checkPremission:
       let requestNotificationPermissionUseCase = UseCaseFactory.createRequestNotificationPermissionUseCase()
-      let cameraPermissionUseCase = UseCaseFactory.createCameraPermissionUseCase()
       let photoPermissionUseCase = UseCaseFactory.createPhotoPermissionUseCase()
       let checkContactsPermissionUseCase = UseCaseFactory.createCheckContactsPermissionUseCase()
       let requestContactsPermissionUseCase = UseCaseFactory.createRequestContactsPermissionUseCase(checkContactsPermissionUseCase: checkContactsPermissionUseCase)
       SignUpViewFactory.createPermissionRequestView(
-        cameraPermissionUseCase: cameraPermissionUseCase,
         photoPermissionUseCase: photoPermissionUseCase,
         requestContactsPermissionUseCase: requestContactsPermissionUseCase,
         requestNotificationPermissionUseCase: requestNotificationPermissionUseCase
