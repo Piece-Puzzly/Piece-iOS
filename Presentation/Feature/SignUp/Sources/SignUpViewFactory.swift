@@ -34,13 +34,13 @@ public struct SignUpViewFactory {
   
   public static func createPermissionRequestView(
     photoPermissionUseCase: PhotoPermissionUseCase,
-    requestContactsPermissionUseCase: RequestContactsPermissionUseCase,
-    requestNotificationPermissionUseCase: RequestNotificationPermissionUseCase
+    requestNotificationPermissionUseCase: RequestNotificationPermissionUseCase,
+    requestContactsPermissionUseCase: RequestContactsPermissionUseCase
   ) -> some View {
     PermissionRequestView(
       photoPermissionUseCase: photoPermissionUseCase,
-      requestContactsPermissionUseCase: requestContactsPermissionUseCase,
-      requestNotificationPermissionUseCase: requestNotificationPermissionUseCase
+      requestNotificationPermissionUseCase: requestNotificationPermissionUseCase,
+      requestContactsPermissionUseCase: requestContactsPermissionUseCase
     )
   }
   

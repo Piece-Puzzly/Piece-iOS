@@ -208,8 +208,8 @@ public struct Coordinator {
       let requestContactsPermissionUseCase = UseCaseFactory.createRequestContactsPermissionUseCase(checkContactsPermissionUseCase: checkContactsPermissionUseCase)
       SignUpViewFactory.createPermissionRequestView(
         photoPermissionUseCase: photoPermissionUseCase,
-        requestContactsPermissionUseCase: requestContactsPermissionUseCase,
-        requestNotificationPermissionUseCase: requestNotificationPermissionUseCase
+        requestNotificationPermissionUseCase: requestNotificationPermissionUseCase,
+        requestContactsPermissionUseCase: requestContactsPermissionUseCase
       )
       
     case .avoidContactsGuide:

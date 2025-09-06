@@ -21,8 +21,8 @@ final class PermissionRequestViewModel {
     isPhotoPermissionGranted ? .solid : .disabled
   }
   private let photoPermissionUseCase: PhotoPermissionUseCase
-  private let requestContactsPermissionUseCase: RequestContactsPermissionUseCase
   private let requestNotificationPermissionUseCase: RequestNotificationPermissionUseCase
+  private let requestContactsPermissionUseCase: RequestContactsPermissionUseCase
   
   enum Action {
     case onAppear
@@ -33,12 +33,12 @@ final class PermissionRequestViewModel {
   
   init(
     photoPermissionUseCase: PhotoPermissionUseCase,
-    requestContactsPermissionUseCase: RequestContactsPermissionUseCase,
-    requestNotificationPermissionUseCase: RequestNotificationPermissionUseCase
+    requestNotificationPermissionUseCase: RequestNotificationPermissionUseCase,
+    requestContactsPermissionUseCase: RequestContactsPermissionUseCase
   ) {
     self.photoPermissionUseCase = photoPermissionUseCase
-    self.requestContactsPermissionUseCase = requestContactsPermissionUseCase
     self.requestNotificationPermissionUseCase = requestNotificationPermissionUseCase
+    self.requestContactsPermissionUseCase = requestContactsPermissionUseCase    
   }
   
   func handleAction(_ action: Action) {
