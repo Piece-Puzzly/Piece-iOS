@@ -75,17 +75,12 @@ struct PermissionRequestView: View {
       .padding(.bottom, 10)
     }
     .toolbar(.hidden)
-    .task {
-      await viewModel.checkPermissions()
-    }
     .onAppear {
       viewModel.handleAction(.onAppear)
     }
     .onChange(of: scenePhase) {
-      if scenePhase == .active {
-        Task {
-          await viewModel.checkPermissions()
-        }
+      if scenePhase == .active && viewModel.hasCheckedPermissions {
+        viewModel.handleAction(.requestPermissions)
       }
     }
     .onChange(of: viewModel.showToAvoidContactsView) { _, newValue in
@@ -93,15 +88,35 @@ struct PermissionRequestView: View {
         router.push(to: .avoidContactsGuide)
       }
     }
-    .alert("필수 권한 요청", isPresented: $viewModel.shouldShowSettingsAlert) {
+    .alert("[필수] 권한 요청", isPresented: $viewModel.showPhotoAlert) {
       Button("설정으로 이동") {
         viewModel.handleAction(.showShettingAlert)
       }
-      Button("취소", role: .cancel) {
-        viewModel.handleAction(.cancelAlert)
+      Button("취소") {
+        viewModel.handleAction(.cancelAlertRequired)
       }
     } message: {
-      Text("[사진] 권한이 필요합니다. 설정에서 [사진] 권한을 허용해주세요.")
+      Text("\"사진\" 기능을 사용하려면\n[설정]-[피스]-[사진]을 허용해주세요.")
+    }
+    .alert("[선택] 권한 요청", isPresented: $viewModel.showNotificationAlert) {
+      Button("설정으로 이동") {
+        viewModel.handleAction(.showShettingAlert)
+      }
+      Button("취소") {
+        viewModel.handleAction(.cancelAlertOptional)
+      }
+    } message: {
+      Text("\"푸쉬 알림\" 기능을 사용하려면\n[설정]-[피스]-[알림]을 허용해주세요.")
+    }
+    .alert("[선택] 권한 요청", isPresented: $viewModel.showAcquaintanceBlockAlert) {
+      Button("설정으로 이동") {
+        viewModel.handleAction(.showShettingAlert)
+      }
+      Button("취소") {
+        viewModel.handleAction(.cancelAlertOptional)
+      }
+    } message: {
+      Text("\"아는 사람 차단\" 기능을 사용하려면\n[설정]-[피스]-[연락처 접근]을 허용해주세요.")
     }
   }
   
@@ -116,7 +131,7 @@ struct PermissionRequestView: View {
     .pretendard(.heading_L_SB)
     .foregroundStyle(Color.grayscaleBlack)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .padding(.bottom, 120)
+    .padding(.bottom, 84)
   }
   
   private var nextButton: some View {
