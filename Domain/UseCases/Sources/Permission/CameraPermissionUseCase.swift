@@ -10,6 +10,7 @@ import AVFoundation
 
 public protocol CameraPermissionUseCase {
   func execute() async -> Bool
+  func checkStatus() -> AVAuthorizationStatus
 }
 
 public final class CameraPermissionUseCaseImpl: CameraPermissionUseCase {
@@ -32,5 +33,9 @@ public final class CameraPermissionUseCaseImpl: CameraPermissionUseCase {
     @unknown default:
       return false
     }
+  }
+  
+  public func checkStatus() -> AVAuthorizationStatus {
+    return captureDevice.authorizationStatus(for: .video)
   }
 }

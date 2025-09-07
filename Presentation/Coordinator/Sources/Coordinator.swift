@@ -203,15 +203,13 @@ public struct Coordinator {
       
     case .checkPremission:
       let requestNotificationPermissionUseCase = UseCaseFactory.createRequestNotificationPermissionUseCase()
-      let cameraPermissionUseCase = UseCaseFactory.createCameraPermissionUseCase()
       let photoPermissionUseCase = UseCaseFactory.createPhotoPermissionUseCase()
       let checkContactsPermissionUseCase = UseCaseFactory.createCheckContactsPermissionUseCase()
       let requestContactsPermissionUseCase = UseCaseFactory.createRequestContactsPermissionUseCase(checkContactsPermissionUseCase: checkContactsPermissionUseCase)
       SignUpViewFactory.createPermissionRequestView(
-        cameraPermissionUseCase: cameraPermissionUseCase,
         photoPermissionUseCase: photoPermissionUseCase,
-        requestContactsPermissionUseCase: requestContactsPermissionUseCase,
-        requestNotificationPermissionUseCase: requestNotificationPermissionUseCase
+        requestNotificationPermissionUseCase: requestNotificationPermissionUseCase,
+        requestContactsPermissionUseCase: requestContactsPermissionUseCase
       )
       
     case .avoidContactsGuide:
@@ -236,11 +234,13 @@ public struct Coordinator {
       let valuePicksRepository = repositoryFactory.createValuePicksRepository()
       let checkNicknameUseCase = UseCaseFactory.createCheckNicknameUseCase(repository: checkNicknameRepositoty)
       let uploadProfileImageUseCase = UseCaseFactory.createUploadProfileImageUseCase(repository: uploadProfileImageRepository)
+      let cameraPermissionUseCase = UseCaseFactory.createCameraPermissionUseCase()
       let getValueTalksUseCase = UseCaseFactory.createGetValueTalksUseCase(repository: valueTalksRepository)
       let getValuePicksUseCase = UseCaseFactory.createGetValuePicksUseCase(repository: valuePicksRepository)
       SignUpViewFactory.createProfileContainerView(
         checkNicknameUseCase: checkNicknameUseCase,
         uploadProfileImageUseCase: uploadProfileImageUseCase,
+        cameraPermissionUseCase: cameraPermissionUseCase,
         getValueTalksUseCase: getValueTalksUseCase,
         getValuePicksUseCase: getValuePicksUseCase
       )
@@ -252,6 +252,8 @@ public struct Coordinator {
       let getProfileBasicUseCase = UseCaseFactory.createGetProfileUseCase(repository: profileRepository)
       let checkNicknameUseCase = UseCaseFactory.createCheckNicknameUseCase(repository: checkNicknameRepositoty)
       let uploadProfileImageUseCase = UseCaseFactory.createUploadProfileImageUseCase(repository: profileRepository)
+      let cameraPermissionUseCase = UseCaseFactory.createCameraPermissionUseCase()
+      let photoPermissionUseCase = UseCaseFactory.createPhotoPermissionUseCase()
       let getProfileValueTalksUseCase = UseCaseFactory.createGetProfileValueTalksUseCase(repository: profileRepository)
       let getProfileValuePicksUseCase = UseCaseFactory.createGetProfileValuePicksUseCase(repository: profileRepository)
 
@@ -259,6 +261,8 @@ public struct Coordinator {
         getProfileBasicUseCase: getProfileBasicUseCase,
         checkNicknameUseCase: checkNicknameUseCase,
         uploadProfileImageUseCase: uploadProfileImageUseCase,
+        cameraPermissionUseCase: cameraPermissionUseCase,
+        photoPermissionUseCase: photoPermissionUseCase,
         getProfileValueTalksUseCase: getProfileValueTalksUseCase,
         getProfileValuePicksUseCase: getProfileValuePicksUseCase
       )
@@ -318,11 +322,15 @@ public struct Coordinator {
       let getProfileBasicUseCase = UseCaseFactory.createGetProfileUseCase(repository: profileRepository)
       let checkNicknameUseCase = UseCaseFactory.createCheckNicknameUseCase(repository: checkNicknameRepositoty)
       let uploadProfileImageUseCase = UseCaseFactory.createUploadProfileImageUseCase(repository: profileRepository)
+      let cameraPermissionUseCase = UseCaseFactory.createCameraPermissionUseCase()
+      let photoPermissionUseCase = UseCaseFactory.createPhotoPermissionUseCase()
       EditProfileViewFactory.createEditProfileView(
         updateProfileBasicUseCase: updateProfileBasicUseCase,
         getProfileBasicUseCase: getProfileBasicUseCase,
         checkNicknameUseCase: checkNicknameUseCase,
-        uploadProfileImageUseCase: uploadProfileImageUseCase
+        uploadProfileImageUseCase: uploadProfileImageUseCase,
+        cameraPermissionUseCase: cameraPermissionUseCase,
+        photoPermissionUseCase: photoPermissionUseCase
       )
       
     case .withdraw:

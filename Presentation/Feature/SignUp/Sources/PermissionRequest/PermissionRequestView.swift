@@ -16,17 +16,15 @@ struct PermissionRequestView: View {
   @Environment(Router.self) private var router: Router
   
   init(
-    cameraPermissionUseCase: CameraPermissionUseCase,
     photoPermissionUseCase: PhotoPermissionUseCase,
-    requestContactsPermissionUseCase: RequestContactsPermissionUseCase,
-    requestNotificationPermissionUseCase: RequestNotificationPermissionUseCase
+    requestNotificationPermissionUseCase: RequestNotificationPermissionUseCase,
+    requestContactsPermissionUseCase: RequestContactsPermissionUseCase
   ) {
     _viewModel = .init(
       wrappedValue: .init(
-        cameraPermissionUseCase: cameraPermissionUseCase,
         photoPermissionUseCase: photoPermissionUseCase,
-        requestContactsPermissionUseCase: requestContactsPermissionUseCase,
-        requestNotificationPermissionUseCase: requestNotificationPermissionUseCase
+        requestNotificationPermissionUseCase: requestNotificationPermissionUseCase,
+        requestContactsPermissionUseCase: requestContactsPermissionUseCase
       )
     )
   }
@@ -45,8 +43,8 @@ struct PermissionRequestView: View {
           
           PermissionItem(
             icon: DesignSystemAsset.Icons.cameraLine32.swiftUIImage,
-            title: "사진, 카메라",
-            description: "프로필 생성 시 사진 첨부를 위해 필요해요.",
+            title: "사진",
+            description: "프로필 사진 첨부를 위해 필요해요.",
             isRequired: true
           )
           
@@ -55,7 +53,7 @@ struct PermissionRequestView: View {
           PermissionItem(
             icon: DesignSystemAsset.Icons.alarm32.swiftUIImage,
             title: "알림",
-            description: "매칭 현황 등 중요 메세지 수신을 위해 필요해요.",
+            description: "중요 메세지 수신을 위해 꼭 필요해요.",
             isRequired: false
           )
           
@@ -64,7 +62,7 @@ struct PermissionRequestView: View {
           PermissionItem(
             icon: DesignSystemAsset.Icons.cellLine32.swiftUIImage,
             title: "연락처",
-            description: "지인을 수집하기 위해 필요해요.",
+            description: "아는 사람 차단하기 기능을 위해 필요해요.",
             isRequired: false
           )
         }
@@ -77,17 +75,12 @@ struct PermissionRequestView: View {
       .padding(.bottom, 10)
     }
     .toolbar(.hidden)
-    .task {
-      await viewModel.checkPermissions()
-    }
     .onAppear {
       viewModel.handleAction(.onAppear)
     }
     .onChange(of: scenePhase) {
-      if scenePhase == .active {
-        Task {
-          await viewModel.checkPermissions()
-        }
+      if scenePhase == .active && viewModel.hasCheckedPermissions {
+        viewModel.handleAction(.requestPermissions)
       }
     }
     .onChange(of: viewModel.showToAvoidContactsView) { _, newValue in
@@ -95,15 +88,35 @@ struct PermissionRequestView: View {
         router.push(to: .avoidContactsGuide)
       }
     }
-    .alert("필수 권한 요청", isPresented: $viewModel.shouldShowSettingsAlert) {
+    .alert("[필수] 권한 요청", isPresented: $viewModel.showPhotoAlert) {
       Button("설정으로 이동") {
-        viewModel.handleAction(.showShettingAlert)
+        viewModel.handleAction(.showSettingAlert)
       }
-      Button("취소", role: .cancel) {
-        viewModel.handleAction(.cancelAlert)
+      Button("취소") {
+        viewModel.handleAction(.cancelAlertRequired)
       }
     } message: {
-      Text("사진, 카메라 권한이 필요합니다. 설정에서 권한을 허용해주세요.")
+      Text("\"사진\" 기능을 사용하려면\n[설정]-[피스]-[사진]을 허용해주세요.")
+    }
+    .alert("[선택] 권한 요청", isPresented: $viewModel.showNotificationAlert) {
+      Button("설정으로 이동") {
+        viewModel.handleAction(.showSettingAlert)
+      }
+      Button("취소") {
+        viewModel.handleAction(.cancelAlertOptional)
+      }
+    } message: {
+      Text("\"푸쉬 알림\" 기능을 사용하려면\n[설정]-[피스]-[알림]을 허용해주세요.")
+    }
+    .alert("[선택] 권한 요청", isPresented: $viewModel.showAcquaintanceBlockAlert) {
+      Button("설정으로 이동") {
+        viewModel.handleAction(.showSettingAlert)
+      }
+      Button("취소") {
+        viewModel.handleAction(.cancelAlertOptional)
+      }
+    } message: {
+      Text("\"아는 사람 차단\" 기능을 사용하려면\n[설정]-[피스]-[연락처 접근]을 허용해주세요.")
     }
   }
   
@@ -118,7 +131,7 @@ struct PermissionRequestView: View {
     .pretendard(.heading_L_SB)
     .foregroundStyle(Color.grayscaleBlack)
     .frame(maxWidth: .infinity, alignment: .leading)
-    .padding(.bottom, 120)
+    .padding(.bottom, 84)
   }
   
   private var nextButton: some View {

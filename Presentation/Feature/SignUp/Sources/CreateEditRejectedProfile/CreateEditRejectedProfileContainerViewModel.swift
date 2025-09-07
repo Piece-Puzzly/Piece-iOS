@@ -33,6 +33,8 @@ final class CreateEditRejectedProfileContainerViewModel {
   let getProfileBasicUseCase: GetProfileBasicUseCase
   let checkNicknameUseCase: CheckNicknameUseCase
   let uploadProfileImageUseCase: UploadProfileImageUseCase
+  let cameraPermissionUseCase: CameraPermissionUseCase
+  let photoPermissionUseCase: PhotoPermissionUseCase
   let getProfileValuePicksUseCase: GetProfileValuePicksUseCase
   let getProfileValueTalksUseCase: GetProfileValueTalksUseCase
 
@@ -43,12 +45,16 @@ final class CreateEditRejectedProfileContainerViewModel {
     getProfileBasicUseCase: GetProfileBasicUseCase,
     checkNicknameUseCase: CheckNicknameUseCase,
     uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase,
+    photoPermissionUseCase: PhotoPermissionUseCase,
     getProfileValueTalksUseCase: GetProfileValueTalksUseCase,
     getProfileValuePicksUseCase: GetProfileValuePicksUseCase
   ) {
     self.getProfileBasicUseCase = getProfileBasicUseCase
     self.checkNicknameUseCase = checkNicknameUseCase
     self.uploadProfileImageUseCase = uploadProfileImageUseCase
+    self.cameraPermissionUseCase = cameraPermissionUseCase
+    self.photoPermissionUseCase = photoPermissionUseCase
     self.getProfileValuePicksUseCase = getProfileValuePicksUseCase
     self.getProfileValueTalksUseCase = getProfileValueTalksUseCase
     

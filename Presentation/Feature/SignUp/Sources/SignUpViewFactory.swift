@@ -33,16 +33,14 @@ public struct SignUpViewFactory {
   }
   
   public static func createPermissionRequestView(
-    cameraPermissionUseCase: CameraPermissionUseCase,
     photoPermissionUseCase: PhotoPermissionUseCase,
-    requestContactsPermissionUseCase: RequestContactsPermissionUseCase,
-    requestNotificationPermissionUseCase: RequestNotificationPermissionUseCase
+    requestNotificationPermissionUseCase: RequestNotificationPermissionUseCase,
+    requestContactsPermissionUseCase: RequestContactsPermissionUseCase
   ) -> some View {
     PermissionRequestView(
-      cameraPermissionUseCase: cameraPermissionUseCase,
       photoPermissionUseCase: photoPermissionUseCase,
-      requestContactsPermissionUseCase: requestContactsPermissionUseCase,
-      requestNotificationPermissionUseCase: requestNotificationPermissionUseCase
+      requestNotificationPermissionUseCase: requestNotificationPermissionUseCase,
+      requestContactsPermissionUseCase: requestContactsPermissionUseCase
     )
   }
   
@@ -53,12 +51,14 @@ public struct SignUpViewFactory {
   public static func createProfileContainerView(
     checkNicknameUseCase: CheckNicknameUseCase,
     uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase,
     getValueTalksUseCase: GetValueTalksUseCase,
     getValuePicksUseCase: GetValuePicksUseCase
   ) -> some View {
     CreateProfileContainerView(
       checkNicknameUseCase: checkNicknameUseCase,
       uploadProfileImageUseCase: uploadProfileImageUseCase,
+      cameraPermissionUseCase: cameraPermissionUseCase,
       getValueTalksUseCase: getValueTalksUseCase,
       getValuePicksUseCase: getValuePicksUseCase
     )
@@ -68,6 +68,8 @@ public struct SignUpViewFactory {
     getProfileBasicUseCase: GetProfileBasicUseCase,
     checkNicknameUseCase: CheckNicknameUseCase,
     uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase,
+    photoPermissionUseCase: PhotoPermissionUseCase,
     getProfileValueTalksUseCase: GetProfileValueTalksUseCase,
     getProfileValuePicksUseCase: GetProfileValuePicksUseCase
   ) -> some View {
@@ -75,6 +77,8 @@ public struct SignUpViewFactory {
       getProfileBasicUseCase: getProfileBasicUseCase,
       checkNicknameUseCase: checkNicknameUseCase,
       uploadProfileImageUseCase: uploadProfileImageUseCase,
+      cameraPermissionUseCase: cameraPermissionUseCase,
+      photoPermissionUseCase: photoPermissionUseCase,
       getProfileValueTalksUseCase: getProfileValueTalksUseCase,
       getProfileValuePicksUseCase: getProfileValuePicksUseCase
     )

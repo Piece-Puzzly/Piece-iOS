@@ -10,6 +10,7 @@ import PhotosUI
 
 public protocol PhotoPermissionUseCase {
   func execute() async -> Bool
+  func checkStatus() -> PHAuthorizationStatus
 }
 
 public final class PhotoPermissionUseCaseImpl: PhotoPermissionUseCase {
@@ -29,6 +30,10 @@ public final class PhotoPermissionUseCaseImpl: PhotoPermissionUseCase {
     @unknown default:
       return false
     }
+  }
+  
+  public func checkStatus() -> PHAuthorizationStatus {
+    return PHPhotoLibrary.authorizationStatus(for: .readWrite)
   }
   
   private func requestAuthorization() async -> Bool {

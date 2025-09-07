@@ -9,61 +9,79 @@ import SwiftUI
 import DesignSystem
 import Observation
 import UseCases
+import LocalStorage
 
 @Observable
 final class PermissionRequestViewModel {
-  private(set) var isCameraPermissionGranted: Bool = false
+  enum PermissionAlertType {
+    case photo
+    case notification
+    case contacts
+  }
+  
+  private var alertQueue: [PermissionAlertType] = []
+  
   private(set) var isPhotoPermissionGranted: Bool = false
   private(set) var isNotificationPermissionGranted: Bool = false
   private(set) var isContactsPermissionGranted: Bool = false
   private(set) var showToAvoidContactsView: Bool = false
-  var shouldShowSettingsAlert: Bool = false // 카메라 권한 거절 상태에 설정창으로 보내기 위한 flag
+  private(set) var hasCheckedPermissions: Bool = false
+  var showPhotoAlert: Bool = false
+  var showNotificationAlert: Bool = false
+  var showAcquaintanceBlockAlert: Bool = false
   var nextButtonType: RoundedButton.ButtonType {
-    isCameraPermissionGranted ? .solid : .disabled
+    isPhotoPermissionGranted ? .solid : .disabled
   }
-  private let cameraPermissionUseCase: CameraPermissionUseCase
   private let photoPermissionUseCase: PhotoPermissionUseCase
-  private let requestContactsPermissionUseCase: RequestContactsPermissionUseCase
   private let requestNotificationPermissionUseCase: RequestNotificationPermissionUseCase
+  private let requestContactsPermissionUseCase: RequestContactsPermissionUseCase
   
   enum Action {
     case onAppear
-    case showShettingAlert
+    case showSettingAlert
     case tapNextButton
-    case cancelAlert
+    case cancelAlertRequired
+    case cancelAlertOptional
+    case requestPermissions
   }
   
   init(
-    cameraPermissionUseCase: CameraPermissionUseCase,
     photoPermissionUseCase: PhotoPermissionUseCase,
-    requestContactsPermissionUseCase: RequestContactsPermissionUseCase,
-    requestNotificationPermissionUseCase: RequestNotificationPermissionUseCase
+    requestNotificationPermissionUseCase: RequestNotificationPermissionUseCase,
+    requestContactsPermissionUseCase: RequestContactsPermissionUseCase
   ) {
-    self.cameraPermissionUseCase = cameraPermissionUseCase
     self.photoPermissionUseCase = photoPermissionUseCase
-    self.requestContactsPermissionUseCase = requestContactsPermissionUseCase
     self.requestNotificationPermissionUseCase = requestNotificationPermissionUseCase
+    self.requestContactsPermissionUseCase = requestContactsPermissionUseCase
   }
   
   func handleAction(_ action: Action) {
     switch action {
     case .onAppear:
+      hasCheckedPermissions = PCUserDefaultsService.shared.getHasRequestedPermissions()
       resetNavigationState()
       
-    case .showShettingAlert:
+      Task {
+        !hasCheckedPermissions
+        ? await checkPermissions()
+        : await requestPermissionAlerts()
+      }
+
+    case .showSettingAlert:
       openSettings()
       
-    case .cancelAlert:
+    case .cancelAlertRequired:
       Task { await resetAlertState() }
+    
+    case .cancelAlertOptional:
+      onAlertDismissed()
       
     case .tapNextButton:
       navigateToAvoidContactsView()
+      
+    case .requestPermissions:
+      Task { await requestPermissionAlerts() }
     }
-  }
-  
-  func checkPermissions() async {
-    await fetchPermissions()
-    await updateSettingsAlertState()
   }
 }
 
@@ -79,10 +97,13 @@ private extension PermissionRequestViewModel {
 }
 
 private extension PermissionRequestViewModel {
-  // TODO: - request 결과 서버에 보내기
+  private func checkPermissions() async {
+    await fetchPermissions()
+    await updateSettingsAlertState()
+  }
+  
   private func fetchPermissions() async {
     do {
-      isCameraPermissionGranted = await cameraPermissionUseCase.execute()
       isPhotoPermissionGranted = await photoPermissionUseCase.execute()
       isNotificationPermissionGranted = try await requestNotificationPermissionUseCase.execute()
       isContactsPermissionGranted = try await requestContactsPermissionUseCase.execute()
@@ -91,16 +112,55 @@ private extension PermissionRequestViewModel {
     }
   }
   
+  private func requestPermissionAlerts() async {
+    await fetchPermissions()
+    
+    alertQueue.removeAll()
+    
+    if !isPhotoPermissionGranted {
+      alertQueue.append(.photo)
+    }
+    
+    if !isNotificationPermissionGranted {
+      alertQueue.append(.notification)
+    }
+    
+    if !isContactsPermissionGranted {
+      alertQueue.append(.contacts)
+    }
+    
+    showNextAlert()
+  }
+  
+  private func showNextAlert() {
+    guard !alertQueue.isEmpty else { return }
+    
+    let alertType = alertQueue.removeFirst()
+    
+    switch alertType {
+    case .photo:
+      showPhotoAlert = true
+    case .notification:
+      showNotificationAlert = true
+    case .contacts:
+      showAcquaintanceBlockAlert = true
+    }
+  }
+  
+  private func onAlertDismissed() {
+    showNextAlert()
+  }
+  
   @MainActor
   private func updateSettingsAlertState() async {
-    shouldShowSettingsAlert = !(isCameraPermissionGranted && isPhotoPermissionGranted)
+    showPhotoAlert = !isPhotoPermissionGranted
   }
   
   @MainActor
   private func resetAlertState() async {
-    shouldShowSettingsAlert = false
+    showPhotoAlert = false
     try? await Task.sleep(nanoseconds: 100_000_000)  // 0.1초 뒤에 설정 창이 뜨도록
-    shouldShowSettingsAlert = true
+    showPhotoAlert = true
   }
   
   private func openSettings() {
@@ -109,5 +169,7 @@ private extension PermissionRequestViewModel {
       return
     }
     UIApplication.shared.open(settingUrl)
+    
+    showNextAlert()
   }
 }

@@ -41,6 +41,15 @@ public final class PCUserDefaultsService {
     }
   }
   
+  var hasRequestedPermissions: Bool {
+    get {
+      PCUserDefaults.objectFor(key: .hasRequestedPermissions) as? Bool ?? false
+    }
+    set {
+      _ = PCUserDefaults.setObjectFor(key: .hasRequestedPermissions, object: newValue)
+    }
+  }
+  
   var userRole: UserRole {
     get {
       if let value = PCUserDefaults.objectFor(key: .userRole) as? String {
@@ -133,6 +142,14 @@ public extension PCUserDefaultsService {
     didSeeOnboarding = false
     matchedUserId = nil
     matchStatus = nil
+  }
+  
+  func getHasRequestedPermissions() -> Bool {
+    if !hasRequestedPermissions {
+      hasRequestedPermissions = true
+      return false
+    }
+    return true
   }
   
   func getUserRole() -> UserRole {

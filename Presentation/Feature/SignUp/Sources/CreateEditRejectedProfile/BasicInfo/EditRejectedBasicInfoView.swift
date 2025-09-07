@@ -21,6 +21,8 @@ struct EditRejectedBasicInfoView: View {
     getProfileBasicUseCase: GetProfileBasicUseCase,
     checkNicknameUseCase: CheckNicknameUseCase,
     uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase,
+    photoPermissionUseCase: PhotoPermissionUseCase,
     didTapBottomButton: @escaping () -> Void
   ) {
     _viewModel = .init(
@@ -28,7 +30,9 @@ struct EditRejectedBasicInfoView: View {
         editRejectedProfileCreator: editRejectedProfileCreator,
         getProfileBasicUseCase: getProfileBasicUseCase,
         checkNicknameUseCase: checkNicknameUseCase,
-        uploadProfileImageUseCase: uploadProfileImageUseCase
+        uploadProfileImageUseCase: uploadProfileImageUseCase,
+        cameraPermissionUseCase: cameraPermissionUseCase,
+        photoPermissionUseCase: photoPermissionUseCase
       )
     )
     self.didTapBottomButton = didTapBottomButton
@@ -178,6 +182,22 @@ struct EditRejectedBasicInfoView: View {
         let imageData = image?.resizedAndCompressedData(targetSize: .init(width: 400, height: 400))
         viewModel.handleAction(.setImageFromImagePicker(imageData))
       }
+    }
+    .alert("[필수] 권한 요청", isPresented: $viewModel.isPresentedPhotoAlert) {
+      Button("설정으로 이동") {
+        viewModel.handleAction(.showSettingAlert)
+      }
+      Button("취소") { }
+    } message: {
+      Text("\"사진\" 기능을 사용하려면\n[설정]-[피스]-[사진]을 허용해주세요.")
+    }
+    .alert("[선택] 권한 요청", isPresented: $viewModel.isPresentedCameraAlert) {
+      Button("설정으로 이동") {
+        viewModel.handleAction(.showSettingAlert)
+      }
+      Button("취소") { }
+    } message: {
+      Text("\"카메라\" 기능을 사용하려면\n[설정]-[피스]-[카메라]를 허용해주세요.")
     }
     .onAppear {
       viewModel.handleAction(.onAppear)
