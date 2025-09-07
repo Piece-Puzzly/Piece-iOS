@@ -24,6 +24,8 @@ struct CreateEditRejectedProfileContainerView: View {
     getProfileBasicUseCase: GetProfileBasicUseCase,
     checkNicknameUseCase: CheckNicknameUseCase,
     uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase,
+    photoPermissionUseCase: PhotoPermissionUseCase,
     getProfileValueTalksUseCase: GetProfileValueTalksUseCase,
     getProfileValuePicksUseCase: GetProfileValuePicksUseCase
   ) {
@@ -32,6 +34,8 @@ struct CreateEditRejectedProfileContainerView: View {
         getProfileBasicUseCase: getProfileBasicUseCase,
         checkNicknameUseCase: checkNicknameUseCase,
         uploadProfileImageUseCase: uploadProfileImageUseCase,
+        cameraPermissionUseCase: cameraPermissionUseCase,
+        photoPermissionUseCase: photoPermissionUseCase,
         getProfileValueTalksUseCase: getProfileValueTalksUseCase,
         getProfileValuePicksUseCase: getProfileValuePicksUseCase
       )
@@ -99,6 +103,8 @@ struct CreateEditRejectedProfileContainerView: View {
       getProfileBasicUseCase: viewModel.getProfileBasicUseCase,
       checkNicknameUseCase: viewModel.checkNicknameUseCase,
       uploadProfileImageUseCase: viewModel.uploadProfileImageUseCase,
+      cameraPermissionUseCase: viewModel.cameraPermissionUseCase,
+      photoPermissionUseCase: viewModel.photoPermissionUseCase,
       didTapBottomButton: { viewModel.handleAction(.didTapBottomButton) }
     )
     .id(createBasicInfo)

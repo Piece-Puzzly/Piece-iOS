@@ -36,18 +36,24 @@ final class EditRejectedBasicInfoViewModel {
     editRejectedProfileCreator: EditRejectedProfileCreator,
     getProfileBasicUseCase: GetProfileBasicUseCase,
     checkNicknameUseCase: CheckNicknameUseCase,
-    uploadProfileImageUseCase: UploadProfileImageUseCase
+    uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase,
+    photoPermissionUseCase: PhotoPermissionUseCase
   ) {
     self.getProfileBasicUseCase = getProfileBasicUseCase
     self.editRejectedProfileCreator = editRejectedProfileCreator
     self.checkNicknameUseCase = checkNicknameUseCase
     self.uploadProfileImageUseCase = uploadProfileImageUseCase
+    self.cameraPermissionUseCase = cameraPermissionUseCase
+    self.photoPermissionUseCase = photoPermissionUseCase
     self.jobItems = Jobs.all.map { BottomSheetTextItem(text: $0) }
   }
   
   private let getProfileBasicUseCase: GetProfileBasicUseCase
   private let checkNicknameUseCase: CheckNicknameUseCase
   private let uploadProfileImageUseCase: UploadProfileImageUseCase
+  private let cameraPermissionUseCase: CameraPermissionUseCase
+  private let photoPermissionUseCase: PhotoPermissionUseCase
   
   /// 초기 패치해온 프로필 데이터
   private var initialProfile: ProfileBasicModel?

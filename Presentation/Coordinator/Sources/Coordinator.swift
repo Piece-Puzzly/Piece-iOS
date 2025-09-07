@@ -252,6 +252,8 @@ public struct Coordinator {
       let getProfileBasicUseCase = UseCaseFactory.createGetProfileUseCase(repository: profileRepository)
       let checkNicknameUseCase = UseCaseFactory.createCheckNicknameUseCase(repository: checkNicknameRepositoty)
       let uploadProfileImageUseCase = UseCaseFactory.createUploadProfileImageUseCase(repository: profileRepository)
+      let cameraPermissionUseCase = UseCaseFactory.createCameraPermissionUseCase()
+      let photoPermissionUseCase = UseCaseFactory.createPhotoPermissionUseCase()
       let getProfileValueTalksUseCase = UseCaseFactory.createGetProfileValueTalksUseCase(repository: profileRepository)
       let getProfileValuePicksUseCase = UseCaseFactory.createGetProfileValuePicksUseCase(repository: profileRepository)
 
@@ -259,6 +261,8 @@ public struct Coordinator {
         getProfileBasicUseCase: getProfileBasicUseCase,
         checkNicknameUseCase: checkNicknameUseCase,
         uploadProfileImageUseCase: uploadProfileImageUseCase,
+        cameraPermissionUseCase: cameraPermissionUseCase,
+        photoPermissionUseCase: photoPermissionUseCase,
         getProfileValueTalksUseCase: getProfileValueTalksUseCase,
         getProfileValuePicksUseCase: getProfileValuePicksUseCase
       )

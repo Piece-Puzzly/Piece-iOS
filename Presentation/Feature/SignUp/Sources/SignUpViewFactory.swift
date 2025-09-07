@@ -68,6 +68,8 @@ public struct SignUpViewFactory {
     getProfileBasicUseCase: GetProfileBasicUseCase,
     checkNicknameUseCase: CheckNicknameUseCase,
     uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase,
+    photoPermissionUseCase: PhotoPermissionUseCase,
     getProfileValueTalksUseCase: GetProfileValueTalksUseCase,
     getProfileValuePicksUseCase: GetProfileValuePicksUseCase
   ) -> some View {
@@ -75,6 +77,8 @@ public struct SignUpViewFactory {
       getProfileBasicUseCase: getProfileBasicUseCase,
       checkNicknameUseCase: checkNicknameUseCase,
       uploadProfileImageUseCase: uploadProfileImageUseCase,
+      cameraPermissionUseCase: cameraPermissionUseCase,
+      photoPermissionUseCase: photoPermissionUseCase,
       getProfileValueTalksUseCase: getProfileValueTalksUseCase,
       getProfileValuePicksUseCase: getProfileValuePicksUseCase
     )

@@ -21,6 +21,8 @@ struct EditRejectedBasicInfoView: View {
     getProfileBasicUseCase: GetProfileBasicUseCase,
     checkNicknameUseCase: CheckNicknameUseCase,
     uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase,
+    photoPermissionUseCase: PhotoPermissionUseCase,
     didTapBottomButton: @escaping () -> Void
   ) {
     _viewModel = .init(
@@ -28,7 +30,9 @@ struct EditRejectedBasicInfoView: View {
         editRejectedProfileCreator: editRejectedProfileCreator,
         getProfileBasicUseCase: getProfileBasicUseCase,
         checkNicknameUseCase: checkNicknameUseCase,
-        uploadProfileImageUseCase: uploadProfileImageUseCase
+        uploadProfileImageUseCase: uploadProfileImageUseCase,
+        cameraPermissionUseCase: cameraPermissionUseCase,
+        photoPermissionUseCase: photoPermissionUseCase
       )
     )
     self.didTapBottomButton = didTapBottomButton
