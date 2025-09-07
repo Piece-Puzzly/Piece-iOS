@@ -84,6 +84,12 @@ struct AvoidContactsGuideView: View {
         router.push(to: .completeSignUp)
       }
     }
+    .overlay(alignment: .bottom) {
+      PCToast(
+        isVisible: viewModel.showToastBinding,
+        text: viewModel.toastMessage?.text
+      )
+    }
   }
   
   private var title: some View {

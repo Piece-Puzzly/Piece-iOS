@@ -5,10 +5,9 @@
 //  Created by eunseou on 1/17/25.
 //
 
-import Observation
 import UseCases
-import UIKit
 import Entities
+import SwiftUI
 
 @MainActor
 @Observable
@@ -22,6 +21,7 @@ final class AvoidContactsGuideViewModel {
   }
   
   private(set) var showToast = false
+  var toastMessage: ToastMessage? = nil
   private(set) var isProcessingShowToast = false
   private(set) var moveToCompleteSignUp: Bool = false
   var isPresentedAlert: Bool = false
@@ -74,6 +74,7 @@ final class AvoidContactsGuideViewModel {
         isPresentedAlert = true
       }
     } catch {
+      setToastMessage(for: .avoidContactsFailure)
       print("\(error.localizedDescription)")
     }
   }
@@ -105,3 +106,30 @@ final class AvoidContactsGuideViewModel {
     isProcessingShowToast = false
   }
 }
+
+extension AvoidContactsGuideViewModel {
+  enum ToastMessage {
+    case avoidContactsFailure
+    
+    var text: String {
+      switch self {
+      case .avoidContactsFailure:
+        return "연락처 차단에 실패했어요"
+      }
+    }
+  }
+  
+  var showToastBinding: Binding<Bool> {
+    return Binding<Bool>(
+      get: { self.toastMessage != nil },
+      set: { isVisible in
+        if !isVisible { self.toastMessage = nil }
+      }
+    )
+  }
+  
+  private func setToastMessage(for message: ToastMessage?) {
+    self.toastMessage = message
+  }
+}
+
