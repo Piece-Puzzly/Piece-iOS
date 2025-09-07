@@ -20,6 +20,7 @@ final class EditRejectedBasicInfoViewModel {
     case tapVaildNickName
     case selectCamera
     case selectPhotoLibrary
+    case showSettingAlert
     case tapLocation
     case tapJob
     case tapAddContact
@@ -193,7 +194,9 @@ final class EditRejectedBasicInfoViewModel {
   var isContactSheetPresented: Bool = false
   var isProfileImageSheetPresented: Bool = false
   var showToast: Bool = false
-
+  var isPresentedCameraAlert: Bool = false
+  var isPresentedPhotoAlert: Bool = false
+  
   func handleAction(_ action: Action) {
     switch action {
     case .onAppear:
@@ -204,9 +207,15 @@ final class EditRejectedBasicInfoViewModel {
     case .tapNextButton:
       Task { await handleTapNextButton() }
     case .selectCamera:
-      imagePickerSource = .camera
+      Task {
+        await handleSelectCamera()
+      }
     case .selectPhotoLibrary:
-      imagePickerSource = .photoLibrary
+      Task {
+        await handleSelectPhotoLibrary()
+      }
+    case .showSettingAlert:
+      openSettings()
     case .tapVaildNickName:
       Task { await handleTapVaildNicknameButton() }
     case .tapLocation:
@@ -650,5 +659,49 @@ extension EditRejectedBasicInfoViewModel {
         return false
       }
     }
+  }
+}
+
+extension EditRejectedBasicInfoViewModel {
+  private func handleSelectCamera() async {
+    let cameraPermissionStatus = cameraPermissionUseCase.checkStatus()
+    
+    switch cameraPermissionStatus {
+    case .notDetermined:
+      if await cameraPermissionUseCase.execute() {
+        imagePickerSource = .camera
+      }
+    case .authorized:
+      imagePickerSource = .camera
+    case .denied, .restricted:
+      isPresentedCameraAlert = true
+    @unknown default:
+      isPresentedCameraAlert = true
+    }
+  }
+  
+  private func handleSelectPhotoLibrary() async {
+    let photoPermissionStatus = photoPermissionUseCase.checkStatus()
+    
+    switch photoPermissionStatus {
+    case .notDetermined:
+      if await photoPermissionUseCase.execute() {
+        imagePickerSource = .photoLibrary
+      }
+    case .authorized, .limited:
+      imagePickerSource = .photoLibrary
+    case .denied, .restricted:
+      isPresentedPhotoAlert = true
+    @unknown default:
+      isPresentedPhotoAlert = true
+    }
+  }
+  
+  private func openSettings() {
+    guard let settingUrl = URL(string: UIApplication.openSettingsURLString),
+          UIApplication.shared.canOpenURL(settingUrl) else {
+      return
+    }
+    UIApplication.shared.open(settingUrl)
   }
 }
