@@ -66,9 +66,10 @@ final class AvoidContactsGuideViewModel {
       let isAuthorized = try await requestContactsPermissionUseCase.execute()
       
       if isAuthorized {
-        await isToastVisible()
         let userContacts = try await fetchContactsUseCase.execute()
         _ = try await blockContactsUseCase.execute(phoneNumbers: userContacts)
+        
+        await isToastVisible()
       } else {
         isPresentedAlert = true
       }
