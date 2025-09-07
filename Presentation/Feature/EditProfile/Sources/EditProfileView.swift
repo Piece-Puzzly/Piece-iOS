@@ -21,14 +21,18 @@ struct EditProfileView: View {
     updateProfileBasicUseCase: UpdateProfileBasicUseCase,
     getProfileBasicUseCase: GetProfileBasicUseCase,
     checkNicknameUseCase: CheckNicknameUseCase,
-    uploadProfileImageUseCase: UploadProfileImageUseCase
+    uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase,
+    photoPermissionUseCase: PhotoPermissionUseCase,
   ) {
     _viewModel = .init(
       wrappedValue: .init(
         getProfileBasicUseCase: getProfileBasicUseCase,
         updateProfileBasicUseCase: updateProfileBasicUseCase,
         checkNicknameUseCase: checkNicknameUseCase,
-        uploadProfileImageUseCase: uploadProfileImageUseCase
+        uploadProfileImageUseCase: uploadProfileImageUseCase,
+        cameraPermissionUseCase: cameraPermissionUseCase,
+        photoPermissionUseCase: photoPermissionUseCase
       )
     )
   }

@@ -14,13 +14,17 @@ public struct EditProfileViewFactory {
     updateProfileBasicUseCase: UpdateProfileBasicUseCase,
     getProfileBasicUseCase: GetProfileBasicUseCase,
     checkNicknameUseCase: CheckNicknameUseCase,
-    uploadProfileImageUseCase: UploadProfileImageUseCase
+    uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase,
+    photoPermissionUseCase: PhotoPermissionUseCase,
   ) -> some View {
     EditProfileView(
       updateProfileBasicUseCase: updateProfileBasicUseCase,
       getProfileBasicUseCase: getProfileBasicUseCase,
       checkNicknameUseCase: checkNicknameUseCase,
-      uploadProfileImageUseCase: uploadProfileImageUseCase
+      uploadProfileImageUseCase: uploadProfileImageUseCase,
+      cameraPermissionUseCase: cameraPermissionUseCase,
+      photoPermissionUseCase: photoPermissionUseCase
     )
   }
 }
