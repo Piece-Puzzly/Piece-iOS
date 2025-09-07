@@ -58,15 +58,15 @@ struct AvoidContactsGuideView: View {
         }
         .padding([.horizontal, .top], 20)
         .padding(.bottom, 10)
-        .alert("연락처 권한 요청", isPresented: $viewModel.isPresentedAlert) {
+        .alert("[선택] 권한 요청", isPresented: $viewModel.isPresentedAlert) {
           Button("설정으로 이동") {
             viewModel.handleAction(.showShettingAlert)
           }
-          Button("취소", role: .cancel) {
+          Button("취소") {
             viewModel.handleAction(.cancelAlert)
           }
         } message: {
-          Text("연락처 권한이 필요합니다. 설정에서 권한을 허용해주세요.")
+          Text("\"아는 사람 차단\" 기능을 사용하려면\n[설정]-[피스]-[연락처 접근]을 허용해주세요.")
         }
       }
       
