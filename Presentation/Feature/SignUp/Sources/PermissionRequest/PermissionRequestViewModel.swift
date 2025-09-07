@@ -38,7 +38,7 @@ final class PermissionRequestViewModel {
   
   enum Action {
     case onAppear
-    case showShettingAlert
+    case showSettingAlert
     case tapNextButton
     case cancelAlertRequired
     case cancelAlertOptional
@@ -67,7 +67,7 @@ final class PermissionRequestViewModel {
         : await requestPermissionAlerts()
       }
 
-    case .showShettingAlert:
+    case .showSettingAlert:
       openSettings()
       
     case .cancelAlertRequired:

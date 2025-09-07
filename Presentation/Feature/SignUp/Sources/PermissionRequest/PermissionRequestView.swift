@@ -90,7 +90,7 @@ struct PermissionRequestView: View {
     }
     .alert("[필수] 권한 요청", isPresented: $viewModel.showPhotoAlert) {
       Button("설정으로 이동") {
-        viewModel.handleAction(.showShettingAlert)
+        viewModel.handleAction(.showSettingAlert)
       }
       Button("취소") {
         viewModel.handleAction(.cancelAlertRequired)
@@ -100,7 +100,7 @@ struct PermissionRequestView: View {
     }
     .alert("[선택] 권한 요청", isPresented: $viewModel.showNotificationAlert) {
       Button("설정으로 이동") {
-        viewModel.handleAction(.showShettingAlert)
+        viewModel.handleAction(.showSettingAlert)
       }
       Button("취소") {
         viewModel.handleAction(.cancelAlertOptional)
@@ -110,7 +110,7 @@ struct PermissionRequestView: View {
     }
     .alert("[선택] 권한 요청", isPresented: $viewModel.showAcquaintanceBlockAlert) {
       Button("설정으로 이동") {
-        viewModel.handleAction(.showShettingAlert)
+        viewModel.handleAction(.showSettingAlert)
       }
       Button("취소") {
         viewModel.handleAction(.cancelAlertOptional)

@@ -60,7 +60,7 @@ struct AvoidContactsGuideView: View {
         .padding(.bottom, 10)
         .alert("[선택] 권한 요청", isPresented: $viewModel.isPresentedAlert) {
           Button("설정으로 이동") {
-            viewModel.handleAction(.showShettingAlert)
+            viewModel.handleAction(.showSettingAlert)
           }
           Button("취소") {
             viewModel.handleAction(.cancelAlert)

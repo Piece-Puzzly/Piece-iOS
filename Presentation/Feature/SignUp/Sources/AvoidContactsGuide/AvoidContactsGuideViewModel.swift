@@ -16,7 +16,7 @@ final class AvoidContactsGuideViewModel {
     case onAppear
     case tapDenyButton
     case tapAcceptButton
-    case showShettingAlert
+    case showSettingAlert
     case cancelAlert
   }
   
@@ -52,7 +52,7 @@ final class AvoidContactsGuideViewModel {
         await handleAcceptButtonTap()
       }
       
-    case .showShettingAlert:
+    case .showSettingAlert:
       openSettings()
       
     case .cancelAlert:
