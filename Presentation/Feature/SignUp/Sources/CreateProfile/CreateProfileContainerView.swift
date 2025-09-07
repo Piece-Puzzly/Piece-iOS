@@ -23,6 +23,7 @@ struct CreateProfileContainerView: View {
   init(
     checkNicknameUseCase: CheckNicknameUseCase,
     uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase,
     getValueTalksUseCase: GetValueTalksUseCase,
     getValuePicksUseCase: GetValuePicksUseCase
   ) {
@@ -30,6 +31,7 @@ struct CreateProfileContainerView: View {
       .init(
         checkNicknameUseCase: checkNicknameUseCase,
         uploadProfileImageUseCase: uploadProfileImageUseCase,
+        cameraPermissionUseCase: cameraPermissionUseCase,
         getValueTalksUseCase: getValueTalksUseCase,
         getValuePicksUseCase: getValuePicksUseCase
       )
@@ -96,6 +98,7 @@ struct CreateProfileContainerView: View {
       profileCreator: viewModel.profileCreator,
       checkNicknameUseCase: viewModel.checkNicknameUseCase,
       uploadProfileImageUseCase: viewModel.uploadProfileImageUseCase,
+      cameraPermissionUseCase: viewModel.cameraPermissionUseCase,
       didTapBottomButton: { viewModel.handleAction(.didTapBottomButton) }
     )
     .id(createBasicInfo)

@@ -51,12 +51,14 @@ public struct SignUpViewFactory {
   public static func createProfileContainerView(
     checkNicknameUseCase: CheckNicknameUseCase,
     uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase,
     getValueTalksUseCase: GetValueTalksUseCase,
     getValuePicksUseCase: GetValuePicksUseCase
   ) -> some View {
     CreateProfileContainerView(
       checkNicknameUseCase: checkNicknameUseCase,
       uploadProfileImageUseCase: uploadProfileImageUseCase,
+      cameraPermissionUseCase: cameraPermissionUseCase,
       getValueTalksUseCase: getValueTalksUseCase,
       getValuePicksUseCase: getValuePicksUseCase
     )

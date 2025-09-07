@@ -34,11 +34,13 @@ final class CreateBasicInfoViewModel {
   init(
     profileCreator: ProfileCreator,
     checkNicknameUseCase: CheckNicknameUseCase,
-    uploadProfileImageUseCase: UploadProfileImageUseCase
+    uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase
   ) {
     self.profileCreator = profileCreator
     self.checkNicknameUseCase = checkNicknameUseCase
     self.uploadProfileImageUseCase = uploadProfileImageUseCase
+    self.cameraPermissionUseCase = cameraPermissionUseCase
     self.jobItems = Jobs.all.map { BottomSheetTextItem(text: $0) }
     
     setupJobItemsWithEtc()
@@ -46,6 +48,7 @@ final class CreateBasicInfoViewModel {
   
   private let checkNicknameUseCase: CheckNicknameUseCase
   private let uploadProfileImageUseCase: UploadProfileImageUseCase
+  private let cameraPermissionUseCase: CameraPermissionUseCase
   let profileCreator: ProfileCreator
   var nicknameState: NicknameState = .empty
   

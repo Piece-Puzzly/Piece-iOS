@@ -234,11 +234,13 @@ public struct Coordinator {
       let valuePicksRepository = repositoryFactory.createValuePicksRepository()
       let checkNicknameUseCase = UseCaseFactory.createCheckNicknameUseCase(repository: checkNicknameRepositoty)
       let uploadProfileImageUseCase = UseCaseFactory.createUploadProfileImageUseCase(repository: uploadProfileImageRepository)
+      let cameraPermissionUseCase = UseCaseFactory.createCameraPermissionUseCase()
       let getValueTalksUseCase = UseCaseFactory.createGetValueTalksUseCase(repository: valueTalksRepository)
       let getValuePicksUseCase = UseCaseFactory.createGetValuePicksUseCase(repository: valuePicksRepository)
       SignUpViewFactory.createProfileContainerView(
         checkNicknameUseCase: checkNicknameUseCase,
         uploadProfileImageUseCase: uploadProfileImageUseCase,
+        cameraPermissionUseCase: cameraPermissionUseCase,
         getValueTalksUseCase: getValueTalksUseCase,
         getValuePicksUseCase: getValuePicksUseCase
       )

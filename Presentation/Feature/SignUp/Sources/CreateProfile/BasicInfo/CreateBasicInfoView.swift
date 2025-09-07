@@ -20,13 +20,15 @@ struct CreateBasicInfoView: View {
     profileCreator: ProfileCreator,
     checkNicknameUseCase: CheckNicknameUseCase,
     uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase,
     didTapBottomButton: @escaping () -> Void
   ) {
     _viewModel = .init(
       wrappedValue: .init(
         profileCreator: profileCreator,
         checkNicknameUseCase: checkNicknameUseCase,
-        uploadProfileImageUseCase: uploadProfileImageUseCase
+        uploadProfileImageUseCase: uploadProfileImageUseCase,
+        cameraPermissionUseCase: cameraPermissionUseCase
       )
     )
     self.didTapBottomButton = didTapBottomButton

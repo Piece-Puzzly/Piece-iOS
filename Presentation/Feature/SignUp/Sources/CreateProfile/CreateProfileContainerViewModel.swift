@@ -31,6 +31,7 @@ final class CreateProfileContainerViewModel {
   let profileCreator = ProfileCreator()
   let checkNicknameUseCase: CheckNicknameUseCase
   let uploadProfileImageUseCase: UploadProfileImageUseCase
+  let cameraPermissionUseCase: CameraPermissionUseCase
   let getValueTalksUseCase: GetValueTalksUseCase
   let getValuePicksUseCase: GetValuePicksUseCase
   
@@ -41,11 +42,13 @@ final class CreateProfileContainerViewModel {
   init(
     checkNicknameUseCase: CheckNicknameUseCase,
     uploadProfileImageUseCase: UploadProfileImageUseCase,
+    cameraPermissionUseCase: CameraPermissionUseCase,
     getValueTalksUseCase: GetValueTalksUseCase,
     getValuePicksUseCase: GetValuePicksUseCase
   ) {
     self.checkNicknameUseCase = checkNicknameUseCase
     self.uploadProfileImageUseCase = uploadProfileImageUseCase
+    self.cameraPermissionUseCase = cameraPermissionUseCase
     self.getValueTalksUseCase = getValueTalksUseCase
     self.getValuePicksUseCase = getValuePicksUseCase
     
