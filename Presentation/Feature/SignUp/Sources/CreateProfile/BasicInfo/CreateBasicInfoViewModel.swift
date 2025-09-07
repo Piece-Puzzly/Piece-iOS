@@ -19,6 +19,7 @@ final class CreateBasicInfoViewModel {
     case tapVaildNickName
     case selectCamera
     case selectPhotoLibrary
+    case showSettingAlert
     case tapLocation
     case tapJob
     case tapAddContact
@@ -185,6 +186,7 @@ final class CreateBasicInfoViewModel {
   var isContactSheetPresented: Bool = false
   var isProfileImageSheetPresented: Bool = false
   var showToast: Bool = false
+  var isPresentedCameraAlert: Bool = false
   
   func handleAction(_ action: Action) {
     switch action {
@@ -193,9 +195,13 @@ final class CreateBasicInfoViewModel {
         await handleTapNextButton()
       }
     case .selectCamera:
-      imagePickerSource = .camera
+      Task {
+        await handleSelectCamera()
+      }
     case .selectPhotoLibrary:
       imagePickerSource = .photoLibrary
+    case .showSettingAlert:
+      openSettings()
     case .tapVaildNickName:
       Task {
         await handleTapVaildNicknameButton()
@@ -593,5 +599,33 @@ extension CreateBasicInfoViewModel {
         return false
       }
     }
+  }
+}
+
+// MARK: - Camera Permission
+extension CreateBasicInfoViewModel {
+  private func handleSelectCamera() async {
+    let cameraPermissionStatus = cameraPermissionUseCase.checkStatus()
+    
+    switch cameraPermissionStatus {
+    case .notDetermined:
+      if await cameraPermissionUseCase.execute() {
+        imagePickerSource = .camera
+      }
+    case .authorized:
+      imagePickerSource = .camera
+    case .denied, .restricted:
+      isPresentedCameraAlert = true
+    @unknown default:
+      isPresentedCameraAlert = true
+    }
+  }
+  
+  private func openSettings() {
+    guard let settingUrl = URL(string: UIApplication.openSettingsURLString),
+          UIApplication.shared.canOpenURL(settingUrl) else {
+      return
+    }
+    UIApplication.shared.open(settingUrl)
   }
 }
