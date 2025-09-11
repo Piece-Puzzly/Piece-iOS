@@ -12,5 +12,6 @@ let project = Project.app(
     .externalDependency(dependency: .GoogleSignIn),
     .externalDependency(dependency: .GoogleSignInSwift),
     .utility(target: .PCFirebase),
+    .utility(target: .PCAmplitude)
   ]
 )
