@@ -8,12 +8,22 @@
 import DesignSystem
 import LocalStorage
 import Observation
+import PCAmplitude
+
+enum OnboardingScreen: String, CaseIterable, PCAmplitudeTrackable {
+  case dailyMatch = "onboarding_dailymatch"
+  case safetyNotice = "onboarding_safetynotice"
+}
 
 @Observable
 final class OnboardingViewModel {
   enum Action {
     case onAppear
     case didTapNextButton
+  }
+  
+  var trackedScreen: OnboardingScreen {
+    OnboardingScreen.allCases[contentTabIndex]
   }
   
   let onboardingContent = [

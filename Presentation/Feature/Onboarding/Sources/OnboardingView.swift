@@ -8,6 +8,7 @@
 import DesignSystem
 import SwiftUI
 import Router
+import PCAmplitude
 
 struct OnboardingView: View {
   @State var viewModel = OnboardingViewModel()
@@ -32,6 +33,7 @@ struct OnboardingView: View {
       viewModel.handleAction(.onAppear)
     }
     .toolbar(.hidden)
+    .trackScreen(viewModel.trackedScreen)
   }
   
   private var topBar: some View {
