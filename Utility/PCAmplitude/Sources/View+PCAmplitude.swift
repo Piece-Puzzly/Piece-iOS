@@ -23,7 +23,7 @@ public struct PCTrackScreenView: ViewModifier {
   public func body(content: Content) -> some View {
     content
       .task(id: id) {
-        PCAmplitude.screenView(screenName)
+        PCAmplitude.trackScreenView(screenName)
       }
   }
 }
@@ -37,7 +37,7 @@ public struct PCTrackScreenViewEnum<T: PCAmplitudeTrackable>: ViewModifier {
   public func body(content: Content) -> some View {
     content
       .task(id: trackable) {
-        PCAmplitude.screenView(trackable)
+        PCAmplitude.trackScreenView(trackable)
       }
   }
 }

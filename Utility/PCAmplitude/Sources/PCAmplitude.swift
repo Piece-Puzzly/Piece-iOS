@@ -25,7 +25,7 @@ public enum PCAmplitude {
     self.provider.setUserId(id)
   }
   
-  public static func screenView(_ screenName: String) {
+  public static func trackScreenView(_ screenName: String) {
     provider.logEvent(
       type: .screenView,
       properties: [
@@ -34,7 +34,7 @@ public enum PCAmplitude {
     )
   }
   
-  public static func screenView<T: PCAmplitudeTrackable>(_ trackable: T) {
+  public static func trackScreenView<T: PCAmplitudeTrackable>(_ trackable: T) {
     provider.logEvent(
       type: .screenView,
       properties: [

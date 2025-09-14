@@ -18,7 +18,8 @@ enum BuildEnvironment {
 
 public enum PCAmplitudeConfiguration {
   public static func createProvider() -> PCAmplitudeProvider {
-    BuildEnvironment.isRelease ? createReleaseProvider() : createDebugProvider()
+    NSLog("📢 Amplitude configured \(BuildEnvironment.isRelease ? "for [RELEASE]" : "for [DEBUG]")")
+    return BuildEnvironment.isRelease ? createReleaseProvider() : createDebugProvider()
   }
 
   static func createDebugProvider() -> PCAmplitudeProvider {
