@@ -17,5 +17,6 @@ let project = Project.staticLibrary(
     .presentation(target: .Profile),
     .presentation(target: .MatchingMain),
     .presentation(target: .Settings),
+    .utility(target: .PCAmplitude),
   ]
 )
