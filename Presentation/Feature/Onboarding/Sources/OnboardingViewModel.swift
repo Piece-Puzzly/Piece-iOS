@@ -10,21 +10,19 @@ import LocalStorage
 import Observation
 import PCAmplitude
 
-enum OnboardingScreen: String, CaseIterable, PCAmplitudeTrackable {
-  case dailyMatch = "onboarding_dailymatch"
-  case safetyNotice = "onboarding_safetynotice"
-}
-
 @Observable
 final class OnboardingViewModel {
   enum Action {
     case onAppear
     case didTapNextButton
+    case resetProgress
   }
   
-  var trackedScreen: OnboardingScreen {
-    OnboardingScreen.allCases[contentTabIndex]
+  init(progressManager: AmplitudeProgressManagable) {
+    self.progressManager = progressManager
   }
+  
+  private let progressManager: AmplitudeProgressManagable
   
   let onboardingContent = [
     OnboardingContent(
@@ -38,10 +36,17 @@ final class OnboardingViewModel {
       description: "스크린샷은 제한되어 있어요.\n오직 이 공간에서만, 편안하게 인연을 찾아보세요."
     ),
   ]
+  
   var isSkipButtonVisible = true
+  
   var contentTabIndex: Int = 0
+  
   var isLastTab: Bool {
     contentTabIndex == onboardingContent.count - 1
+  }
+  
+  var trackedScreen: OnboardingProgress {
+    return OnboardingProgress.allCases[contentTabIndex]
   }
   
   func handleAction(_ action: Action) {
@@ -51,6 +56,9 @@ final class OnboardingViewModel {
       
     case .didTapNextButton:
       contentTabIndex += 1
+      
+    case .resetProgress:
+      progressManager.resetProgress()
     }
   }
 }
