@@ -11,6 +11,7 @@ import ProjectDescriptionHelpers
 let project = Project.dynamicResourceFramework(
   name: Modules.Utility.PCAmplitude.rawValue,
   dependencies: [
+    .data(target: .LocalStorage),
     .externalDependency(dependency: .AmplitudeSwift)
   ]
 )
