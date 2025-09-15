@@ -7,47 +7,47 @@
 
 import SwiftUI
 
-public struct PCTrackScreenView: ViewModifier {
+public struct PCTrackScreenView<T: ProgressTrackable>: ViewModifier {
   private let id: AnyHashable
-  private let screenName: String
-
-  public init(key: AnyHashable? = nil, screenName: String) {
+  private let trackable: T
+  private let manager: any AmplitudeProgressManagable
+  
+  public init(key: AnyHashable? = nil, trackable: T) {
     if let key {
       self.id = key
     } else {
-      self.id = AnyHashable(screenName)
+      self.id = AnyHashable(trackable.rawValue)
     }
-    self.screenName = screenName
+    self.trackable = trackable
+    self.manager = Self.getManager(for: trackable)
   }
   
   public func body(content: Content) -> some View {
     content
       .task(id: id) {
-        PCAmplitude.trackScreenView(screenName)
+        if manager.shouldTrack(trackable.rawValue) {
+          PCAmplitude.trackScreenView(trackable.rawValue)
+          manager.updateProgress(trackable.rawValue)
+        }
       }
   }
-}
-public struct PCTrackScreenViewEnum<T: PCAmplitudeTrackable>: ViewModifier {
-  private let trackable: T
   
-  public init(_ trackable: T) {
-    self.trackable = trackable
-  }
-  
-  public func body(content: Content) -> some View {
-    content
-      .task(id: trackable) {
-        PCAmplitude.trackScreenView(trackable)
-      }
+  private static func getManager(for trackable: T) -> any AmplitudeProgressManagable {
+    switch trackable {
+    case is OnboardingProgress:
+      return OnboardingProgressManager.shared
+      
+    case is SignUpProgress:
+      return SignUpProgressManager.shared
+      
+    default:
+      return DefaultProgressManager.shared
+    }
   }
 }
 
 public extension View {
-  func trackScreen(key: AnyHashable? = nil, screenName: String) -> some View {
-    modifier(PCTrackScreenView(key: key, screenName: screenName))
-  }
-  
-  func trackScreen<T: PCAmplitudeTrackable>(_ trackable: T) -> some View {
-    modifier(PCTrackScreenViewEnum(trackable))
+  func trackScreen<T: ProgressTrackable>(key: AnyHashable? = nil, trackable: T) -> some View {
+    modifier(PCTrackScreenView(key: key, trackable: trackable))
   }
 }
