@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class DefaultProgressManager: AmplitudeProgressManagable {
+public final class DefaultProgressManager: AmplitudeProgressManagable {
   public static let shared = DefaultProgressManager()
   
   private init() {}

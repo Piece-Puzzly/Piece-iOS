@@ -8,7 +8,7 @@
 import Foundation
 import LocalStorage
 
-public class OnboardingProgressManager: AmplitudeProgressManagable {
+public final class OnboardingProgressManager: AmplitudeProgressManagable {
   public static let shared = OnboardingProgressManager()
   
   private init() {}
