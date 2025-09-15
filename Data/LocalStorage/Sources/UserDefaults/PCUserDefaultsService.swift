@@ -92,6 +92,27 @@ public final class PCUserDefaultsService {
       _ = PCUserDefaults.setObjectFor(key: .latestSyncDate, object: newValue)
     }
   }
+  
+  // MARK: - Amplitude Progress
+  var onboardingProgress: Int {
+    get {
+      PCUserDefaults.objectFor(key: .onboardingProgress) as? Int ?? 0
+    }
+    
+    set {
+      _ = PCUserDefaults.setObjectFor(key: .onboardingProgress, object: newValue)
+    }
+  }
+
+  var signUpProgress: Int {
+    get {
+      PCUserDefaults.objectFor(key: .signUpProgress) as? Int ?? 0
+    }
+    
+    set {
+      _ = PCUserDefaults.setObjectFor(key: .signUpProgress, object: newValue)
+    }
+  }
 }
 
 public extension PCUserDefaultsService {
@@ -184,5 +205,30 @@ public extension PCUserDefaultsService {
   
   func setLatestSyncDate(_ date: Date) {
     latestSyncDate = date
+  }
+  
+  // MARK: Amplitude Progress
+  func getOnboardingProgress() -> Int {
+    onboardingProgress
+  }
+  
+  func setOnboardingProgress(_ progress: Int) {
+    onboardingProgress = progress
+  }
+  
+  func resetOnboardingProgress() {
+    onboardingProgress = -1
+  }
+  
+  func getSignUpProgress() -> Int {
+    signUpProgress
+  }
+  
+  func setSignUpProgress(_ progress: Int) {
+    signUpProgress = progress
+  }
+  
+  func resetSignUpProgress() {
+    signUpProgress = -1
   }
 }

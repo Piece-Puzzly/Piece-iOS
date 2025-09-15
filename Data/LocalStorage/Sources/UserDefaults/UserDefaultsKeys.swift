@@ -14,4 +14,6 @@ public enum UserDefaultsKeys: String {
   case matchedUserId
   case matchStatus
   case latestSyncDate
+  case onboardingProgress
+  case signUpProgress
 }
