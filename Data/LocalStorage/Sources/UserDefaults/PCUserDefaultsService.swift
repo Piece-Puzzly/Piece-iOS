@@ -96,7 +96,7 @@ public final class PCUserDefaultsService {
   // MARK: - Amplitude Progress
   var onboardingProgress: Int {
     get {
-      PCUserDefaults.objectFor(key: .onboardingProgress) as? Int ?? 0
+      PCUserDefaults.objectFor(key: .onboardingProgress) as? Int ?? -1
     }
     
     set {
@@ -106,7 +106,7 @@ public final class PCUserDefaultsService {
 
   var signUpProgress: Int {
     get {
-      PCUserDefaults.objectFor(key: .signUpProgress) as? Int ?? 0
+      PCUserDefaults.objectFor(key: .signUpProgress) as? Int ?? -1
     }
     
     set {

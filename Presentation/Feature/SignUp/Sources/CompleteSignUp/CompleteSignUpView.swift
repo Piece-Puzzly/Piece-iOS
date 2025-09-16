@@ -8,6 +8,7 @@
 import SwiftUI
 import DesignSystem
 import Router
+import PCAmplitude
 
 struct CompleteSignUpView: View {
  // @State var viewModel: CompleteSignUpViewModel
@@ -50,7 +51,10 @@ struct CompleteSignUpView: View {
       buttonText: "프로필 생성하기",
       width: .maxWidth,
       action: {
-        router.setRoute(.createProfile)
+        /// View가 완전히 메모리에서 내려간 후 초기화
+        router.setRoute(.createProfile) {
+          SignUpProgressManager.shared.resetProgress()
+        }
       }
     )
   }
