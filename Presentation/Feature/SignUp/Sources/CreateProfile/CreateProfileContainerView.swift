@@ -9,14 +9,14 @@ import DesignSystem
 import Router
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 struct CreateProfileContainerView: View {
   @Namespace private var createBasicInfo
   @Namespace private var valueTalk
   @Namespace private var valuePick
-  @Bindable var viewModel: CreateProfileContainerViewModel
+  @State var viewModel: CreateProfileContainerViewModel
   @Environment(Router.self) private var router: Router
-  @Environment(\.dismiss) private var dismiss // TODO: - dismiss 동작 확인
   
   private let screenWidth = UIScreen.main.bounds.width
   
@@ -28,7 +28,7 @@ struct CreateProfileContainerView: View {
     getValuePicksUseCase: GetValuePicksUseCase
   ) {
     _viewModel = .init(
-      .init(
+      wrappedValue: .init(
         checkNicknameUseCase: checkNicknameUseCase,
         uploadProfileImageUseCase: uploadProfileImageUseCase,
         cameraPermissionUseCase: cameraPermissionUseCase,
@@ -76,6 +76,7 @@ struct CreateProfileContainerView: View {
       .animation(.easeInOut, value: viewModel.currentStep)
     }
     .toolbar(.hidden)
+    .trackScreen(trackable: viewModel.trackedScreen)
     .onChange(of: viewModel.destination) { _, destination in
       guard let destination else { return }
       router.setRoute(destination)

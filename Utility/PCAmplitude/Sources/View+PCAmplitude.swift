@@ -40,6 +40,9 @@ public struct PCTrackScreenView<T: ProgressTrackable>: ViewModifier {
     case is SignUpProgress:
       return SignUpProgressManager.shared
       
+    case is CreateProfileProgress:
+      return CreateProfileProgressManager.shared
+      
     default:
       return DefaultProgressManager.shared
     }

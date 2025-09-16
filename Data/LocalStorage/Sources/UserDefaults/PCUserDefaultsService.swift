@@ -113,6 +113,16 @@ public final class PCUserDefaultsService {
       _ = PCUserDefaults.setObjectFor(key: .signUpProgress, object: newValue)
     }
   }
+  
+  var createProfileProgress: Int {
+    get {
+      PCUserDefaults.objectFor(key: .createProfileProgress) as? Int ?? -1
+    }
+    
+    set {
+      _ = PCUserDefaults.setObjectFor(key: .createProfileProgress, object: newValue)
+    }
+  }
 }
 
 public extension PCUserDefaultsService {
@@ -218,6 +228,7 @@ public extension PCUserDefaultsService {
   
   func resetOnboardingProgress() {
     onboardingProgress = -1
+    NSLog("DEBUG: initialize: \(UserDefaultsKeys.onboardingProgress.rawValue)")
   }
   
   func getSignUpProgress() -> Int {
@@ -230,5 +241,19 @@ public extension PCUserDefaultsService {
   
   func resetSignUpProgress() {
     signUpProgress = -1
+    NSLog("DEBUG: initialize: \(UserDefaultsKeys.signUpProgress.rawValue)")
+  }
+  
+  func getCreateProfileProgress() -> Int {
+    createProfileProgress
+  }
+  
+  func setCreateProfileProgress(_ progress: Int) {
+    createProfileProgress = progress
+  }
+  
+  func resetCreateProfileProgress() {
+    createProfileProgress = -1
+    NSLog("DEBUG: initialize: \(UserDefaultsKeys.createProfileProgress.rawValue)")
   }
 }

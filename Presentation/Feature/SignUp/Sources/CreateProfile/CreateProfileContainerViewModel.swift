@@ -10,6 +10,7 @@ import Observation
 import Router
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 @Observable
 final class CreateProfileContainerViewModel {
@@ -25,6 +26,13 @@ final class CreateProfileContainerViewModel {
   }
   
   var currentStep: CreateProfileStep = .basicInfo
+  var trackedScreen: CreateProfileProgress {
+    switch currentStep {
+    case .basicInfo: return .basicInfo
+    case .valuePick: return .valuePick
+    case .valueTalk: return .valueTalk
+    }
+  }
   var valuePickViewModel: ValuePickViewModel?
   var valueTalkViewModel: ValueTalkViewModel?
   

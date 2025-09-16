@@ -98,6 +98,7 @@ public struct SignUpViewFactory {
       profile: profile,
       createProfileUseCase: createProfileUseCase
     )
+    .trackScreen(trackable: CreateProfileProgress.aiLoding)
   }
   
   public static func createEditRejectedWaitingAISummaryView(
@@ -112,6 +113,13 @@ public struct SignUpViewFactory {
   
   public static func createCompleteCreateProfileView() -> some View {
     CompleteCreateProfileView()
+      .trackScreen(trackable: CreateProfileProgress.complete)
+      .onAppear {
+        Task {
+          try? await Task.sleep(for: .milliseconds(500))
+          CreateProfileProgressManager.shared.resetProgress()
+        }
+      }
   }
   
   public static func createCompleteEditRejectedProfileView() -> some View {

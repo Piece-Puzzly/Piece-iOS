@@ -16,4 +16,5 @@ public enum UserDefaultsKeys: String {
   case latestSyncDate
   case onboardingProgress
   case signUpProgress
+  case createProfileProgress
 }
