@@ -25,6 +25,7 @@ public enum DefaultProgress: String, ProgressTrackable {
   case previewSelfBasicProfile = "preview_self_basic_profile"
   case previewSelfValuePick = "preview_self_value_pick"
   case previewSelfValueTalk = "preview_self_value_talk"
+  case previewSelfPhoto = "preview_self_photo"
   
   /// 매칭 메인
   case matchMainLoading = "match_main_loading"

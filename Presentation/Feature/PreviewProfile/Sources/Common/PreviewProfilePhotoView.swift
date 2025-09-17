@@ -7,6 +7,7 @@
 
 import DesignSystem
 import SwiftUI
+import PCAmplitude
 
 struct PreviewProfilePhotoView: View {
   private let uri: String
@@ -22,6 +23,7 @@ struct PreviewProfilePhotoView: View {
         Dimmer()
           .ignoresSafeArea()
       )
+      .trackScreen(trackable: DefaultProgress.previewSelfPhoto)
   }
   
   private var content: some View {
