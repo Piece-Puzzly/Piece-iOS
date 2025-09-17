@@ -9,6 +9,7 @@ import Foundation
 import LocalStorage
 import Observation
 import UseCases
+import PCAmplitude
 
 @MainActor
 @Observable
@@ -96,9 +97,11 @@ final class ValueTalkViewModel {
       
     case .didTapAcceptButton:
       isMatchAcceptAlertPresented = true
+      PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
       
     case .didTapRefuseButton:
       isMatchDeclineAlertPresented = true
+      PCAmplitude.trackScreenView(DefaultProgress.matchDetailRejectPopup.rawValue)
       
     case .didAcceptMatch:
       completedMatchAction = nil

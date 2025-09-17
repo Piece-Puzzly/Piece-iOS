@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 public struct MatchDetailViewFactory {
   @ViewBuilder
@@ -20,6 +21,7 @@ public struct MatchDetailViewFactory {
       getMatchPhotoUseCase: getMatchPhotoUseCase,
       acceptMatchUseCase: acceptMatchUseCase
     )
+    .trackScreen(trackable: DefaultProgress.matchDetailBasicProfile)
   }
   
   @ViewBuilder
@@ -35,6 +37,7 @@ public struct MatchDetailViewFactory {
       acceptMatchUseCase: acceptMatchUseCase,
       refuseMatchUseCase: refuseMatchUseCase
     )
+    .trackScreen(trackable: DefaultProgress.matchDetailValueTalk)
   }
   
   @ViewBuilder
@@ -48,6 +51,7 @@ public struct MatchDetailViewFactory {
       getMatchPhotoUseCase: getMatchPhotoUseCase,
       acceptMatchUseCase: acceptMatchUseCase
     )
+    .trackScreen(trackable: DefaultProgress.matchDetailValuePick)
   }
   
   @ViewBuilder

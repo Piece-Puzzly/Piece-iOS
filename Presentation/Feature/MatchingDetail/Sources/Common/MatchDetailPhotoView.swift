@@ -10,6 +10,7 @@ import Entities
 import LocalStorage
 import Router
 import SwiftUI
+import PCAmplitude
 
 struct MatchDetailPhotoView: View {
   private let nickname: String
@@ -49,6 +50,7 @@ struct MatchDetailPhotoView: View {
         Dimmer()
           .ignoresSafeArea()
       )
+      .trackScreen(trackable: DefaultProgress.matchDetailPhoto)
   }
   
   private var content: some View {
@@ -77,7 +79,10 @@ struct MatchDetailPhotoView: View {
         buttonText: "인연 수락하기",
         rounding: true
       ) {
-        if isAcceptButtonEnabled { isAlertPresented.toggle() }
+        if isAcceptButtonEnabled {
+          isAlertPresented.toggle()
+          PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
+        }
       }
     }
     .pcAlert(isPresented: $isAlertPresented) {

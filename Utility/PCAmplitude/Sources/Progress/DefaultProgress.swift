@@ -34,4 +34,12 @@ public enum DefaultProgress: String, ProgressTrackable {
   case matchMainHome = "match_main_home" // USER
   case matchMainProfileRejectPopup = "match_main_profile_reject_popup" // REJECTED
   case matchMainAcceptPopup = "match_main_accept_popup" // 인연 수락 팝업
+  
+  /// 매칭 상세
+  case matchDetailBasicProfile = "match_detail_basic_profile"
+  case matchDetailValuePick = "match_detail_value_pick"
+  case matchDetailValueTalk = "match_detail_value_talk"
+  case matchDetailPhoto = "match_detail_photo"
+  case matchDetailAcceptPopup = "match_detail_accept_popup"
+  case matchDetailRejectPopup = "match_detail_reject_popup"
 }
