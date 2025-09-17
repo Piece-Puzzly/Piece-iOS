@@ -9,8 +9,8 @@ import Foundation
 
 public enum CreateProfileProgress: String, ProgressTrackable {
   case basicInfo = "basic_info_main"
-  case valuePick = "value_talk_input"
-  case valueTalk = "value_pick_input"
+  case valuePick = "value_pick_input"
+  case valueTalk = "value_talk_input"
   case aiLoding = "profile_ai_loading"
   case complete = "profile_complete"
 
