@@ -13,10 +13,18 @@ import Observation
 import UseCases
 import Entities
 import LocalStorage
+import PCAmplitude
 
 @MainActor
 @Observable
 final class MatchingMainViewModel {
+  enum MatchingMainTrackedScreen {
+    case pending
+    case nodata
+    case home
+    case loading
+  }
+  
   enum MatchingButtonState {
     case pending
     case checkMatchingPiece // 매칭 조각 확인하기
@@ -63,6 +71,15 @@ final class MatchingMainViewModel {
     case tapProfileInfo // 매칭 조각 확인하고 상대 프로필 눌렀을때
     case tapMatchingButton // 하단 CTA 매칭 버튼 누를시
     case didAcceptMatch // 인연 수락하기
+  }
+  var currentTrackedScreen: MatchingMainTrackedScreen = .loading
+  var trackedScreen: DefaultProgress {
+    switch currentTrackedScreen {
+    case .pending: .matchMainReviewing
+    case .nodata: .matchMainNoMatch
+    case .home: .matchMainHome
+    case .loading: .matchMainLoading
+    }
   }
   var userRole: String {
     PCUserDefaultsService.shared.getUserRole().rawValue
@@ -139,6 +156,7 @@ final class MatchingMainViewModel {
       switch matchingButtonState {
       case .acceptMatching:
         isMatchAcceptAlertPresented = true
+        PCAmplitude.trackScreenView(DefaultProgress.matchMainAcceptPopup.rawValue)
       case .checkMatchingPiece:
         Task { await patchCheckMatchingPiece() }
       case .pending, .checkContact, .responseComplete:
@@ -170,6 +188,7 @@ final class MatchingMainViewModel {
       case .REJECTED:
         // 프로필 상태가 REJECTED 일 경우, 해당 api 호출
         await fetchUserRejectState()
+        PCAmplitude.trackScreenView(DefaultProgress.matchMainProfileRejectPopup.rawValue)
       case .INCOMPLETE, .REVISED, .APPROVED:
         break
       case .none:
@@ -181,6 +200,7 @@ final class MatchingMainViewModel {
         // 심사 중 Pending
         matchingButtonState = .pending
         isShowMatchingPendingCard = true
+        currentTrackedScreen = .pending
       case .USER:
         await getMatchesInfo()
       default: break
@@ -234,11 +254,13 @@ final class MatchingMainViewModel {
         matchingButtonState = .pending
       } else {
         isShowMatchingMainBasicCard = true
+        currentTrackedScreen = .home
       }
     } catch {
       print("Get Match Status :\(error.localizedDescription)")
       isShowMatchingNodataCard = true
       matchingButtonState = .pending
+      currentTrackedScreen = .nodata
     }
   }
   
