@@ -8,8 +8,16 @@
 import Foundation
 
 public enum DefaultProgress: String, ProgressTrackable {
-  case termsDetail = "signup_terms_detail"
+  /// 로그인 관련
   case loginIntro = "login_intro"
   case loginPhoneVerify = "login_phone_verify"
   case alreadyRegisteredPopup = "already_registered_popup"
+  
+  /// 가입 시 이용약관 팝업
+  case termsDetail = "signup_terms_detail"
+  
+  /// 프로필 기본정보 생성 바텀시트
+  case basicInfoJobBottomsheet = "basic_info_job_bottomsheet"
+  case basicInfoRegionBottomsheet = "basic_info_region_bottomsheet"
+  case basicInfoContactBottomsheet = "basic_info_contact_bottomsheet"
 }
