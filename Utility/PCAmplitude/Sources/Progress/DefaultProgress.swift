@@ -20,4 +20,9 @@ public enum DefaultProgress: String, ProgressTrackable {
   case basicInfoJobBottomsheet = "basic_info_job_bottomsheet"
   case basicInfoRegionBottomsheet = "basic_info_region_bottomsheet"
   case basicInfoContactBottomsheet = "basic_info_contact_bottomsheet"
+  
+  /// 심사 전 프로필 프리뷰
+  case previewSelfBasicProfile = "preview_self_basic_profile"
+  case previewSelfValuePick = "preview_self_value_pick"
+  case previewSelfValueTalk = "preview_self_value_talk"
 }
