@@ -50,4 +50,15 @@ public enum DefaultProgress: String, ProgressTrackable {
   case blockIntro = "block_intro"
   case blockConfirmPopup = "block_confirm_popup"
   case blockCompletePopup = "block_complete_popup"
+  
+  /// 설정
+  case settingIntro = "setting_intro"
+  
+  /// 로그아웃
+  case logoutPopup = "logout_popup"
+  
+  /// 회원탈퇴
+  case withdrawalReason = "withdrawal_reason"
+  case withdrawalConfirm = "withdrawal_confirm"
+  case withdrawalFoundPartnerBottomsheet = "withdrawal_found_partner_bottomsheet"
 }
