@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 public struct EditValueTalkViewFactory {
   public static func createEditValueTalkViewFactory(
@@ -23,5 +24,6 @@ public struct EditValueTalkViewFactory {
       connectSseUseCase: connectSseUseCase,
       disconnectSseUseCase: disconnectSseUseCase
     )
+    .trackScreen(trackable: DefaultProgress.profileEditValueTalk)
   }
 }

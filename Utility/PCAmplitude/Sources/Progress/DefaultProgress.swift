@@ -42,6 +42,19 @@ public enum DefaultProgress: String, ProgressTrackable {
   case matchDetailPhoto = "match_detail_photo"
   case matchDetailAcceptPopup = "match_detail_accept_popup"
   case matchDetailRejectPopup = "match_detail_reject_popup"
+  
+  /// 로그인 후 프로필
+  case profileBasic = "profile_basic"
+  case profileEditBasic = "profile_edit_basic"
+  case profileEditValueTalk = "profile_edit_value_talk"
+  case profileEditValuePick = "profile_edit_value_pick"
+  
+  /// 알림 리스트
+  case notification = "notification"
+  
+  /// 연락처 공개 화면
+  case contactShareResult = "contact_share_result"
+  
   /// 신고 / 차단
   case reportBlockSelectBottomsheet = "report_block_select_bottomsheet"
   case reportIntro = "report_intro"

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 public struct NotificationViewFactory {
   @ViewBuilder
@@ -18,5 +19,6 @@ public struct NotificationViewFactory {
       getNotificationsUseCase: getNotificationsUseCase,
       readNotificationUseCase: readNotificationUseCase
     )
+    .trackScreen(trackable: DefaultProgress.notification)
   }
 }
