@@ -91,6 +91,7 @@ final class ValueTalkViewModel {
       
     case .didTapMoreButton:
       isBottomSheetPresented = true
+      PCAmplitude.trackScreenView(DefaultProgress.reportBlockSelectBottomsheet.rawValue)
       
     case .didTapPhotoButton:
       isPhotoViewPresented = true

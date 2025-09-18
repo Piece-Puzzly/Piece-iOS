@@ -8,6 +8,7 @@
 import LocalStorage
 import Observation
 import UseCases
+import PCAmplitude
 
 @Observable
 final class ReportUserViewModel {
@@ -45,6 +46,7 @@ final class ReportUserViewModel {
       
     case .didTapNextButton:
       showBlockAlert = true
+      PCAmplitude.trackScreenView(DefaultProgress.reportConfirmPopup.rawValue)
       
     case let .didUpdateReportReason(reason):
       let limitedText = reason.count <= 100 ? reason : String(reason.prefix(100))
@@ -54,6 +56,7 @@ final class ReportUserViewModel {
     case .didTapReportButton:
       showBlockAlert = false
       Task { await reportUser() }
+      PCAmplitude.trackScreenView(DefaultProgress.reportCompletePopup.rawValue)
     }
   }
   

@@ -10,6 +10,7 @@ import Foundation
 import LocalStorage
 import Observation
 import UseCases
+import PCAmplitude
 
 @MainActor
 @Observable
@@ -71,6 +72,7 @@ final class ValuePickViewModel {
       
     case .didTapMoreButton:
       isBottomSheetPresented = true
+      PCAmplitude.trackScreenView(DefaultProgress.reportBlockSelectBottomsheet.rawValue)
       
     case let .didSelectTab(tab):
       self.selectedTab = tab
