@@ -22,6 +22,7 @@ public struct MatchDetailViewFactory {
       acceptMatchUseCase: acceptMatchUseCase
     )
     .trackScreen(trackable: DefaultProgress.matchDetailBasicProfile)
+    .trackDuration(action: .matchDetailBasicProfileDuration)
   }
   
   @ViewBuilder

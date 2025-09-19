@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-public struct PCTrackScreenView<T: ProgressTrackable>: ViewModifier {
+struct PCTrackScreenViewModifier<T: ProgressTrackable>: ViewModifier {
   private let id: AnyHashable
   private let trackable: T
   private let manager: any AmplitudeProgressManagable
@@ -49,8 +49,35 @@ public struct PCTrackScreenView<T: ProgressTrackable>: ViewModifier {
   }
 }
 
+struct PCTrackDurationViewModifier: ViewModifier {
+  @State private var startTime: Date?
+  
+  let action: PCAmplitudeAction
+  
+  func body(content: Content) -> some View {
+    content
+      .onAppear {
+        startTime = Date()
+      }
+      .onDisappear {
+        guard let startTime else { return }
+        let duration = Int(Date().timeIntervalSince(startTime) * 1000)
+        PCAmplitude.trackAction(
+          action: action,
+          properties: [.duration: duration]
+        )
+      }
+  }
+}
+
 public extension View {
   func trackScreen<T: ProgressTrackable>(key: AnyHashable? = nil, trackable: T) -> some View {
-    modifier(PCTrackScreenView(key: key, trackable: trackable))
+    modifier(PCTrackScreenViewModifier(key: key, trackable: trackable))
+  }
+}
+
+public extension View {
+  func trackDuration(action: PCAmplitudeAction) -> some View {
+    modifier(PCTrackDurationViewModifier(action: action))
   }
 }

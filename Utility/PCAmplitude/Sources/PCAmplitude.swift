@@ -76,4 +76,20 @@ public enum PCAmplitude {
     
     provider.logEvent(type: .action, properties: properties)
   }
+  
+  public static func trackAction(
+    action: PCAmplitudeAction,
+    properties additionalProperties: [AmplitudeParameterKey: Any]? = nil
+  ) {
+    var properties: [AmplitudeParameterKey: Any] = [
+      .screenName : action.screenName,
+      .actionName : action.actionName
+    ]
+    
+    if let additionalProperties {
+      properties.merge(additionalProperties) { _, new in new }
+    }
+    
+    provider.logEvent(type: .action, properties: properties)
+  }
 }

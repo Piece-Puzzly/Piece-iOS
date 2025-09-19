@@ -72,6 +72,7 @@ struct CreateProfileContainerView: View {
           .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
           .opacity(viewModel.currentStep == .valueTalk ? 1 : 0)
           .disabled(viewModel.currentStep != .valueTalk)
+          .trackDuration(action: .valueTalkDuration)
       }
       .animation(.easeInOut, value: viewModel.currentStep)
     }
