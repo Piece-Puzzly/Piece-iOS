@@ -61,6 +61,11 @@ final class MatchProfileBasicViewModel {
     case .didTapPhotoButton:
       isPhotoViewPresented = true
       
+      PCAmplitude.trackButtonClick(
+        screenName: .matchDetailBasicInfo,
+        buttonName: .photoView
+      )
+      
     case .didAcceptMatch:
       Task {
         await acceptMatch()

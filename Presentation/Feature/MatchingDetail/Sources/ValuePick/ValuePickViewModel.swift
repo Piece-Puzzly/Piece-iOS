@@ -88,6 +88,11 @@ final class ValuePickViewModel {
     case .didTapPhotoButton:
       isPhotoViewPresented = true
       
+      PCAmplitude.trackButtonClick(
+        screenName: .matchDetailValuePick,
+        buttonName: .photoView
+      )
+      
     case .didAcceptMatch:
       Task {
         await acceptMatch()

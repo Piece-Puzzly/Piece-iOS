@@ -96,6 +96,11 @@ final class ValueTalkViewModel {
     case .didTapPhotoButton:
       isPhotoViewPresented = true
       
+      PCAmplitude.trackButtonClick(
+        screenName: .matchDetailValueTalk,
+        buttonName: .photoView
+      )
+      
     case .didTapAcceptButton:
       isMatchAcceptAlertPresented = true
       PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)

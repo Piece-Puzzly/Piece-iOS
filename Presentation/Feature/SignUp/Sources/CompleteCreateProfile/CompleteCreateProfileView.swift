@@ -8,6 +8,7 @@
 import DesignSystem
 import Router
 import SwiftUI
+import PCAmplitude
 
 struct CompleteCreateProfileView: View {
   @Environment(Router.self) private var router
@@ -59,6 +60,10 @@ struct CompleteCreateProfileView: View {
       PCTextButton(content: "홈으로")
         .contentShape(Rectangle())
         .onTapGesture {
+          PCAmplitude.trackButtonClick(
+            screenName: .registerProfileComplete,
+            buttonName: .home
+          )
           router.setRoute(.home)
         }
       

@@ -158,7 +158,14 @@ final class MatchingMainViewModel {
         isMatchAcceptAlertPresented = true
         PCAmplitude.trackScreenView(DefaultProgress.matchMainAcceptPopup.rawValue)
       case .checkMatchingPiece:
-        Task { await patchCheckMatchingPiece() }
+        Task {
+          await patchCheckMatchingPiece()
+          
+          PCAmplitude.trackButtonClick(
+            screenName: .matchMainHome,
+            buttonName: .checkRelationShip
+          )
+        }
       case .pending, .checkContact, .responseComplete:
         return
       }
@@ -169,10 +176,22 @@ final class MatchingMainViewModel {
     destination = .matchProfileBasic
     
     switch matchingButtonState {
+    case .pending:
+      break
+    
     case .checkMatchingPiece:
       Task { await patchCheckMatchingPiece() }
-    case .pending, .checkContact, .responseComplete, .acceptMatching:
-      return
+      
+      PCAmplitude.trackButtonClick(
+        screenName: .matchMainHome,
+        buttonName: .userDescription
+      )
+    
+    case .checkContact, .responseComplete, .acceptMatching:
+      PCAmplitude.trackButtonClick(
+        screenName: .matchMainHome,
+        buttonName: .userDescription
+      )
     }
   }
   

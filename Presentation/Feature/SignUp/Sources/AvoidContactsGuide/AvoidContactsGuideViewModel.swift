@@ -8,6 +8,7 @@
 import UseCases
 import Entities
 import SwiftUI
+import PCAmplitude
 
 @MainActor
 @Observable
@@ -50,6 +51,11 @@ final class AvoidContactsGuideViewModel {
     case .tapAcceptButton:
       Task {
         await handleAcceptButtonTap()
+        
+        PCAmplitude.trackButtonClick(
+          screenName: .avoidanceIntro,
+          buttonName: .avoidanceAllow
+        )
       }
       
     case .showSettingAlert:
