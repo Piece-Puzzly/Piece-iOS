@@ -44,13 +44,13 @@ public enum PCAmplitude {
   }
   
   public static func trackButtonClick(
-    screenName: String,
-    buttonName: String,
+    screenName: PCAmplitudeButtonClickScreen,
+    buttonName: PCAmplitudeButtonName,
     properties additionalProperties: [AmplitudeParameterKey: Any]? = nil
   ) {
     var properties: [AmplitudeParameterKey: Any] = [
-      .screenName : screenName,
-      .buttonName : buttonName
+      .screenName : screenName.rawValue,
+      .buttonName : buttonName.rawValue
     ]
     
     if let additionalProperties {
