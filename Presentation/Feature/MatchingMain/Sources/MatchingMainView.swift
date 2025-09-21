@@ -11,8 +11,8 @@ import DesignSystem
 import UseCases
 
 struct MatchingMainView: View {
-  @Bindable var matchingTimerViewModel: MatchingTimerViewModel
-  @Bindable var matchingMainViewModel: MatchingMainViewModel
+  @State var matchingTimerViewModel: MatchingTimerViewModel
+  @State var matchingMainViewModel: MatchingMainViewModel
   
   @Environment(Router.self) private var router: Router
   @Environment(PCToastManager.self) private var toastManager: PCToastManager
@@ -63,6 +63,9 @@ struct MatchingMainView: View {
         
         Spacer()
       }
+    }
+    .onAppear {
+      matchingMainViewModel.handleAction(.onAppear)
     }
     .pcAlert(isPresented: $matchingMainViewModel.isMatchAcceptAlertPresented) {
       AlertView(

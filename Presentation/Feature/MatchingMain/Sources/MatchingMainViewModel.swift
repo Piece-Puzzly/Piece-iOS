@@ -60,6 +60,7 @@ final class MatchingMainViewModel {
   }
   
   enum Action {
+    case onAppear
     case tapProfileInfo // 매칭 조각 확인하고 상대 프로필 눌렀을때
     case tapMatchingButton // 하단 CTA 매칭 버튼 누를시
     case didAcceptMatch // 인연 수락하기
@@ -115,14 +116,12 @@ final class MatchingMainViewModel {
     self.getMatchesInfoUseCase = getMatchesInfoUseCase
     self.getUserRejectUseCase = getUserRejectUseCase
     self.patchMatchesCheckPieceUseCase = patchMatchesCheckPieceUseCase
-    
-    Task {
-      await getUserRole()
-    }
   }
   
   func handleAction(_ action: Action) {
     switch action {
+    case .onAppear:
+      handleOnAppear()
     case .tapProfileInfo:
       handleProfileInfoTap()
       
@@ -131,6 +130,14 @@ final class MatchingMainViewModel {
       
     case .didAcceptMatch:
       Task { await acceptMatch() }
+    }
+  }
+  
+  private func handleOnAppear() {
+    destination = nil
+    
+    Task {
+      await getUserRole()
     }
   }
   
