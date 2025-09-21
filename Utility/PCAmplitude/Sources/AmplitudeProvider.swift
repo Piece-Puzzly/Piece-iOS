@@ -32,12 +32,21 @@ public final class AmplitudeProvider: PCAmplitudeProvider {
   }
   
   public func setUserId(_ id: String?) {
-    amplitude.setUserId(userId: id)
-    NSLog("""
-          📢 AMPLITUDE (RELEASE)
-          📢 SET USER ID: \(id ?? "nil")
-          """
-    )
+    if let id {
+      amplitude.setUserId(userId: "piece_ios_\(id)")
+      NSLog("""
+            📢 AMPLITUDE (RELEASE)
+            📢 SET USER ID: piece_ios_\(id)"
+            """
+      )
+    } else {
+      amplitude.setUserId(userId: nil)
+      NSLog("""
+            📢 AMPLITUDE (RELEASE)
+            📢 CLEAR USER ID => nil
+            """
+      )
+    }
   }
   
   private func convertProperties(_ parameters: [AmplitudeParameterKey: Any]) -> [String: Any] {
