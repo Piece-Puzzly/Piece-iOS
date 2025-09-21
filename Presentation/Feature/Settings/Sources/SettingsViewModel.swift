@@ -383,6 +383,7 @@ final class SettingsViewModel {
     let fcmToken = PCKeychainManager.shared.read(.fcmToken)
     PCKeychainManager.shared.deleteAll()
     PCUserDefaultsService.shared.initialize()
+    PCAmplitude.clearUserId()
     
     if let fcmToken {
       PCKeychainManager.shared.save(.fcmToken, value: fcmToken)

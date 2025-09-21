@@ -25,6 +25,10 @@ public enum PCAmplitude {
     self.provider.setUserId(id)
   }
   
+  public static func clearUserId() {
+    self.provider.setUserId(nil)
+  }
+  
   public static func trackScreenView(_ screenName: String) {
     provider.logEvent(
       type: .screenView,
