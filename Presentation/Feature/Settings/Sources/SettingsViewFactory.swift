@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 public struct SettingsViewFactory {
   public static func createSettingsView(
@@ -39,6 +40,7 @@ public struct SettingsViewFactory {
       putSettingsBlockAcquaintanceUseCase: putSettingsBlockAcquaintanceUseCase,
       patchLogoutUseCase: patchLogoutUseCase
     )
+    .trackScreen(trackable: DefaultProgress.settingIntro)
   }
   
   public static func createSettingsWebView(title: String, uri: String) -> some View {

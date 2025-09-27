@@ -51,6 +51,18 @@ public final class Router {
     initialRoute = route
   }
   
+  @MainActor
+  public func setRoute(_ route: Route, completion: @escaping (() -> Void)) {
+    print("➡️ set route: \(route)")
+    path.removeLast(path.count)
+    initialRoute = route
+    
+    Task {
+      await Task.yield()
+      completion()
+    }
+  }
+  
   public func setRouteAndPush(root: Route, pushTo route: Route) {
     print("➡️ set route and push: root \(root), route \(route)")
     path.removeLast(path.count)

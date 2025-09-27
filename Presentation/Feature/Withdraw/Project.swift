@@ -14,6 +14,7 @@ let project = Project.staticLibrary(
     .presentation(target: .DesignSystem),
     .presentation(target: .Router),
     .utility(target: .PCFoundationExtension),
+    .utility(target: .PCAmplitude),
     .domain(target: .UseCases),
     .data(target: .LocalStorage),
     .externalDependency(dependency: .KakaoSDKUser),

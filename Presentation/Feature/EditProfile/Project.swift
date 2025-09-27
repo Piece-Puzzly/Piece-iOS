@@ -16,5 +16,6 @@ let project = Project.staticLibrary(
     .presentation(target: .Router),
     .presentation(target: .PCImagePicker),
     .utility(target: .PCFoundationExtension),
+    .utility(target: .PCAmplitude),
   ]
 )

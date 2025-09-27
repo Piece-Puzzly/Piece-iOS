@@ -7,11 +7,13 @@
 
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 public struct PreviewProfileViewFactory {
   @ViewBuilder
   public static func createMatchProfileBasicView(getProfileBasicUseCase: GetProfileBasicUseCase) -> some View {
     PreviewProfileBasicView(getProfileBasicUseCase: getProfileBasicUseCase)
+      .trackScreen(trackable: DefaultProgress.previewSelfBasicProfile)
   }
   
   @ViewBuilder
@@ -27,6 +29,7 @@ public struct PreviewProfileViewFactory {
       imageUri: imageUri,
       getProfileValueTalksUseCase: getProfileValueTalksUseCase
     )
+    .trackScreen(trackable: DefaultProgress.previewSelfValueTalk)
   }
   
   @ViewBuilder
@@ -42,5 +45,6 @@ public struct PreviewProfileViewFactory {
       imageUri: imageUri,
       getProfileValuePicksUseCase: getProfileValuePicksUseCase
     )
+    .trackScreen(trackable: DefaultProgress.previewSelfValuePick)
   }
 }

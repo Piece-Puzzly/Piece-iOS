@@ -92,6 +92,37 @@ public final class PCUserDefaultsService {
       _ = PCUserDefaults.setObjectFor(key: .latestSyncDate, object: newValue)
     }
   }
+  
+  // MARK: - Amplitude Progress
+  var onboardingProgress: Int {
+    get {
+      PCUserDefaults.objectFor(key: .onboardingProgress) as? Int ?? -1
+    }
+    
+    set {
+      _ = PCUserDefaults.setObjectFor(key: .onboardingProgress, object: newValue)
+    }
+  }
+
+  var signUpProgress: Int {
+    get {
+      PCUserDefaults.objectFor(key: .signUpProgress) as? Int ?? -1
+    }
+    
+    set {
+      _ = PCUserDefaults.setObjectFor(key: .signUpProgress, object: newValue)
+    }
+  }
+  
+  var createProfileProgress: Int {
+    get {
+      PCUserDefaults.objectFor(key: .createProfileProgress) as? Int ?? -1
+    }
+    
+    set {
+      _ = PCUserDefaults.setObjectFor(key: .createProfileProgress, object: newValue)
+    }
+  }
 }
 
 public extension PCUserDefaultsService {
@@ -184,5 +215,45 @@ public extension PCUserDefaultsService {
   
   func setLatestSyncDate(_ date: Date) {
     latestSyncDate = date
+  }
+  
+  // MARK: Amplitude Progress
+  func getOnboardingProgress() -> Int {
+    onboardingProgress
+  }
+  
+  func setOnboardingProgress(_ progress: Int) {
+    onboardingProgress = progress
+  }
+  
+  func resetOnboardingProgress() {
+    onboardingProgress = -1
+    NSLog("DEBUG: initialize: \(UserDefaultsKeys.onboardingProgress.rawValue)")
+  }
+  
+  func getSignUpProgress() -> Int {
+    signUpProgress
+  }
+  
+  func setSignUpProgress(_ progress: Int) {
+    signUpProgress = progress
+  }
+  
+  func resetSignUpProgress() {
+    signUpProgress = -1
+    NSLog("DEBUG: initialize: \(UserDefaultsKeys.signUpProgress.rawValue)")
+  }
+  
+  func getCreateProfileProgress() -> Int {
+    createProfileProgress
+  }
+  
+  func setCreateProfileProgress(_ progress: Int) {
+    createProfileProgress = progress
+  }
+  
+  func resetCreateProfileProgress() {
+    createProfileProgress = -1
+    NSLog("DEBUG: initialize: \(UserDefaultsKeys.createProfileProgress.rawValue)")
   }
 }

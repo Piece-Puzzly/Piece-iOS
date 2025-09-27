@@ -76,6 +76,7 @@ extension Target {
           "NSContactsUsageDescription": "사용자가 원할 경우, 사용자의 연락처에 있는 상대에게 사용자가 노출되지 않도록 하기 위해 연락처 정보를 수집합니다.",
           "BASE_URL": "$(BASE_URL)",
           "NATIVE_APP_KEY": "$(NATIVE_APP_KEY)",
+          "AMPLITUDE_API_KEY": "$(AMPLITUDE_API_KEY)",
           "NSAppTransportSecurity": [
             "NSAllowsArbitraryLoads": true
           ],

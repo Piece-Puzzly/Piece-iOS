@@ -11,6 +11,7 @@ import Router
 import LocalStorage
 import KakaoSDKUser
 import AuthenticationServices
+import PCAmplitude
 
 @MainActor
 @Observable
@@ -165,6 +166,7 @@ final class WithdrawConfirmViewModel: NSObject {
     let fcmToken = PCKeychainManager.shared.read(.fcmToken)
     PCKeychainManager.shared.deleteAll()
     PCUserDefaultsService.shared.initialize()
+    PCAmplitude.clearUserId()
     
     if let fcmToken {
       PCKeychainManager.shared.save(.fcmToken, value: fcmToken)

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 public struct LoginViewFactory {
   @ViewBuilder
@@ -18,6 +19,7 @@ public struct LoginViewFactory {
       socialLoginUseCase: socialLoginUseCase,
       testLoginUseCase: testLoginUseCase
     )
+    .trackScreen(trackable: DefaultProgress.loginIntro)
   }
   
   @ViewBuilder
@@ -29,5 +31,6 @@ public struct LoginViewFactory {
       sendSMSCodeUseCase: sendSMSCodeUseCase,
       verifySMSCodeUseCase: verifySMSCodeUseCase
     )
+    .trackScreen(trackable: DefaultProgress.loginPhoneVerify)
   }
 }

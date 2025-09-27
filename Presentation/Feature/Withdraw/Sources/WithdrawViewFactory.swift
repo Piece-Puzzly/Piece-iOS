@@ -7,10 +7,12 @@
 
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 public struct WithdrawViewFactory {
     public static func createWithdrawView() -> some View {
         WithdrawView(viewModel: WithdrawViewModel())
+        .trackScreen(trackable: DefaultProgress.withdrawalReason)
     }
     
   public static func createWithdrawConfirmView(
@@ -23,5 +25,6 @@ public struct WithdrawViewFactory {
         appleAuthServiceUseCase: appleAuthServiceUseCase,
         reason: reason
       )
+      .trackScreen(trackable: DefaultProgress.withdrawalConfirm)
     }
 }

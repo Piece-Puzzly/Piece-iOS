@@ -9,10 +9,11 @@ import Router
 import SwiftUI
 import DesignSystem
 import UseCases
+import PCAmplitude
 
 struct MatchingMainView: View {
-  @Bindable var matchingTimerViewModel: MatchingTimerViewModel
-  @Bindable var matchingMainViewModel: MatchingMainViewModel
+  @State var matchingTimerViewModel: MatchingTimerViewModel
+  @State var matchingMainViewModel: MatchingMainViewModel
   
   @Environment(Router.self) private var router: Router
   @Environment(PCToastManager.self) private var toastManager: PCToastManager
@@ -64,6 +65,7 @@ struct MatchingMainView: View {
         Spacer()
       }
     }
+    .trackScreen(trackable: matchingMainViewModel.trackedScreen)
     .pcAlert(isPresented: $matchingMainViewModel.isMatchAcceptAlertPresented) {
       AlertView(
         title: {

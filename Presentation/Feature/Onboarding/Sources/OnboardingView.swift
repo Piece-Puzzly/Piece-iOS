@@ -8,9 +8,10 @@
 import DesignSystem
 import SwiftUI
 import Router
+import PCAmplitude
 
 struct OnboardingView: View {
-  @State var viewModel = OnboardingViewModel()
+  @State var viewModel = OnboardingViewModel(progressManager: OnboardingProgressManager.shared)
   @Environment(Router.self) var router
 
   var body: some View {
@@ -32,6 +33,7 @@ struct OnboardingView: View {
       viewModel.handleAction(.onAppear)
     }
     .toolbar(.hidden)
+    .trackScreen(trackable: viewModel.trackedScreen)
   }
   
   private var topBar: some View {
@@ -41,7 +43,8 @@ struct OnboardingView: View {
       PCTextButton(content: "건너뛰기")
         .opacity(viewModel.isSkipButtonVisible ? 1 : 0)
         .onTapGesture {
-          router.push(to: .login)
+          viewModel.handleAction(.resetProgress)
+          router.setRoute(.login)
         }
     }
     .frame(maxWidth: .infinity)
@@ -89,6 +92,7 @@ struct OnboardingView: View {
     ) {
       withAnimation {
         if viewModel.isLastTab {
+          viewModel.handleAction(.resetProgress)
           router.setRoute(.login)
         } else {
           viewModel.handleAction(.didTapNextButton)

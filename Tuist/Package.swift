@@ -47,6 +47,7 @@ enum ExternalDependency: String, CaseIterable {
   case Lottie
   case Firebase
   case Mantis
+  case AmplitudeSwift
 }
 
 extension ExternalDependency {
@@ -59,6 +60,7 @@ extension ExternalDependency {
     case .Lottie: "https://github.com/airbnb/lottie-ios"
     case .Firebase: "https://github.com/firebase/firebase-ios-sdk"
     case .Mantis: "https://github.com/guoyingtao/Mantis"
+    case .AmplitudeSwift: "https://github.com/amplitude/Amplitude-Swift"
     }
   }
 }
@@ -73,6 +75,7 @@ extension ExternalDependency {
     case .Lottie: "4.5.1"
     case .Firebase: "11.8.1"
     case .Mantis: "2.26.0"
+    case .AmplitudeSwift: "1.14.0"
     }
   }
 }

@@ -8,6 +8,7 @@
 import Foundation
 import UseCases
 import DesignSystem
+import PCAmplitude
 
 @Observable
 final class WithdrawViewModel {
@@ -57,6 +58,7 @@ final class WithdrawViewModel {
       switch withdraw {
       case .인연을_만났어요:
         isReasonSheetPresented = true
+        PCAmplitude.trackScreenView(DefaultProgress.withdrawalFoundPartnerBottomsheet.rawValue)
       default:
         break
       }

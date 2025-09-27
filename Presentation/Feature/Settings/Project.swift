@@ -19,5 +19,6 @@ let project = Project.staticLibrary(
     .data(target: .LocalStorage),
     .utility(target: .PCFirebase),
     .utility(target: .PCFoundationExtension),
+    .utility(target: .PCAmplitude),
   ]
 )

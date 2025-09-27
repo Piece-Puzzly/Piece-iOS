@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 public struct MatchResultViewFactory {
   public static func createMatchResultView(
@@ -19,5 +20,6 @@ public struct MatchResultViewFactory {
       getMatchPhotoUseCase: getMatchPhotoUseCase,
       getMatchContactsUseCase: getMatchContactsUseCase
     )
+    .trackScreen(trackable: DefaultProgress.contactShareResult)
   }
 }

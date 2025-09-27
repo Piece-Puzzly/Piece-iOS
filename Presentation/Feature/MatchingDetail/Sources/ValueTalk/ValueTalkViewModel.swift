@@ -9,6 +9,7 @@ import Foundation
 import LocalStorage
 import Observation
 import UseCases
+import PCAmplitude
 
 @MainActor
 @Observable
@@ -90,15 +91,23 @@ final class ValueTalkViewModel {
       
     case .didTapMoreButton:
       isBottomSheetPresented = true
+      PCAmplitude.trackScreenView(DefaultProgress.reportBlockSelectBottomsheet.rawValue)
       
     case .didTapPhotoButton:
       isPhotoViewPresented = true
       
+      PCAmplitude.trackButtonClick(
+        screenName: .matchDetailValueTalk,
+        buttonName: .photoView
+      )
+      
     case .didTapAcceptButton:
       isMatchAcceptAlertPresented = true
+      PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
       
     case .didTapRefuseButton:
       isMatchDeclineAlertPresented = true
+      PCAmplitude.trackScreenView(DefaultProgress.matchDetailRejectPopup.rawValue)
       
     case .didAcceptMatch:
       completedMatchAction = nil

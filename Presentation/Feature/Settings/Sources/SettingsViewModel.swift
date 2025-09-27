@@ -12,6 +12,7 @@ import PCFoundationExtension
 import SwiftUI
 import UseCases
 import Router
+import PCAmplitude
 
 @Observable
 final class SettingsViewModel {
@@ -148,6 +149,7 @@ final class SettingsViewModel {
       
     case .logoutItemTapped:
       showLogoutAlert = true
+      PCAmplitude.trackScreenView(DefaultProgress.logoutPopup.rawValue)
       
     case .confirmLogoutButton:
       tapComfirmLogout()
@@ -381,6 +383,7 @@ final class SettingsViewModel {
     let fcmToken = PCKeychainManager.shared.read(.fcmToken)
     PCKeychainManager.shared.deleteAll()
     PCUserDefaultsService.shared.initialize()
+    PCAmplitude.clearUserId()
     
     if let fcmToken {
       PCKeychainManager.shared.save(.fcmToken, value: fcmToken)

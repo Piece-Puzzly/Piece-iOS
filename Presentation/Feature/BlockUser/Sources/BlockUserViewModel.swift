@@ -7,6 +7,7 @@
 
 import Observation
 import UseCases
+import PCAmplitude
 
 @Observable
 final class BlockUserViewModel {
@@ -35,12 +36,14 @@ final class BlockUserViewModel {
     switch action {
     case .didTapBottomButton:
       isBlockUserAlertPresented = true
+      PCAmplitude.trackScreenView(DefaultProgress.blockConfirmPopup.rawValue)
       
     case .didTapBlockUserAlertBackButton:
       isBlockUserAlertPresented = false
       
     case .didTapBlockUserAlertBlockUserButton:
       blockUser()
+      PCAmplitude.trackScreenView(DefaultProgress.blockCompletePopup.rawValue)
       
     case .didTapBlockUserCompleteButton:
       isBlockUserCompleteAlertPresented = false
