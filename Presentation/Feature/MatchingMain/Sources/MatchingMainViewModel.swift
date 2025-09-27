@@ -13,10 +13,18 @@ import Observation
 import UseCases
 import Entities
 import LocalStorage
+import PCAmplitude
 
 @MainActor
 @Observable
 final class MatchingMainViewModel {
+  enum MatchingMainTrackedScreen {
+    case pending
+    case nodata
+    case home
+    case loading
+  }
+  
   enum MatchingButtonState {
     case pending
     case checkMatchingPiece // 매칭 조각 확인하기
@@ -64,6 +72,15 @@ final class MatchingMainViewModel {
     case tapProfileInfo // 매칭 조각 확인하고 상대 프로필 눌렀을때
     case tapMatchingButton // 하단 CTA 매칭 버튼 누를시
     case didAcceptMatch // 인연 수락하기
+  }
+  var currentTrackedScreen: MatchingMainTrackedScreen = .loading
+  var trackedScreen: DefaultProgress {
+    switch currentTrackedScreen {
+    case .pending: .matchMainReviewing
+    case .nodata: .matchMainNoMatch
+    case .home: .matchMainHome
+    case .loading: .matchMainLoading
+    }
   }
   var userRole: String {
     PCUserDefaultsService.shared.getUserRole().rawValue
@@ -146,8 +163,16 @@ final class MatchingMainViewModel {
       switch matchingButtonState {
       case .acceptMatching:
         isMatchAcceptAlertPresented = true
+        PCAmplitude.trackScreenView(DefaultProgress.matchMainAcceptPopup.rawValue)
       case .checkMatchingPiece:
-        Task { await patchCheckMatchingPiece() }
+        Task {
+          await patchCheckMatchingPiece()
+          
+          PCAmplitude.trackButtonClick(
+            screenName: .matchMainHome,
+            buttonName: .checkRelationShip
+          )
+        }
       case .pending, .checkContact, .responseComplete:
         return
       }
@@ -158,10 +183,22 @@ final class MatchingMainViewModel {
     destination = .matchProfileBasic
     
     switch matchingButtonState {
+    case .pending:
+      break
+    
     case .checkMatchingPiece:
       Task { await patchCheckMatchingPiece() }
-    case .pending, .checkContact, .responseComplete, .acceptMatching:
-      return
+      
+      PCAmplitude.trackButtonClick(
+        screenName: .matchMainHome,
+        buttonName: .userDescription
+      )
+    
+    case .checkContact, .responseComplete, .acceptMatching:
+      PCAmplitude.trackButtonClick(
+        screenName: .matchMainHome,
+        buttonName: .userDescription
+      )
     }
   }
   
@@ -170,13 +207,14 @@ final class MatchingMainViewModel {
       let userInfo = try await getUserInfoUseCase.execute()
       let userRole = userInfo.role
       let profileStatus = userInfo.profileStatus
-      
       PCUserDefaultsService.shared.setUserRole(userRole)
+      PCAmplitude.setUserId(with: String(userInfo.id))
       
       switch profileStatus {
       case .REJECTED:
         // 프로필 상태가 REJECTED 일 경우, 해당 api 호출
         await fetchUserRejectState()
+        PCAmplitude.trackScreenView(DefaultProgress.matchMainProfileRejectPopup.rawValue)
       case .INCOMPLETE, .REVISED, .APPROVED:
         break
       case .none:
@@ -188,6 +226,7 @@ final class MatchingMainViewModel {
         // 심사 중 Pending
         matchingButtonState = .pending
         isShowMatchingPendingCard = true
+        currentTrackedScreen = .pending
       case .USER:
         await getMatchesInfo()
       default: break
@@ -241,11 +280,13 @@ final class MatchingMainViewModel {
         matchingButtonState = .pending
       } else {
         isShowMatchingMainBasicCard = true
+        currentTrackedScreen = .home
       }
     } catch {
       print("Get Match Status :\(error.localizedDescription)")
       isShowMatchingNodataCard = true
       matchingButtonState = .pending
+      currentTrackedScreen = .nodata
     }
   }
   

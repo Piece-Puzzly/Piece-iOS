@@ -7,6 +7,7 @@
 
 import Observation
 import UseCases
+import PCAmplitude
 
 @MainActor
 @Observable
@@ -55,8 +56,16 @@ final class MatchProfileBasicViewModel {
     switch action {
     case .didTapMoreButton:
       isBottomSheetPresented = true
+      PCAmplitude.trackScreenView(DefaultProgress.reportBlockSelectBottomsheet.rawValue)
+      
     case .didTapPhotoButton:
       isPhotoViewPresented = true
+      
+      PCAmplitude.trackButtonClick(
+        screenName: .matchDetailBasicInfo,
+        buttonName: .photoView
+      )
+      
     case .didAcceptMatch:
       Task {
         await acceptMatch()

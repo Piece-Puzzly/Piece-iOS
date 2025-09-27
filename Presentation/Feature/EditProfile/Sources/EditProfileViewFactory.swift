@@ -8,6 +8,7 @@
 import Entities
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 public struct EditProfileViewFactory {
   public static func createEditProfileView(
@@ -26,5 +27,6 @@ public struct EditProfileViewFactory {
       cameraPermissionUseCase: cameraPermissionUseCase,
       photoPermissionUseCase: photoPermissionUseCase
     )
+    .trackScreen(trackable: DefaultProgress.profileEditBasic)
   }
 }

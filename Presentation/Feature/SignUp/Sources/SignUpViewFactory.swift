@@ -8,6 +8,7 @@
 import Entities
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 public struct SignUpViewFactory {
   public static func createAvoidContactsGuideView(
@@ -20,16 +21,19 @@ public struct SignUpViewFactory {
       fetchContactsUseCase: fetchContactsUseCase,
       blockContactsUseCase: blockContactsUseCase
     )
+    .trackScreen(trackable: SignUpProgress.avoidance)
   }
 
   public static func createTermsAgreementView(
     fetchTermsUseCase: FetchTermsUseCase
   ) -> some View {
     TermsAgreementView(fetchTermsUseCase: fetchTermsUseCase)
+      .trackScreen(trackable: SignUpProgress.terms)
   }
   
   public static func createTermsWebView(term: TermModel) -> some View {
     TermsWebView(term: term)
+      .trackScreen(trackable: DefaultProgress.termsDetail)
   }
   
   public static func createPermissionRequestView(
@@ -42,10 +46,12 @@ public struct SignUpViewFactory {
       requestNotificationPermissionUseCase: requestNotificationPermissionUseCase,
       requestContactsPermissionUseCase: requestContactsPermissionUseCase
     )
+    .trackScreen(trackable: SignUpProgress.permission)
   }
   
   public static func createCompleteSignUpView() -> some View {
     CompleteSignUpView()
+      .trackScreen(trackable: SignUpProgress.complete)
   }
   
   public static func createProfileContainerView(
@@ -92,6 +98,7 @@ public struct SignUpViewFactory {
       profile: profile,
       createProfileUseCase: createProfileUseCase
     )
+    .trackScreen(trackable: CreateProfileProgress.aiLoding)
   }
   
   public static func createEditRejectedWaitingAISummaryView(
@@ -106,6 +113,13 @@ public struct SignUpViewFactory {
   
   public static func createCompleteCreateProfileView() -> some View {
     CompleteCreateProfileView()
+      .trackScreen(trackable: CreateProfileProgress.complete)
+      .onAppear {
+        Task {
+          try? await Task.sleep(for: .milliseconds(500))
+          CreateProfileProgressManager.shared.resetProgress()
+        }
+      }
   }
   
   public static func createCompleteEditRejectedProfileView() -> some View {

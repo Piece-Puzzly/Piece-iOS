@@ -9,6 +9,7 @@ import SwiftUI
 import DesignSystem
 import Router
 import UseCases
+import PCAmplitude
 
 struct VerifingContactView: View {
   @State var viewModel: VerifingContactViewModel
@@ -134,6 +135,11 @@ struct VerifingContactView: View {
       }
       .ignoresSafeArea(.keyboard)
       .toolbar(.hidden, for: .navigationBar)
+    }
+    .onChange(of: viewModel.showDuplicatePhoneNumberAlert) { _, isPresented in
+      if isPresented {
+        PCAmplitude.trackScreenView(DefaultProgress.alreadyRegisteredPopup.rawValue)
+      }
     }
     .pcAlert(
       isPresented: $viewModel.showDuplicatePhoneNumberAlert) {

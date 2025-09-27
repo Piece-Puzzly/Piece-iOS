@@ -6,6 +6,7 @@
 //
 
 import Entities
+import PCAmplitude
 
 final class ProfileCreator {
   private(set) var basicInfo: ProfileBasicModel = ProfileBasicModel.empty
@@ -22,6 +23,12 @@ final class ProfileCreator {
   
   func isBasicInfoValid(_ isValid: Bool) {
     isBasicInfoValid = isValid
+    
+    PCAmplitude.trackButtonClick(
+      screenName: .registerBasicProfile,
+      buttonName: .profileRegisterNext,
+      properties: [.result: isValid]
+    )
   }
   
   func updateValuePicks(_ valuePicks: [ValuePickModel]) {
@@ -31,6 +38,12 @@ final class ProfileCreator {
   
   func isValuePicksValid(_ isValid: Bool) {
     isValuePicksValid = isValid
+    
+    PCAmplitude.trackButtonClick(
+      screenName: .registerValuePick,
+      buttonName: .profileRegisterNext,
+      properties: [.result: isValid]
+    )
   }
   
   func updateValueTalks(_ valueTalks: [ValueTalkModel]) {
@@ -40,6 +53,12 @@ final class ProfileCreator {
   
   func isValueTalksValid(_ isValid: Bool) {
     isValueTalksValid = isValid
+    
+    PCAmplitude.trackButtonClick(
+      screenName: .registerValueTalk,
+      buttonName: .profileRegisterNext,
+      properties: [.result: isValid]
+    )
   }
   
   func isProfileValid() -> Bool {

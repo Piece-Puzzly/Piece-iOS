@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 public struct ReportUserViewFactory {
   public static func createReportUserView(
@@ -14,5 +15,6 @@ public struct ReportUserViewFactory {
     reportUserUseCase: ReportUserUseCase
   ) -> some View {
     ReportUserView(nickname: nickname, reportUserUseCase: reportUserUseCase)
+      .trackScreen(trackable: DefaultProgress.reportIntro)
   }
 }

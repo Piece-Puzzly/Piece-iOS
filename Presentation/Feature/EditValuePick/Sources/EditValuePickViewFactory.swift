@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 public struct EditValuePickViewFactory {
   public static func createEditValuePickViewFactory(
@@ -17,5 +18,6 @@ public struct EditValuePickViewFactory {
       getProfileValuePicksUseCase: getProfileValuePicksUseCase,
       updateProfileValuePicksUseCase: updateProfileValuePicksUseCase
     )
+    .trackScreen(trackable: DefaultProgress.profileEditValuePick)
   }
 }

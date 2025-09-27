@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UseCases
+import PCAmplitude
 
 public struct ProfileViewFactory {
   @ViewBuilder
@@ -14,5 +15,6 @@ public struct ProfileViewFactory {
     getProfileUseCase: GetProfileBasicUseCase
   ) -> some View {
     ProfileView(getProfileUseCase: getProfileUseCase)
+      .trackScreen(trackable: DefaultProgress.profileBasic)
   }
 }

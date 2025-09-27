@@ -14,6 +14,7 @@ import Router
 import UseCases
 import UIKit
 import Entities
+import PCAmplitude
 
 @MainActor
 @Observable
@@ -173,6 +174,7 @@ final class SplashViewModel {
     let userInfo = try await getUserInfoUseCase.execute()
     let userRole = userInfo.role
     PCUserDefaultsService.shared.setUserRole(userRole)
+    PCAmplitude.setUserId(with: String(userInfo.id))
     
     switch userRole {
     case .NONE:

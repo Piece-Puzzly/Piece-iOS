@@ -10,6 +10,7 @@ import DesignSystem
 import Entities
 import UseCases
 import PCImagePicker
+import PCAmplitude
 
 struct CreateBasicInfoView: View {
   @State var viewModel: CreateBasicInfoViewModel
@@ -142,6 +143,7 @@ struct CreateBasicInfoView: View {
         onTapRowItem: { viewModel.tapLocationRowItem($0) }
       )
       .presentationDetents([.height(602)])
+      .trackScreen(trackable: DefaultProgress.basicInfoRegionBottomsheet)
     }
     .sheet(isPresented: $viewModel.isJobSheetPresented) {
       PCBottomSheet<BottomSheetTextItem>(
@@ -153,6 +155,7 @@ struct CreateBasicInfoView: View {
         onTapRowItem: { viewModel.tapJobRowItem($0) }
       )
       .presentationDetents([.height(562)])
+      .trackScreen(trackable: DefaultProgress.basicInfoJobBottomsheet)
     }
     .sheet(isPresented: $viewModel.isContactSheetPresented) {
       PCBottomSheet<BottomSheetIconItem>(
@@ -165,6 +168,7 @@ struct CreateBasicInfoView: View {
         onTapRowItem: { viewModel.tapContactRowItem($0) }
       )
       .presentationDetents([.height(479)])
+      .trackScreen(trackable: DefaultProgress.basicInfoContactBottomsheet)
     }
     .sheet(isPresented: $viewModel.isContactTypeChangeSheetPresented) {
       PCBottomSheet<BottomSheetIconItem>(
