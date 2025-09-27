@@ -10,12 +10,14 @@ struct ContentView: View {
   
   var body: some View {
     NavigationStack(path: $router.path) {
-      coordinator.view(for: router.initialRoute)
-        .id(router.rootViewId)
-        .navigationDestination(for: Route.self) { route in
-          coordinator.view(for: route)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+      RootView(
+        coordinator: coordinator,
+        initialRoute: router.initialRoute
+      )
+      .navigationDestination(for: Route.self) { route in
+        coordinator.view(for: route)
+      }
+      .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     .environment(router)
     .environment(toastManager)
@@ -36,6 +38,15 @@ struct ContentView: View {
     }
     
     print(">>> DEBUG: ✅ 푸쉬 알림 observer 등록 완료")
+  }
+}
+
+fileprivate struct RootView: View {
+  let coordinator: Coordinator
+  let initialRoute: Route
+  
+  var body: some View {
+    coordinator.view(for: initialRoute)
   }
 }
 

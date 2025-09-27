@@ -65,6 +65,9 @@ struct MatchingMainView: View {
         Spacer()
       }
     }
+    .onAppear {
+      matchingMainViewModel.handleAction(.onAppear)
+    }
     .trackScreen(trackable: matchingMainViewModel.trackedScreen)
     .pcAlert(isPresented: $matchingMainViewModel.isMatchAcceptAlertPresented) {
       AlertView(
