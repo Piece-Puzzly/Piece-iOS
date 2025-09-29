@@ -6,6 +6,7 @@
 //
 
 import FirebaseCore
+import FirebaseCrashlytics
 import FirebaseRemoteConfig
 
 public final class PCFirebase {
@@ -23,7 +24,19 @@ public final class PCFirebase {
     
     if FirebaseApp.app() == nil {
       FirebaseApp.configure(options: options)
+      
+      setCrashlytics()
     }
+  }
+  
+  private func setCrashlytics() {
+    #if DEBUG
+    Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(false)
+    NSLog("🔥 Crashlytics disabled in DEBUG mode")
+    #else
+    Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(true)
+    NSLog("🔥 Crashlytics enabled in RELEASE mode")
+    #endif
   }
   
   public func setRemoteConfig() throws {
@@ -84,6 +97,38 @@ public final class PCFirebase {
   
   public func needsForceUpdate() -> Bool {
     return bool(forKey: .needsForceUpdate)
+  }
+}
+
+extension PCFirebase {
+  public func logCrashlytics(_ message: String) {
+    Crashlytics.crashlytics().log(message)
+  }
+  
+  public func setCrashlyticsUserId(_ userId: String) {
+    Crashlytics.crashlytics().setUserID(userId)
+  }
+  
+  public func setCrashlyticsCustomKey(_ key: String, value: Any) {
+    Crashlytics.crashlytics().setCustomValue(value, forKey: key)
+  }
+  
+  public func recordCrashlyticsError(_ error: Error) {
+    Crashlytics.crashlytics().record(error: error)
+  }
+  
+  public func testCrashlytics() {
+    // 커스텀 로그 기록
+    logCrashlytics("Test log message")
+    
+    // 커스텀 키 설정
+    setCrashlyticsCustomKey("test_key", value: "test_value")
+    
+    // 비치명적 오류 기록
+    let error = NSError(domain: "TestDomain", code: 123, userInfo: [NSLocalizedDescriptionKey: "Test error"])
+    recordCrashlyticsError(error)
+    
+    print("🔥 Crashlytics 테스트 데이터 전송 완료")
   }
 }
 

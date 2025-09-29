@@ -18,6 +18,7 @@ public enum ExternalDependencies {
   case FirebaseRemoteConfig
   case FirebaseCore
   case FirebaseAnalytics
+  case FirebaseCrashlytics
   case FirebaseMessaging
   case Mantis
   case AmplitudeSwift
@@ -34,6 +35,7 @@ public enum ExternalDependencies {
     case .FirebaseRemoteConfig: "FirebaseRemoteConfig"
     case .FirebaseCore: "FirebaseCore"
     case .FirebaseAnalytics: "FirebaseAnalytics"
+    case .FirebaseCrashlytics: "FirebaseCrashlytics"
     case .FirebaseMessaging: "FirebaseMessaging"
     case .Mantis: "Mantis"
     case .AmplitudeSwift: "AmplitudeSwift"

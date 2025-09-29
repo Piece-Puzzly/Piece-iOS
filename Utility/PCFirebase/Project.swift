@@ -12,6 +12,7 @@ let project = Project.dynamicResourceFramework(
   name: Modules.Utility.PCFirebase.rawValue,
   dependencies: [
     .externalDependency(dependency: .FirebaseAnalytics),
+    .externalDependency(dependency: .FirebaseCrashlytics),
     .externalDependency(dependency: .FirebaseCore),
     .externalDependency(dependency: .FirebaseMessaging),
     .externalDependency(dependency: .FirebaseRemoteConfig),

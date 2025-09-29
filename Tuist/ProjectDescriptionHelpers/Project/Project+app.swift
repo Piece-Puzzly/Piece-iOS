@@ -190,6 +190,19 @@ extension Target {
         )
       ),
       entitlements: .file(path: .relativeToRoot("Piece-iOS.entitlements")),
+      scripts: [
+        .post(
+          script: "${SRCROOT}/../Tuist/.build/checkouts/firebase-ios-sdk/Crashlytics/run",
+          name: "Firebase Crashlytics dSYM Upload",
+          inputPaths: [
+            "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+            "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+            "${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+            "$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+            "$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+          ]
+        )
+      ],
       dependencies: dependencies,
       settings: .settings(
         base: [
@@ -198,6 +211,7 @@ extension Target {
           "DEVELOPMENT_TEAM": SettingValue.string(AppConstants.developmentTeam),
           "MARKETING_VERSION": SettingValue.string(AppConstants.versionString),
           "CURRENT_PROJECT_VERSION": SettingValue.string(AppConstants.buildString),
+          "DEBUG_INFORMATION_FORMAT": "dwarf-with-dsym",
         ],
         configurations: [
           .configuration(environment: .Debug),
