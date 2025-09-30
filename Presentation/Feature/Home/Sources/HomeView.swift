@@ -12,12 +12,14 @@ import Router
 import Settings
 import SwiftUI
 import UseCases
+import Entities
 
 struct HomeView: View {
   @State private var viewModel: HomeViewModel
   @State private var showProfileToast: Bool = false
   
   init(
+    selectedTab: HomeViewTab,
     getProfileUseCase: GetProfileBasicUseCase,
     getUserInfoUseCase: GetUserInfoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
@@ -40,6 +42,7 @@ struct HomeView: View {
   ) {
     _viewModel = .init(
       wrappedValue: .init(
+        selectedTab: selectedTab,
         getProfileUseCase: getProfileUseCase,
         getUserInfoUseCase: getUserInfoUseCase,
         acceptMatchUseCase: acceptMatchUseCase,

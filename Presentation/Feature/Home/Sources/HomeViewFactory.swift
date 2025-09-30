@@ -7,10 +7,13 @@
 
 import SwiftUI
 import UseCases
+import Entities
 
 public struct HomeViewFactory {
   @ViewBuilder
   public static func createHomeView(
+    // initialTab
+    selectedTab: HomeViewTab,
     // profile
     getProfileUseCase: GetProfileBasicUseCase,
     // matchMain
@@ -35,6 +38,8 @@ public struct HomeViewFactory {
     patchLogoutUseCase: PatchLogoutUseCase
   ) -> some View {
     HomeView(
+      // initialTab
+      selectedTab: selectedTab,
       // profile
       getProfileUseCase: getProfileUseCase,
       // matchMain
