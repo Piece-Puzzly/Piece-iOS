@@ -84,6 +84,12 @@ struct HomeView: View {
     }
     .toolbar(.hidden)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .onReceive(NotificationCenter.default.publisher(for: .switchHomeTab)) { notification in
+      if let raw = notification.userInfo?["homeViewTab"] as? String,
+         let tab = HomeViewTab(rawValue: raw) {
+        viewModel.selectedTab = tab
+      }
+    }
   }
   
   @ViewBuilder
