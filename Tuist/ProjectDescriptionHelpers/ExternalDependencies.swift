@@ -13,11 +13,11 @@ public enum ExternalDependencies {
   case KakaoSDKAuth
   case KakaoSDKUser
   case GoogleSignIn
-  case GoogleSignInSwift
   case Lottie
   case FirebaseRemoteConfig
   case FirebaseCore
   case FirebaseAnalytics
+  case FirebaseCrashlytics
   case FirebaseMessaging
   case Mantis
   case AmplitudeSwift
@@ -26,7 +26,6 @@ public enum ExternalDependencies {
     switch self {
     case .Alamofire: "Alamofire"
     case .GoogleSignIn: "GoogleSignIn"
-    case .GoogleSignInSwift: "GoogleSignInSwift"
     case .KakaoSDKCommon: "KakaoSDKCommon"
     case .KakaoSDKAuth: "KakaoSDKAuth"
     case .KakaoSDKUser: "KakaoSDKUser"
@@ -34,6 +33,7 @@ public enum ExternalDependencies {
     case .FirebaseRemoteConfig: "FirebaseRemoteConfig"
     case .FirebaseCore: "FirebaseCore"
     case .FirebaseAnalytics: "FirebaseAnalytics"
+    case .FirebaseCrashlytics: "FirebaseCrashlytics"
     case .FirebaseMessaging: "FirebaseMessaging"
     case .Mantis: "Mantis"
     case .AmplitudeSwift: "AmplitudeSwift"

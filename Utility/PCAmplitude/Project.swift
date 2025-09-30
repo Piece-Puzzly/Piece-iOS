@@ -8,7 +8,7 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.dynamicResourceFramework(
+let project = Project.dynamicFramework(
   name: Modules.Utility.PCAmplitude.rawValue,
   dependencies: [
     .data(target: .LocalStorage),

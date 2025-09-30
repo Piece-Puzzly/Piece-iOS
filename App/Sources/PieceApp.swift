@@ -7,7 +7,6 @@ import KakaoSDKCommon
 import KakaoSDKAuth
 import KakaoSDKUser
 import GoogleSignIn
-import GoogleSignInSwift
 import SwiftUI
 
 @main
