@@ -115,7 +115,7 @@ struct ProfileView: View {
         category: "나이",
         answer: { ageAnswer(userProfile: userProfile) }
       )
-      .frame(width: 144)
+      .frame(width: 140)
       
       ProfileCard(
         type: .profile,
@@ -137,7 +137,7 @@ struct ProfileView: View {
         category: "활동 지역",
         answer: { locationAnswer(userProfile: userProfile) }
       )
-      .frame(width: 144)
+      .frame(width: 140)
       
       ProfileCard(
         type: .profile,
