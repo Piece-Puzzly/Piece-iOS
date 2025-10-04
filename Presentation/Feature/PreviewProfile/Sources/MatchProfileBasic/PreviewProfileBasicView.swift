@@ -98,7 +98,7 @@ struct PreviewProfileBasicView: View {
         category: "나이",
         answer: { ageAnswer(basicInfoModel: basicInfoModel) }
       )
-      .frame(width: 144)
+      .frame(width: 140)
       
       ProfileCard(
         type: .matching,
@@ -120,7 +120,7 @@ struct PreviewProfileBasicView: View {
         category: "활동 지역",
         answer: { regionAnswer(basicInfoModel: basicInfoModel) }
       )
-      .frame(width: 144)
+      .frame(width: 140)
       
       ProfileCard(
         type: .matching,
