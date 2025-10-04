@@ -127,6 +127,7 @@ struct ReportUserView: View {
     HStack(alignment: .center, spacing: 12) {
       PCRadio(isSelected: .constant(viewModel.selectedReportReason == reason))
         .padding(1)
+        .allowsHitTesting(false)
       
       Text(reason.rawValue)
         .pretendard(.body_M_R)
