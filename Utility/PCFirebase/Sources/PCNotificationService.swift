@@ -145,10 +145,15 @@ public final class PCNotificationService: NSObject, UNUserNotificationCenterDele
     print("  - Action Identifier: \(response.actionIdentifier)")
     print("  - UserInfo: \(userInfo)")
     
+    guard let notificationType = userInfo["notificationType"] as? String else {
+      NSLog("🚨 FCM payload에서 'notificationType' 파라미터가 존재하지 않습니다.")
+      return
+    }
+    
     NotificationCenter.default.post(
-      name: .deepLinkHome,
+      name: .deepLink,
       object: nil,
-      userInfo: nil
+      userInfo: ["notificationType": notificationType]
     )
   }
   

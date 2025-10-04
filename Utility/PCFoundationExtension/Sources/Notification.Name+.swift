@@ -9,6 +9,7 @@ import Foundation
 
 // MARK: - Push Notifications
 public extension Notification.Name {
-  static let deepLinkHome = Notification.Name("DeepLinkHome")
+  static let deepLink = Notification.Name("DeepLink")
+  static let switchHomeTab = Notification.Name("SwitchHomeTab")
   static let fcmToken = Notification.Name("FCMToken")
 }

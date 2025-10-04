@@ -2,6 +2,8 @@ import Coordinator
 import Router
 import SwiftUI
 import DesignSystem
+import Entities
+import LocalStorage
 
 struct ContentView: View {
   @State private var router = Router()
@@ -21,23 +23,45 @@ struct ContentView: View {
     }
     .environment(router)
     .environment(toastManager)
-    .onAppear {
-      setupPushNotificationObserver()
+    .onReceive(NotificationCenter.default.publisher(for: .deepLink)) { notification in
+      guard
+        let raw = notification.userInfo?["notificationType"] as? String,
+        let notificationType = NotificationType.from(raw: raw),
+        let accessToken = PCKeychainManager.shared.read(.accessToken),
+        !accessToken.isEmpty
+      else {
+        router.setRoute(.login)
+        return
+      }
+      handleDeepLink(with: notificationType)
     }
   }
   
-  // MARK: - 푸쉬 알림 observer 설정
-  private func setupPushNotificationObserver() {
-    NotificationCenter.default.addObserver(
-      forName: .deepLinkHome,
-      object: nil,
-      queue: .main
-    ) { _ in
-      print(">>> DEBUG: 🔗 푸쉬 알림으로 홈 이동")
+  private func handleDeepLink(with type: NotificationType) {
+    switch type {
+      // 매칭 메인
+    case .profileApproved, .matchNew, .matchAccepted, .matchCompleted:
       router.setRoute(.home)
+      
+      // 프로필 리젝 팝업
+    case .profileRejected:
+      router.setRoute(.home)
+      
+      // 프로필 메인 -> 기본 정보 수정
+    case .profileImageApproved, .profileImageRejected:
+      router.setRoute(.home) {
+        postSwitchHomeTab(.profile)
+        router.push(to: .editProfile)
+      }
     }
-    
-    print(">>> DEBUG: ✅ 푸쉬 알림 observer 등록 완료")
+  }
+  
+  private func postSwitchHomeTab(_ tab: HomeViewTab) {
+    NotificationCenter.default.post(
+      name: .switchHomeTab,
+      object: nil,
+      userInfo: ["homeViewTab": tab.rawValue]
+    )
   }
 }
 

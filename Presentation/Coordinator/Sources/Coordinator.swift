@@ -90,6 +90,7 @@ public struct Coordinator {
       let putSettingsBlockAcquaintanceUseCase = UseCaseFactory.createPutSettingsBlockAcquaintanceUseCase(repository: settingsRepository)
       let patchLogoutUseCase = UseCaseFactory.createLogoutUseCase(repository: settingsRepository)
       HomeViewFactory.createHomeView(
+        selectedTab: .home,
         getProfileUseCase: getProfileUseCase,
         getUserInfoUseCase: getUserInfoUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
@@ -290,6 +291,57 @@ public struct Coordinator {
       SignUpViewFactory.createCompleteEditRejectedProfileView()
       
       // MARK: - Profile
+    case .profileBasic:
+      let profileRepository = repositoryFactory.createProfileRepository()
+      let matchesRepository = repositoryFactory.createMatchesRepository()
+      let termsRepository = repositoryFactory.createTermsRepository()
+      let blockContactsRepository = repositoryFactory.createBlockContactsRepository()
+      let settingsRepository = repositoryFactory.createSettingsRepository()
+      let userRepository = repositoryFactory.createUserRepository()
+      // profile
+      let getProfileUseCase = UseCaseFactory.createGetProfileUseCase(repository: profileRepository)
+      // matchMain
+      let getUserInfoUseCase = UseCaseFactory.createGetUserInfoUseCase(repository: userRepository)
+      let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
+      let getMatchesInfoUseCase = UseCaseFactory.createGetMatchesInfoUseCase(repository: matchesRepository)
+      let getUserRejectUseCase = UseCaseFactory.createGetUserRejectUseCase(repository: matchesRepository)
+      let patchMatchesCheckPieceUseCase = UseCaseFactory.createPatchMatchesCheckPieceUseCase(repository: matchesRepository)
+      // setting
+      let getSettingsInfoUseCase = UseCaseFactory.createGetSettingsInfoUseCase(repository: settingsRepository)
+      let fetchTermsUseCase = UseCaseFactory.createFetchTermsUseCase(repository: termsRepository)
+      let checkNotificationPermissionUseCase = UseCaseFactory.createCheckNotificationPermissionUseCase()
+      let requestNotificationPermissionUseCase = UseCaseFactory.createRequestNotificationPermissionUseCase()
+      let changeNotificationRegisterStatusUseCase = UseCaseFactory.createChangeNotificationRegisterStatusUseCase()
+      let checkContactsPermissionUseCase = UseCaseFactory.createCheckContactsPermissionUseCase()
+      let requestContactsPermissionUseCase = UseCaseFactory.createRequestContactsPermissionUseCase(checkContactsPermissionUseCase: checkContactsPermissionUseCase)
+      let fetchContactsUseCase = UseCaseFactory.createFetchContactsUseCase()
+      let blockContactsUseCase = UseCaseFactory.createBlockContactsUseCase(repository: blockContactsRepository)
+      let getContactsSyncTimeUseCase = UseCaseFactory.createGetContactsSyncTimeUseCase(repository: settingsRepository)
+      let putSettingsNotificationUseCase = UseCaseFactory.createPutSettingsNotificationUseCase(repository: settingsRepository)
+      let putSettingsBlockAcquaintanceUseCase = UseCaseFactory.createPutSettingsBlockAcquaintanceUseCase(repository: settingsRepository)
+      let patchLogoutUseCase = UseCaseFactory.createLogoutUseCase(repository: settingsRepository)
+      HomeViewFactory.createHomeView(
+        selectedTab: .profile,
+        getProfileUseCase: getProfileUseCase,
+        getUserInfoUseCase: getUserInfoUseCase,
+        acceptMatchUseCase: acceptMatchUseCase,
+        getMatchesInfoUseCase: getMatchesInfoUseCase,
+        getUserRejectUseCase: getUserRejectUseCase,
+        patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase,
+        getSettingsInfoUseCase: getSettingsInfoUseCase,
+        fetchTermsUseCase: fetchTermsUseCase,
+        checkNotificationPermissionUseCase: checkNotificationPermissionUseCase,
+        requestNotificationPermissionUseCase: requestNotificationPermissionUseCase,
+        changeNotificationRegisterStatusUseCase: changeNotificationRegisterStatusUseCase,
+        checkContactsPermissionUseCase: checkContactsPermissionUseCase,
+        requestContactsPermissionUseCase: requestContactsPermissionUseCase,
+        fetchContactsUseCase: fetchContactsUseCase,
+        blockContactsUseCase: blockContactsUseCase,
+        getContactsSyncTimeUseCase: getContactsSyncTimeUseCase,
+        putSettingsNotificationUseCase: putSettingsNotificationUseCase,
+        putSettingsBlockAcquaintanceUseCase: putSettingsBlockAcquaintanceUseCase,
+        patchLogoutUseCase: patchLogoutUseCase
+      )
     case .editValueTalk:
       let profileRepository = repositoryFactory.createProfileRepository()
       let sseRepository = repositoryFactory.createSseRepository()

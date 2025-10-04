@@ -12,12 +12,14 @@ import Router
 import Settings
 import SwiftUI
 import UseCases
+import Entities
 
 struct HomeView: View {
   @State private var viewModel: HomeViewModel
   @State private var showProfileToast: Bool = false
   
   init(
+    selectedTab: HomeViewTab,
     getProfileUseCase: GetProfileBasicUseCase,
     getUserInfoUseCase: GetUserInfoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
@@ -40,6 +42,7 @@ struct HomeView: View {
   ) {
     _viewModel = .init(
       wrappedValue: .init(
+        selectedTab: selectedTab,
         getProfileUseCase: getProfileUseCase,
         getUserInfoUseCase: getUserInfoUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
@@ -81,6 +84,12 @@ struct HomeView: View {
     }
     .toolbar(.hidden)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .onReceive(NotificationCenter.default.publisher(for: .switchHomeTab)) { notification in
+      if let raw = notification.userInfo?["homeViewTab"] as? String,
+         let tab = HomeViewTab(rawValue: raw) {
+        viewModel.selectedTab = tab
+      }
+    }
   }
   
   @ViewBuilder

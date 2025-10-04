@@ -9,19 +9,16 @@ import DesignSystem
 import LocalStorage
 import Observation
 import UseCases
+import Entities
 
 @MainActor
 @Observable
 final class HomeViewModel {
-  enum Tab {
-    case profile
-    case home
-    case settings
-  }
-  
   enum Action { }
   
   init(
+    // initialTab
+    selectedTab: HomeViewTab,
     // profile
     getProfileUseCase: GetProfileBasicUseCase,
     // matchmain
@@ -45,6 +42,8 @@ final class HomeViewModel {
     putSettingsBlockAcquaintanceUseCase: PutSettingsBlockAcquaintanceUseCase,
     patchLogoutUseCase: PatchLogoutUseCase
   ) {
+    // initialTab
+    self.selectedTab = selectedTab
     // profile
     self.getProfileUseCase = getProfileUseCase
     // matchmain
@@ -93,7 +92,7 @@ final class HomeViewModel {
   let patchLogoutUseCase: PatchLogoutUseCase
   
   // MARK: - State
-  var selectedTab: Tab = .home
+  var selectedTab: HomeViewTab
   var isProfileTabDisabled: Bool {
     PCUserDefaultsService.shared.getUserRole() != .USER
   }

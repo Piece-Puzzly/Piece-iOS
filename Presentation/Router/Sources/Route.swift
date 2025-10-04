@@ -27,13 +27,16 @@ public enum Route: Hashable {
   case matchProfileBasic
   case matchValueTalk
   case matchValuePick
-  case editValueTalk
-  case editValuePick
   case matchResult(nickname: String)
+  
+  // MARK: - 프로필
+  case profileBasic
+  case editProfile
+  case editValuePick
+  case editValueTalk
   
   // MARK: - 설정
   case settingsWebView(title: String, uri: String)
-  case editProfile
   
   // MARK: - 프로필 생성
   case createProfile
