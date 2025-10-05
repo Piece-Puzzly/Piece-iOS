@@ -60,6 +60,7 @@ public extension Modules {
     case PCFoundationExtension
     case PCFirebase
     case PCAmplitude
+    case PCNetworkMonitor
     
     var path: String {
       "Utility/\(self.rawValue)"
