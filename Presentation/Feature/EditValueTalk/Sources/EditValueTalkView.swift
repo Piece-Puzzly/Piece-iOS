@@ -9,6 +9,7 @@ import DesignSystem
 import Router
 import SwiftUI
 import UseCases
+import PCNetworkMonitor
 
 struct EditValueTalkView: View {
   enum Field: Hashable {
@@ -19,6 +20,7 @@ struct EditValueTalkView: View {
   @State var viewModel: EditValueTalkViewModel
   @FocusState private var focusField: Field?
   @Environment(Router.self) var router
+  @Environment(PCNetworkMonitor.self) var networkMonitor
   
   init(
     getProfileValueTalksUseCase: GetProfileValueTalksUseCase,
@@ -88,6 +90,11 @@ struct EditValueTalkView: View {
     }
     .onChange(of: viewModel.isEditing) { _, isEditing in
       if !isEditing { focusField = nil }
+    }
+    .onChange(of: networkMonitor.networkEvent) { _, event in
+      if let event {
+        viewModel.handleAction(.onNetworkStatusChanged(event))
+      }
     }
     .onAppear {
       viewModel.handleAction(.onAppear)

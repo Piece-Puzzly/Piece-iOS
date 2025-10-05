@@ -10,11 +10,13 @@ import Observation
 import UseCases
 import SwiftUI
 import DesignSystem
+import PCNetworkMonitor
 
 @MainActor
 @Observable
 final class EditValueTalkViewModel {
   enum Action {
+    case onNetworkStatusChanged(PCNetworkMonitor.NetworkEvent)
     case onAppear
     case updateValueTalk(ProfileValueTalkModel)
     case updateAISummaryFromSSE(AISummaryModel)
@@ -68,6 +70,11 @@ final class EditValueTalkViewModel {
   
   func handleAction(_ action: Action) {
     switch action {
+    case .onNetworkStatusChanged(let event):
+      Task {
+        await handleNetworkEvent(to: event)
+      }
+      
     case .onAppear:
       Task {
         await connectSse()
@@ -146,6 +153,22 @@ final class EditValueTalkViewModel {
       handleDidTapBackButton()
     } catch {
       print(error)
+    }
+  }
+  
+  // MARK: - Network Status Change
+  private func handleNetworkEvent(to eventStatus: PCNetworkMonitor.NetworkEvent) async {
+    switch eventStatus {
+    case .connected:
+      await disconnectSse()
+      await connectSse()
+    
+    case .disconnected:
+      await disconnectSse()
+      
+    case .interfaceChanged(_, _):
+      await disconnectSse()
+      await connectSse()
     }
   }
   
