@@ -4,11 +4,13 @@ import SwiftUI
 import DesignSystem
 import Entities
 import LocalStorage
+import PCNetworkMonitor
 
 struct ContentView: View {
   @State private var router = Router()
   @State private var coordinator = Coordinator()
   @State private var toastManager = PCToastManager()
+  @State private var networkMonitor = PCNetworkMonitor()
   
   var body: some View {
     NavigationStack(path: $router.path) {
@@ -23,6 +25,7 @@ struct ContentView: View {
     }
     .environment(router)
     .environment(toastManager)
+    .environment(networkMonitor)
     .onReceive(NotificationCenter.default.publisher(for: .deepLink)) { notification in
       guard
         let raw = notification.userInfo?["notificationType"] as? String,

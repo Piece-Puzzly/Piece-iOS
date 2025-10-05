@@ -11,6 +11,7 @@ let project = Project.app(
     .externalDependency(dependency: .KakaoSDKUser),
     .externalDependency(dependency: .GoogleSignIn),
     .utility(target: .PCFirebase),
-    .utility(target: .PCAmplitude)
+    .utility(target: .PCAmplitude),
+    .utility(target: .PCNetworkMonitor)
   ]
 )
