@@ -10,6 +10,11 @@ struct ContentView: View {
   @State private var router = Router()
   @State private var coordinator = Coordinator()
   @State private var toastManager = PCToastManager()
+  
+  @State private var hasEmptyView: Bool = false
+  
+  @State private var overlayWindow: UIWindow?
+  
   @Environment(PCNetworkMonitor.self) var networkMonitor
   
   var body: some View {
@@ -37,6 +42,66 @@ struct ContentView: View {
       }
       handleDeepLink(with: notificationType)
     }
+    .onChange(of: networkMonitor.isConnected) { _, isConnected in
+      if !isConnected {
+        showOverlayWindow()
+      }
+    }
+  }
+  
+  private func showOverlayWindow(animated: Bool = true) {
+    guard let scene = UIApplication.shared.connectedScenes
+      .compactMap({ $0 as? UIWindowScene }).first else { return }
+    
+    let window = UIWindow(windowScene: scene)
+    window.windowLevel = .alert + 1000  // 모든 모달보다 위
+    window.backgroundColor = .clear
+    window.rootViewController = UIHostingController(rootView:
+      NetworkErrorView {
+        Task {
+          guard hasEmptyView else { return }
+          await MainActor.run {
+            withAnimation(.none) {
+              router.pop()
+            }
+            hasEmptyView = false
+          }
+          try? await Task.sleep(nanoseconds: 1_000_000_000)
+          await MainActor.run {
+            hideOverlayWindow()
+          }
+        }
+      }
+      .environment(networkMonitor)
+    )
+    window.alpha = 0
+    window.isHidden = false
+    window.makeKeyAndVisible()
+    overlayWindow = window
+    
+    UIView.animate(withDuration: 0.28, delay: 0, options: [.curveEaseInOut]) {
+      window.alpha = 1
+    }
+    
+    Task {
+      try? await Task.sleep(nanoseconds: 1_000_000_000)
+      await MainActor.run {
+        router.push(to: .empty)
+        hasEmptyView = true
+      }
+    }
+  }
+
+  private func hideOverlayWindow() {
+    guard let window = overlayWindow else { return }
+    
+    UIView.animate(withDuration: 0.28, delay: 0, options: [.curveEaseInOut], animations: {
+      window.alpha = 0
+    }, completion: { _ in
+      overlayWindow?.isHidden = true
+      overlayWindow = nil
+      hasEmptyView = false
+    })
   }
   
   private func handleDeepLink(with type: NotificationType) {
