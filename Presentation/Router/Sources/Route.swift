@@ -13,6 +13,7 @@ public enum Route: Hashable {
   case home
   case onboarding
   case login
+  case empty
   
   // MARK: - 회원가입
   case verifyContact
