@@ -9,6 +9,7 @@
 import Network
 import Observation
 import Foundation
+import Combine
 
 /// 네트워크 상태 변화를 감지하고 이벤트를 방출하는 모니터
 @MainActor
@@ -20,8 +21,15 @@ public final class PCNetworkMonitor {
   /// 현재 네트워크 연결 상태
   public private(set) var isConnected: Bool = true
   
+  /// Combine publisher로 연결 상태 구독 가능
+  public var connectionPublisher: AnyPublisher<Bool, Never> {
+    connectionSubject.eraseToAnyPublisher()
+  }
+  
   private let networkMonitor = NWPathMonitor()
   private let networkQueue = DispatchQueue(label: "NetworkMonitor")
+  // Combine 지원을 위한 Subject 추가
+  private let connectionSubject = PassthroughSubject<Bool, Never>()
 
   private var availableInterfaces: [String] = []
   private var previousInterfaces: [String] = []
@@ -99,6 +107,8 @@ public final class PCNetworkMonitor {
     isConnected = path.status == .satisfied
     availableInterfaces = path.availableInterfaces.map { $0.name }
     previousInterfaces = wasInterfaces
+    
+    connectionSubject.send(isConnected)
     
     // 이벤트 감지 및 방출
     let connectionChanged = wasConnected != isConnected
