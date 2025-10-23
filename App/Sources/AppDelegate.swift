@@ -16,18 +16,12 @@ import UseCases
 
 final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
   
-  private let networkMonitor = NWPathMonitor()
-  private let networkQueue = DispatchQueue(label: "NetworkMonitor")
-  
   func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
   ) -> Bool {
     
     print("🚀 앱 시작 - didFinishLaunchingWithOptions")
-    
-    // 네트워크 모니터링 시작
-    startNetworkMonitoring()
     
     // FCM 토큰 알림 구독
     NotificationCenter.default.addObserver(
@@ -90,18 +84,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
       print("🍎 APNs 재등록 시도...")
       UIApplication.shared.registerForRemoteNotifications()
     }
-  }
-  
-  // 네트워크 모니터링
-  private func startNetworkMonitoring() {
-    networkMonitor.pathUpdateHandler = { path in
-      if path.status == .satisfied {
-        print("🌐 네트워크 연결됨: \(path.availableInterfaces)")
-      } else {
-        print("🌐 네트워크 연결 안됨")
-      }
-    }
-    networkMonitor.start(queue: networkQueue)
   }
   
   @objc private func handleFCMTokenNotification(_ notification: Notification) {

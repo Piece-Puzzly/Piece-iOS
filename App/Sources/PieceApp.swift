@@ -1,21 +1,18 @@
-//import DesignSystem
 import PCFirebase
 import PCAmplitude
 import LocalStorage
-//import Router
 import KakaoSDKCommon
 import KakaoSDKAuth
-//import KakaoSDKUser
 import GoogleSignIn
 import SwiftUI
+import PCNetworkMonitor
 
 @main
 struct PieceApp: App {
   @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
   
+  @State private var networkMonitor = PCNetworkMonitor()
   init() {
-    print("app init")
-
     // Amplitude 초기화
     PCAmplitude.configure()
     
@@ -44,13 +41,13 @@ struct PieceApp: App {
         print("🔥 RemoteConfig fetch failed with unknown error:", error)
       }
     }
-    
   }
   
   var body: some Scene {
     WindowGroup {
       ContentView()
         .preventScreenshot()
+        .environment(networkMonitor)
         .onOpenURL(perform: { url in
           if (AuthApi.isKakaoTalkLoginUrl(url)) {
             _ = AuthController.handleOpenUrl(url: url)

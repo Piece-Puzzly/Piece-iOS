@@ -115,6 +115,9 @@ public struct Coordinator {
     case .onboarding:
       OnboardingViewFactory.createOnboardingView()
       
+    case .empty:
+      EmptyView()
+      
       // MARK: - 설정
     case let .settingsWebView(title, uri):
       SettingsViewFactory.createSettingsWebView(title: title, uri: uri)
