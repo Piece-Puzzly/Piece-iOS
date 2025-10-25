@@ -10,6 +10,25 @@ import UseCases
 
 public struct MatchMainViewFactory {
   @ViewBuilder
+  
+  // TODO: - Deprecated ("MatcingMain" -> "MatchingHome") for "다중 매칭"
+  
+//  public static func createMatchMainView(
+//    getUserInfoUseCase: GetUserInfoUseCase,
+//    acceptMatchUseCase: AcceptMatchUseCase,
+//    getMatchesInfoUseCase: GetMatchesInfoUseCase,
+//    getUserRejectUseCase: GetUserRejectUseCase,
+//    patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
+//  ) -> some View {
+//    MatchingMainView(
+//      getUserInfoUseCase: getUserInfoUseCase,
+//      acceptMatchUseCase: acceptMatchUseCase,
+//      getMatchesInfoUseCase: getMatchesInfoUseCase,
+//      getUserRejectUseCase: getUserRejectUseCase,
+//      patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase
+//    )
+//  }
+  
   public static func createMatchMainView(
     getUserInfoUseCase: GetUserInfoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
@@ -17,7 +36,7 @@ public struct MatchMainViewFactory {
     getUserRejectUseCase: GetUserRejectUseCase,
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
   ) -> some View {
-    MatchingMainView(
+    MatchingHomeView(
       getUserInfoUseCase: getUserInfoUseCase,
       acceptMatchUseCase: acceptMatchUseCase,
       getMatchesInfoUseCase: getMatchesInfoUseCase,
