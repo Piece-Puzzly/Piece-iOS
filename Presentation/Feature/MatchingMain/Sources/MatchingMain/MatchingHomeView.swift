@@ -12,7 +12,8 @@ import UseCases
 import PCAmplitude
 
 struct MatchingHomeView: View {
-  @State private var viewModel: MatchingHomeViewModel
+  @State private var matchingHomeViewModel: MatchingHomeViewModel
+  @State private var profileRejectedViewModel: ProfileRejectedViewModel
   
   @Environment(Router.self) private var router: Router
   @Environment(PCToastManager.self) private var toastManager: PCToastManager
@@ -24,13 +25,18 @@ struct MatchingHomeView: View {
     getUserRejectUseCase: GetUserRejectUseCase,
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
   ) {
-    _viewModel = .init(
+    _matchingHomeViewModel = .init(
       wrappedValue: .init(
         getUserInfoUseCase: getUserInfoUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
         getMatchesInfoUseCase: getMatchesInfoUseCase,
-        getUserRejectUseCase: getUserRejectUseCase,
         patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase
+      )
+    )
+    
+    _profileRejectedViewModel = .init(
+      wrappedValue: .init(
+        getUserRejectUseCase: getUserRejectUseCase
       )
     )
   }
@@ -39,11 +45,14 @@ struct MatchingHomeView: View {
     ZStack {
       BackgroundView()
       
-      MainContentView(viewModel: viewModel)
+      MainContentView(
+        matchingHomeViewModel: matchingHomeViewModel,
+        profileRejectedViewModel: profileRejectedViewModel
+      )
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .onAppear {
-      viewModel.handleAction(.onAppear)
+      matchingHomeViewModel.handleAction(.onAppear)
     }
   }
 }
@@ -59,17 +68,25 @@ fileprivate struct BackgroundView: View {
 fileprivate struct MainContentView: View {
   @Environment(Router.self) private var router: Router
   
-  private let viewModel: MatchingHomeViewModel
+  private let matchingHomeViewModel: MatchingHomeViewModel
+  private let profileRejectedViewModel: ProfileRejectedViewModel
   
-  init(viewModel: MatchingHomeViewModel) {
-    self.viewModel = viewModel
+  init(
+    matchingHomeViewModel: MatchingHomeViewModel,
+    profileRejectedViewModel: ProfileRejectedViewModel,
+  ) {
+    self.matchingHomeViewModel = matchingHomeViewModel
+    self.profileRejectedViewModel = profileRejectedViewModel
   }
   
   var body: some View {
     VStack(spacing: 0) {
-      MatchingNavigationBar(viewModel: viewModel)
+      MatchingNavigationBar(viewModel: matchingHomeViewModel)
       
-      MatchingListContentView(viewModel: viewModel)
+      MatchingListContentView(
+        matchingHomeViewModel: matchingHomeViewModel,
+        profileRejectedViewModel: profileRejectedViewModel
+      )
     }
     .padding(.bottom, Constants.tabBarHeight)
   }
@@ -81,30 +98,33 @@ fileprivate struct MainContentView: View {
 
 // MARK: - Matching List Content View
 fileprivate struct MatchingListContentView: View {
-  private let viewModel: MatchingHomeViewModel
+  private let matchingHomeViewModel: MatchingHomeViewModel
+  private let profileRejectedViewModel: ProfileRejectedViewModel
   
-  init(viewModel: MatchingHomeViewModel) {
-    self.viewModel = viewModel
+  init(
+    matchingHomeViewModel: MatchingHomeViewModel,
+    profileRejectedViewModel: ProfileRejectedViewModel,
+  ) {
+    self.matchingHomeViewModel = matchingHomeViewModel
+    self.profileRejectedViewModel = profileRejectedViewModel
   }
   
   var body: some View {
-    switch viewModel.viewState {
+    switch matchingHomeViewModel.viewState {
     case .loading:
       Text("LOADING STATE")
     
     case .profileStatusRejected:
-      Text("PROFILE STATUS REJECTED STATE")
+      ProfileRejectedView(viewModel: profileRejectedViewModel)
     
     case .userRolePending:
-      Text("USERROLE PENDING STATE")
-      MatchingPendingCardView(viewModel: viewModel)
+      MatchingPendingCardView(viewModel: matchingHomeViewModel)
         .padding(.top, 16)
         .padding(.bottom, 12)
         .padding(.horizontal, 20)
     
     case .userRoleUser:
-      Text("USERROLE USER STATE")
-      MatchingCardListView(viewModel: viewModel)
+      MatchingCardListView(viewModel: matchingHomeViewModel)
     }
   }
 }
