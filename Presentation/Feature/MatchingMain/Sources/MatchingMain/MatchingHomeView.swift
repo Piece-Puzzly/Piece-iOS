@@ -97,9 +97,14 @@ fileprivate struct MatchingListContentView: View {
     
     case .userRolePending:
       Text("USERROLE PENDING STATE")
+      MatchingPendingCardView(viewModel: viewModel)
+        .padding(.top, 16)
+        .padding(.bottom, 12)
+        .padding(.horizontal, 20)
     
     case .userRoleUser:
       Text("USERROLE USER STATE")
+      MatchingCardListView(viewModel: viewModel)
     }
   }
 }
