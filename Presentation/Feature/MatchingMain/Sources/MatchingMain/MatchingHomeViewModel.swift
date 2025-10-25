@@ -12,9 +12,10 @@ import Entities
 import LocalStorage
 import PCAmplitude
 
+@MainActor
 @Observable
 final class MatchingHomeViewModel {
-  enum MatchingHomeViewState {
+  enum MatchingHomeViewState: Equatable {
     case loading
     case profileStatusRejected
     case userRolePending
@@ -28,7 +29,6 @@ final class MatchingHomeViewModel {
   private let getUserInfoUseCase: GetUserInfoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
   private let getMatchesInfoUseCase: GetMatchesInfoUseCase
-  private let getUserRejectUseCase: GetUserRejectUseCase
   private let patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
   
   var viewState: MatchingHomeViewState = .loading
@@ -37,13 +37,11 @@ final class MatchingHomeViewModel {
     getUserInfoUseCase: GetUserInfoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
-    getUserRejectUseCase: GetUserRejectUseCase,
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
   ) {
     self.getUserInfoUseCase = getUserInfoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
     self.getMatchesInfoUseCase = getMatchesInfoUseCase
-    self.getUserRejectUseCase = getUserRejectUseCase
     self.patchMatchesCheckPieceUseCase = patchMatchesCheckPieceUseCase
   }
   
@@ -70,11 +68,8 @@ final class MatchingHomeViewModel {
       
       switch profileStatus {
       case .REJECTED:
-        // 프로필 상태가 REJECTED 일 경우, 해당 api 호출
-//        await fetchUserRejectState()
-//        PCAmplitude.trackScreenView(DefaultProgress.matchMainProfileRejectPopup.rawValue)
-        // TODO: - View 따로 만들어서 거기서 로직 처리
         viewState = .profileStatusRejected
+        return
       case .INCOMPLETE, .REVISED, .APPROVED:
         break
       case .none:
