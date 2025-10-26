@@ -13,6 +13,7 @@ public enum Fonts {
     case heading_XL_SB
     case heading_L_SB
     case heading_M_SB
+    case heading_M_M
     case heading_S_SB
     case heading_S_M
     case body_M_SB
@@ -28,6 +29,7 @@ public enum Fonts {
       case .heading_XL_SB: DesignSystemFontFamily.Pretendard.semiBold.swiftUIFont(size: 28)
       case .heading_L_SB: DesignSystemFontFamily.Pretendard.semiBold.swiftUIFont(size: 24)
       case .heading_M_SB: DesignSystemFontFamily.Pretendard.semiBold.swiftUIFont(size: 20)
+      case .heading_M_M: DesignSystemFontFamily.Pretendard.medium.swiftUIFont(size: 20)
       case .heading_S_SB: DesignSystemFontFamily.Pretendard.semiBold.swiftUIFont(size: 18)
       case .heading_S_M: DesignSystemFontFamily.Pretendard.medium.swiftUIFont(size: 18)
       case .body_M_SB: DesignSystemFontFamily.Pretendard.semiBold.swiftUIFont(size: 16)
@@ -45,6 +47,7 @@ public enum Fonts {
       case .heading_XL_SB: DesignSystemFontFamily.Pretendard.semiBold.font(size: 28)
       case .heading_L_SB: DesignSystemFontFamily.Pretendard.semiBold.font(size: 24)
       case .heading_M_SB: DesignSystemFontFamily.Pretendard.semiBold.font(size: 20)
+      case .heading_M_M: DesignSystemFontFamily.Pretendard.medium.font(size: 20)
       case .heading_S_SB: DesignSystemFontFamily.Pretendard.semiBold.font(size: 18)
       case .heading_S_M: DesignSystemFontFamily.Pretendard.medium.font(size: 18)
       case .body_M_SB: DesignSystemFontFamily.Pretendard.semiBold.font(size: 16)
@@ -63,7 +66,7 @@ public enum Fonts {
       case .heading_L_SB: 32
       case .heading_M_SB: 24
       case .heading_S_SB, .heading_S_M: 22
-      case .body_M_SB, .body_M_M, .body_M_R: 24
+      case .heading_M_M, .body_M_SB, .body_M_M, .body_M_R: 24
       case .body_S_SB, .body_S_M, .body_S_R: 20
       case .caption_M_M: 16
       }
