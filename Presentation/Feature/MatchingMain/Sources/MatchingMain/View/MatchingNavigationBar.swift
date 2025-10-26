@@ -21,7 +21,13 @@ struct MatchingNavigationBar: View {
   var body: some View {
     switch viewModel.viewState {
     case .loading:
-      Text("LOADING STATE NAVIGATION BAR")
+      HomeNavigationBar(
+        foregroundColor: .grayscaleWhite,
+        leftButton: { PCPuzzleCount(style: .skeleton(.dark)) },
+        leftButtonTap: { /* None Action */ },
+        rightIcon: DesignSystemAsset.Icons.alarm32.swiftUIImage,
+        rightIconTap: { /* None Action */ }
+      )
       
     case .profileStatusRejected, .userRolePending:
       HomeNavigationBar(
@@ -32,15 +38,21 @@ struct MatchingNavigationBar: View {
           router.push(to: .notificationList)
         }
       )
-      
+
+    // TODO: - 퍼즐 개수 Response 필요
     case .userRoleUser:
-      Text("NAVIGATION BAR -> USER STATE")
-        .foregroundStyle(.grayscaleWhite)
-        .wixMadeforDisplay(.branding)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 20)
-        .padding(.vertical, 14)
-        .background(Color.clear)
+      HomeNavigationBar(
+        foregroundColor: .grayscaleWhite,
+        leftButton: { PCPuzzleCount(count: 0, style: .dark) },
+        leftButtonTap: {
+          // TODO: - 결제 페이지 화면 구현
+          /// 스토어뷰 이동
+        },
+        rightIcon: DesignSystemAsset.Icons.alarm32.swiftUIImage,
+        rightIconTap: {
+          router.push(to: .notificationList)
+        }
+      )
     }
   }
 }
