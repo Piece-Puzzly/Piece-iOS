@@ -237,4 +237,9 @@ public struct UseCaseFactory {
   public static func createReadNotificationUseCase(repository: NotificationRepositoryInterface) -> ReadNotificationUseCase {
     ReadNotificationUseCaseImpl(repository: repository)
   }
+  
+  // MARK: - IAP
+  public static func createGetCashProductsUseCase(repository: IAPRepositoryInterface) -> GetCashProductsUseCase {
+    GetCashProductsUseCaseImpl(repository: repository)
+  }
 }

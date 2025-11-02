@@ -79,4 +79,8 @@ public struct RepositoryFactory {
   public func createNotificationRepository() -> NotificationRepositoryInterface {
     NotificationRepository(networkService: networkService)
   }
+  
+  public func createIAPRepository() -> IAPRepositoryInterface {
+    IAPRepository(networkService: networkService)
+  }
 }
