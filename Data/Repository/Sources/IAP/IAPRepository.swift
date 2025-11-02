@@ -26,7 +26,14 @@ final class IAPRepository: IAPRepositoryInterface {
   
   func postVerifyIAP(productUUID: String, purchaseCredential: String, store: AppStoreType) async throws -> VoidModel {
     let dto = PostVerifyIAPRequestDTO(productUUID: productUUID, purchaseCredential: purchaseCredential, store: store)
-    let endpoint = IAPEndpoint.postInAppPurchase(dto)
+    let endpoint = IAPEndpoint.postVerifyIAP(dto)
+    let responseDto: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
+    
+    return responseDto.toDomain()
+  }
+  
+  func deletePaymentHistory() async throws -> VoidModel {
+    let endpoint = IAPEndpoint.deletePaymentHistory
     let responseDto: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
     
     return responseDto.toDomain()

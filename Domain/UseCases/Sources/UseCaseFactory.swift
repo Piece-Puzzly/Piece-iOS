@@ -246,4 +246,8 @@ public struct UseCaseFactory {
   public static func createPostVerifyIAPUseCase(repository: IAPRepositoryInterface) -> PostVerifyIAPUseCase {
     PostVerifyIAPUseCaseImpl(repository: repository)
   }
+  
+  public static func createDeletePaymentHistoryUseCase(repository: IAPRepositoryInterface) -> DeletePaymentHistoryUseCase {
+    DeletePaymentHistoryUseCaseImpl(repository: repository)
+  }
 }

@@ -12,11 +12,13 @@ import LocalStorage
 public enum IAPEndpoint: TargetType {
   case getCashProducts
   case postVerifyIAP(PostVerifyIAPRequestDTO)
+  case deletePaymentHistory /// 개발 환경 전용 API (for. 프로모션 결제 상품 테스트)
   
   public var method: HTTPMethod {
     switch self {
     case .getCashProducts: .get
     case .postVerifyIAP: .post
+    case .deletePaymentHistory: .delete
     }
   }
   
@@ -24,6 +26,7 @@ public enum IAPEndpoint: TargetType {
     switch self {
     case .getCashProducts: "api/cash-products"
     case .postVerifyIAP: "api/payments/in-app"
+    case .deletePaymentHistory: "api/payments"
     }
   }
   
@@ -38,6 +41,10 @@ public enum IAPEndpoint: TargetType {
         NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? ""),
         NetworkHeader.contentType: NetworkHeader.applicationJson
       ]
+    case .deletePaymentHistory:
+      [
+        NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
+      ]
     }
   }
   
@@ -45,6 +52,7 @@ public enum IAPEndpoint: TargetType {
     switch self {
     case .getCashProducts: .plain
     case let .postVerifyIAP(dto): .body(dto)
+    case .deletePaymentHistory: .plain
     }
   }
 }
