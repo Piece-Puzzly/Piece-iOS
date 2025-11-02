@@ -242,4 +242,8 @@ public struct UseCaseFactory {
   public static func createGetCashProductsUseCase(repository: IAPRepositoryInterface) -> GetCashProductsUseCase {
     GetCashProductsUseCaseImpl(repository: repository)
   }
+  
+  public static func createPostVerifyIAPUseCase(repository: IAPRepositoryInterface) -> PostVerifyIAPUseCase {
+    PostVerifyIAPUseCaseImpl(repository: repository)
+  }
 }

@@ -23,4 +23,12 @@ final class IAPRepository: IAPRepositoryInterface {
     
     return responseDto.toDomain()
   }
+  
+  func postVerifyIAP(productUUID: String, purchaseCredential: String, store: AppStoreType) async throws -> VoidModel {
+    let dto = PostVerifyIAPRequestDTO(productUUID: productUUID, purchaseCredential: purchaseCredential, store: store)
+    let endpoint = IAPEndpoint.postInAppPurchase(dto)
+    let responseDto: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
+    
+    return responseDto.toDomain()
+  }
 }

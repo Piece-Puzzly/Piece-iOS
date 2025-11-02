@@ -11,16 +11,19 @@ import LocalStorage
 
 public enum IAPEndpoint: TargetType {
   case getCashProducts
+  case postVerifyIAP(PostVerifyIAPRequestDTO)
   
   public var method: HTTPMethod {
     switch self {
     case .getCashProducts: .get
+    case .postVerifyIAP: .post
     }
   }
   
   public var path: String {
     switch self {
     case .getCashProducts: "api/cash-products"
+    case .postVerifyIAP: "api/payments/in-app"
     }
   }
   
@@ -30,12 +33,18 @@ public enum IAPEndpoint: TargetType {
       [
         NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
       ]
+    case .postVerifyIAP:
+      [
+        NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? ""),
+        NetworkHeader.contentType: NetworkHeader.applicationJson
+      ]
     }
   }
   
   public var requestType: RequestType {
     switch self {
     case .getCashProducts: .plain
+    case let .postVerifyIAP(dto): .body(dto)
     }
   }
 }
