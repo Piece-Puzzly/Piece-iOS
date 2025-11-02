@@ -237,4 +237,17 @@ public struct UseCaseFactory {
   public static func createReadNotificationUseCase(repository: NotificationRepositoryInterface) -> ReadNotificationUseCase {
     ReadNotificationUseCaseImpl(repository: repository)
   }
+  
+  // MARK: - IAP
+  public static func createGetCashProductsUseCase(repository: IAPRepositoryInterface) -> GetCashProductsUseCase {
+    GetCashProductsUseCaseImpl(repository: repository)
+  }
+  
+  public static func createPostVerifyIAPUseCase(repository: IAPRepositoryInterface) -> PostVerifyIAPUseCase {
+    PostVerifyIAPUseCaseImpl(repository: repository)
+  }
+  
+  public static func createDeletePaymentHistoryUseCase(repository: IAPRepositoryInterface) -> DeletePaymentHistoryUseCase {
+    DeletePaymentHistoryUseCaseImpl(repository: repository)
+  }
 }
