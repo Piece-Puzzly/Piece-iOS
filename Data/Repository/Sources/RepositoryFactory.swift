@@ -83,4 +83,8 @@ public struct RepositoryFactory {
   public func createIAPRepository() -> IAPRepositoryInterface {
     IAPRepository(networkService: networkService)
   }
+  
+  public func createStoreRepository() -> StoreRepositoryInterface {
+    StoreRepository()
+  }
 }

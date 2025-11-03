@@ -250,4 +250,8 @@ public struct UseCaseFactory {
   public static func createDeletePaymentHistoryUseCase(repository: IAPRepositoryInterface) -> DeletePaymentHistoryUseCase {
     DeletePaymentHistoryUseCaseImpl(repository: repository)
   }
+  
+  public static func createFetchValidStoreProductsUseCase(repository: StoreRepositoryInterface) -> FetchValidStoreProductsUseCase {
+    FetchValidStoreProductsUseCaseImpl(repository: repository)
+  }
 }
