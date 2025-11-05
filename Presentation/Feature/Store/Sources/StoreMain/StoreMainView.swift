@@ -12,6 +12,8 @@ import Router
 
 struct StoreMainView: View {
   @State var viewModel: StoreMainViewModel
+  
+  @Environment(Router.self) private var router: Router
 
   init(
     getCashProductsUseCase: GetCashProductsUseCase,
@@ -62,6 +64,7 @@ fileprivate struct MainContentView: View {
       StoreNavigationBar(viewModel: viewModel)
       
       StoreMainListContentView(viewModel: viewModel)
+        .padding(.horizontal, 20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     .toolbar(.hidden)
@@ -78,14 +81,36 @@ fileprivate struct StoreMainListContentView: View {
   
   var body: some View {
     ScrollView {
-      switch viewModel.viewState {
-      case .loading:
-        Text("LOADING STATE")
-      case .success:
-        Text("SUCCESS STATE")
-      case .failure:
-        Text("FAILURE STATE")
+      LazyVStack(spacing: 0) {
+        switch viewModel.viewState {
+        case .loading:
+          Text("LOADING STATE")
+        case .success:
+          PieceProductSectionView(viewModel: viewModel)
+            .padding(.vertical, 20)
+        case .failure:
+          Text("FAILURE STATE")
+        }
+        
+        StoreMainDescriptionView()
+          .padding(.top, 12)
       }
+    }
+  }
+}
+
+fileprivate struct PieceProductSectionView: View {
+  private let viewModel: StoreMainViewModel
+  
+  init(viewModel: StoreMainViewModel) {
+    self.viewModel = viewModel
+  }
+  
+  var body: some View {
+    VStack {
+      PromotionProductSectionView()
+
+      NormalProductSectionView()
     }
   }
 }
