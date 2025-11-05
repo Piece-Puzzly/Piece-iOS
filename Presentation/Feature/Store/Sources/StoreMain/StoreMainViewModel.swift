@@ -11,6 +11,12 @@ import Entities
 
 @Observable
 final class StoreMainViewModel {
+  enum StoreMainViewState: Equatable {
+    case loading
+    case success
+    case failure
+  }
+  
   enum Action {
     case onAppear
   }
@@ -18,6 +24,8 @@ final class StoreMainViewModel {
   private let getCashProductsUseCase: GetCashProductsUseCase
   private let deletePaymentHistoryUseCase: DeletePaymentHistoryUseCase
   private let fetchValidStoreProductsUseCase: FetchValidStoreProductsUseCase
+  
+  var viewState: StoreMainViewState = .loading
   
   init(
     getCashProductsUseCase: GetCashProductsUseCase,
@@ -32,7 +40,10 @@ final class StoreMainViewModel {
   func handleAction(_ action: Action) {
     switch action {
     case .onAppear:
-      break
+      Task {
+        try await Task.sleep(for: .seconds(3))
+        self.viewState = .success
+      }
     }
   }
 }
