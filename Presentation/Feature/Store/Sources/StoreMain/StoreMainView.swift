@@ -9,6 +9,7 @@ import SwiftUI
 import DesignSystem
 import UseCases
 import Router
+import Entities
 
 struct StoreMainView: View {
   @State var viewModel: StoreMainViewModel
@@ -85,9 +86,11 @@ fileprivate struct StoreMainListContentView: View {
         switch viewModel.viewState {
         case .loading:
           Text("LOADING STATE")
+        
         case .success:
           PieceProductSectionView(viewModel: viewModel)
             .padding(.vertical, 20)
+        
         case .failure:
           Text("FAILURE STATE")
         }
@@ -110,7 +113,10 @@ fileprivate struct PieceProductSectionView: View {
     VStack {
       PromotionProductSectionView()
 
-      NormalProductSectionView()
+      NormalProductSectionView(
+        items: viewModel.normalProducts,
+        onTap: { viewModel.handleAction(.didTapNormalProduct($0)) }
+      )
     }
   }
 }

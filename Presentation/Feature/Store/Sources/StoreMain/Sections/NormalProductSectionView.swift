@@ -6,10 +6,28 @@
 //
 
 import SwiftUI
+import Entities
 
 struct NormalProductSectionView: View {
+  private let items: [NormalProductModel]
+  private let onTap: (NormalProductModel) -> Void
+  
+  init(
+    items: [NormalProductModel],
+    onTap: @escaping (NormalProductModel) -> Void
+  ) {
+    self.items = items
+    self.onTap = onTap
+  }
+  
   var body: some View {
-    Text("NORMAL PRODUCT SECTION")
+    LazyVStack(spacing: 12) {
+      ForEach(items) { item in
+        NormalProductCardView(item: item) {
+          onTap(item)
+        }
+      }
+    }
   }
 }
 

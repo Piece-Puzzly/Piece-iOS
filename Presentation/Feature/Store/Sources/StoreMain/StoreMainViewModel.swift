@@ -19,13 +19,15 @@ final class StoreMainViewModel {
   
   enum Action {
     case onAppear
+    case didTapNormalProduct(NormalProductModel)
   }
   
   private let getCashProductsUseCase: GetCashProductsUseCase
   private let deletePaymentHistoryUseCase: DeletePaymentHistoryUseCase
   private let fetchValidStoreProductsUseCase: FetchValidStoreProductsUseCase
   
-  var viewState: StoreMainViewState = .loading
+  private(set) var viewState: StoreMainViewState = .loading
+  private(set) var normalProducts: [NormalProductModel] = []
   
   init(
     getCashProductsUseCase: GetCashProductsUseCase,
@@ -41,9 +43,13 @@ final class StoreMainViewModel {
     switch action {
     case .onAppear:
       Task {
-        try await Task.sleep(for: .seconds(3))
+        try await Task.sleep(for: .seconds(1))
+        self.normalProducts = StoreMainViewModel.dummyNormalProducts
         self.viewState = .success
       }
+      
+    case .didTapNormalProduct(let product):
+      print(product.name)
     }
   }
 }
