@@ -47,3 +47,25 @@ final class StoreMainViewModel {
     }
   }
 }
+
+extension StoreMainViewModel {
+  static let dummyNormalProducts: [NormalProductModel] = [
+    NormalProductModel(
+      storeProduct: StoreProductModel(id: "1", displayName: "", description: "", price: 0, displayPrice: ""),
+      backendProduct: BasicCashProductModel(uuid: "11", name: "5 퍼즐", rewardPuzzleCount: 5, originalAmount: 9900, currencyCode: "", discountRate: 0, discountedAmount: 9900)
+    ),
+    NormalProductModel(
+      storeProduct: StoreProductModel(id: "2", displayName: "", description: "", price: 0, displayPrice: ""),
+      backendProduct: BasicCashProductModel(uuid: "22", name: "10 퍼즐", rewardPuzzleCount: 10, originalAmount: 19000, currencyCode: "", discountRate: 10, discountedAmount: 17100)
+    ),
+    NormalProductModel(
+      storeProduct: StoreProductModel(id: "3", displayName: "", description: "", price: 0, displayPrice: ""),
+      backendProduct: BasicCashProductModel(uuid: "33", name: "20 퍼즐", rewardPuzzleCount: 20, originalAmount: 38000, currencyCode: "", discountRate: 15, discountedAmount: 32300)
+    ),
+    NormalProductModel(
+      storeProduct: StoreProductModel(id: "4", displayName: "", description: "", price: 0, displayPrice: ""),
+      backendProduct: BasicCashProductModel(uuid: "44", name: "50 퍼즐", rewardPuzzleCount: 50, originalAmount: 95000, currencyCode: "", discountRate: 20, discountedAmount: 76000)
+    )
+  ]
+}
+
