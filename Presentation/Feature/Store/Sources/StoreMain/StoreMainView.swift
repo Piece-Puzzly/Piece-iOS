@@ -97,6 +97,7 @@ fileprivate struct StoreMainListContentView: View {
         
         StoreMainDescriptionView()
           .padding(.top, 12)
+          .padding(.bottom, 60)
       }
       .immediateScrollTap()
     }
