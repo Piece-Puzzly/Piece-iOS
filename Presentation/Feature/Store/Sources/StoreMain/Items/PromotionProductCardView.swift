@@ -7,7 +7,7 @@
 
 import SwiftUI
 import Entities
-import DesignSystem
+import SDWebImageSwiftUI
 
 struct PromotionProductCardView: View {
   private let item: PromotionProductModel
@@ -24,14 +24,21 @@ struct PromotionProductCardView: View {
   var body: some View {
     Button(
       action: onTap,
-      label: {
-        DesignSystemAsset.Images.imgLeave.swiftUIImage
-          .resizable()
-          .frame(height: 200)
-          .scaledToFit()
-          .contentShape(Rectangle())
-          .cornerRadius(8)
-      }
+      label: { PromotionProductSVG(item: item) }
     )
+  }
+}
+
+fileprivate struct PromotionProductSVG: View {
+  private let item: PromotionProductModel
+  
+  init(item: PromotionProductModel) {
+    self.item = item
+  }
+  
+  var body: some View {
+    WebImage(url: URL(string: item.backendProduct.cardImageUrl))
+      .resizable()
+      .scaledToFit()
   }
 }
