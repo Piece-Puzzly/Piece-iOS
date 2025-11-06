@@ -13,6 +13,7 @@ import PCNetwork
 import LocalStorage
 import Repository
 import UseCases
+import SDWebImageSVGCoder
 
 final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
   
@@ -22,6 +23,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
   ) -> Bool {
     
     print("🚀 앱 시작 - didFinishLaunchingWithOptions")
+    
+    // SVG 코더 등록
+    let SVGCoder = SDImageSVGCoder.shared
+    SDImageCodersManager.shared.addCoder(SVGCoder)
     
     // FCM 토큰 알림 구독
     NotificationCenter.default.addObserver(
