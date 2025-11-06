@@ -17,5 +17,11 @@ let project = Project.staticLibrary(
     .presentation(target: .Router),
     .utility(target: .PCFoundationExtension),
     .utility(target: .PCAmplitude),
-  ]
+    .externalDependency(dependency: .SDWebImageSwiftUI),
+  ],
+  settings: .settings(
+    base: [
+      "OTHER_LDFLAGS": ["-ObjC"]
+    ]
+  )
 )
