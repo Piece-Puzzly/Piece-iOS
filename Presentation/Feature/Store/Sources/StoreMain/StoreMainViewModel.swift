@@ -20,6 +20,7 @@ final class StoreMainViewModel {
   enum Action {
     case onAppear
     case didTapNormalProduct(NormalProductModel)
+    case didTapPromotionProduct(PromotionProductModel)
   }
   
   private let getCashProductsUseCase: GetCashProductsUseCase
@@ -28,6 +29,7 @@ final class StoreMainViewModel {
   
   private(set) var viewState: StoreMainViewState = .loading
   private(set) var normalProducts: [NormalProductModel] = []
+  private(set) var promotionProducts: [PromotionProductModel] = []
   
   init(
     getCashProductsUseCase: GetCashProductsUseCase,
@@ -45,11 +47,15 @@ final class StoreMainViewModel {
       Task {
         try await Task.sleep(for: .seconds(1))
         self.normalProducts = StoreMainViewModel.dummyNormalProducts
+        self.promotionProducts = StoreMainViewModel.dummyPromotionProducts
         self.viewState = .success
       }
       
     case .didTapNormalProduct(let product):
       print(product.name)
+      
+    case .didTapPromotionProduct(let product):
+      print(product.originPriceString)
     }
   }
 }
@@ -71,6 +77,13 @@ extension StoreMainViewModel {
     NormalProductModel(
       storeProduct: StoreProductModel(id: "4", displayName: "", description: "", price: 0, displayPrice: ""),
       backendProduct: BasicCashProductModel(uuid: "44", name: "50 퍼즐", rewardPuzzleCount: 50, originalAmount: 95000, currencyCode: "", discountRate: 20, discountedAmount: 76000)
+    )
+  ]
+  
+  static let dummyPromotionProducts: [PromotionProductModel] = [
+    PromotionProductModel(
+      storeProduct: StoreProductModel(id: "", displayName: "", description: "", price: 19000, displayPrice: ""),
+      backendProduct: PromotionCashProductModel(uuid: "", cardImageUrl: "")
     )
   ]
 }

@@ -100,6 +100,7 @@ fileprivate struct StoreMainListContentView: View {
       }
       .immediateScrollTap()
     }
+    .scrollIndicators(.hidden)
   }
 }
 
@@ -111,8 +112,11 @@ fileprivate struct PieceProductSectionView: View {
   }
   
   var body: some View {
-    VStack {
-      PromotionProductSectionView()
+    VStack(spacing: 12) {
+      PromotionProductSectionView(
+        items: viewModel.promotionProducts,
+        onTap: { viewModel.handleAction(.didTapPromotionProduct($0)) }
+      )
 
       NormalProductSectionView(
         items: viewModel.normalProducts,
