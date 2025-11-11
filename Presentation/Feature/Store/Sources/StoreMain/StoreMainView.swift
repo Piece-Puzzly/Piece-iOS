@@ -40,6 +40,21 @@ struct StoreMainView: View {
     .onAppear {
       viewModel.handleAction(.onAppear)
     }
+    .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
+      if shouldDismiss { router.pop() }
+    }
+    .pcAlert(isPresented: $viewModel.isShowingPurchaseCompleteAlert) {
+      AlertView(
+        title: {
+          Text("퍼즐 ").foregroundStyle(Color.grayscaleBlack) +
+          Text("\(viewModel.completedPuzzleCount)").foregroundStyle(Color.primaryDefault) +
+          Text("개를 구매했어요").foregroundStyle(Color.grayscaleBlack)
+        },
+        message: "지금 바로 새로운 인연을 만나보세요!",
+        secondButtonText: "홈으로",
+        secondButtonAction: { viewModel.handleAction(.didCompletePurchase) }
+      )
+    }
   }
 }
 

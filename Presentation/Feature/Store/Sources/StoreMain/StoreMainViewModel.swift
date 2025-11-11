@@ -21,6 +21,7 @@ final class StoreMainViewModel {
     case onAppear
     case didTapNormalProduct(NormalProductModel)
     case didTapPromotionProduct(PromotionProductModel)
+    case didCompletePurchase
   }
   
   private let getCashProductsUseCase: GetCashProductsUseCase
@@ -30,6 +31,10 @@ final class StoreMainViewModel {
   private(set) var viewState: StoreMainViewState = .loading
   private(set) var normalProducts: [NormalProductModel] = []
   private(set) var promotionProducts: [PromotionProductModel] = []
+  private(set) var completedPuzzleCount: Int64 = 0
+  private(set) var shouldDismiss: Bool = false
+  var isShowingPurchaseCompleteAlert: Bool = false
+  
   
   init(
     getCashProductsUseCase: GetCashProductsUseCase,
@@ -52,10 +57,24 @@ final class StoreMainViewModel {
       }
       
     case .didTapNormalProduct(let product):
-      print(product.name)
+      Task {
+        try await Task.sleep(for: .seconds(1))
+        isShowingPurchaseCompleteAlert = true
+        completedPuzzleCount = product.backendProduct.rewardPuzzleCount
+      }
       
     case .didTapPromotionProduct(let product):
-      print(product.originPriceString)
+      Task {
+        try await Task.sleep(for: .seconds(1))
+        isShowingPurchaseCompleteAlert = true
+        completedPuzzleCount = 50
+      }
+      
+    case .didCompletePurchase:
+      Task {
+        isShowingPurchaseCompleteAlert = false
+        shouldDismiss = true
+      }
     }
   }
 }
