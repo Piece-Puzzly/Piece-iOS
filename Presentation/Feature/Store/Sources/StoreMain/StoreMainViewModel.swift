@@ -33,6 +33,7 @@ final class StoreMainViewModel {
   private(set) var promotionProducts: [PromotionProductModel] = []
   private(set) var completedPuzzleCount: Int64 = 0
   private(set) var shouldDismiss: Bool = false
+  private(set) var isPurchasing: Bool = false
   var isShowingPurchaseCompleteAlert: Bool = false
   
   
@@ -49,36 +50,66 @@ final class StoreMainViewModel {
   func handleAction(_ action: Action) {
     switch action {
     case .onAppear:
-      Task {
-        try await Task.sleep(for: .seconds(1))
-        self.normalProducts = StoreMainViewModel.dummyNormalProducts
-        self.promotionProducts = StoreMainViewModel.dummyPromotionProducts
-        self.viewState = .success
-      }
-      
+      loadProducts()
+
     case .didTapNormalProduct(let product):
-      Task {
-        try await Task.sleep(for: .seconds(1))
-        isShowingPurchaseCompleteAlert = true
-        completedPuzzleCount = product.backendProduct.rewardPuzzleCount
-      }
-      
+      purchaseNormalProduct(product)
+
     case .didTapPromotionProduct(let product):
-      Task {
-        try await Task.sleep(for: .seconds(1))
-        isShowingPurchaseCompleteAlert = true
-        completedPuzzleCount = 50
-      }
-      
+      purchasePromotionProduct(product)
+
     case .didCompletePurchase:
-      Task {
-        isShowingPurchaseCompleteAlert = false
-        shouldDismiss = true
-      }
+      completePurchase()
     }
   }
 }
 
+// MARK: - Private Methods
+private extension StoreMainViewModel {
+  func loadProducts() {
+    Task {
+      try await Task.sleep(for: .seconds(1))
+      self.normalProducts = StoreMainViewModel.dummyNormalProducts
+      self.promotionProducts = StoreMainViewModel.dummyPromotionProducts
+      self.viewState = .success
+    }
+  }
+  
+  func purchaseNormalProduct(_ product: NormalProductModel) {
+    guard !isPurchasing else { return }
+    
+    Task {
+      isPurchasing = true
+      defer { isPurchasing = false }
+      
+      try await Task.sleep(for: .seconds(1))
+      isShowingPurchaseCompleteAlert = true
+      completedPuzzleCount = product.backendProduct.rewardPuzzleCount
+    }
+  }
+  
+  func purchasePromotionProduct(_ product: PromotionProductModel) {
+    guard !isPurchasing else { return }
+    
+    Task {
+      isPurchasing = true
+      defer { isPurchasing = false }
+      
+      try await Task.sleep(for: .seconds(1))
+      isShowingPurchaseCompleteAlert = true
+      completedPuzzleCount = 50
+    }
+  }
+  
+  func completePurchase() {
+    Task {
+      isShowingPurchaseCompleteAlert = false
+      shouldDismiss = true
+    }
+  }
+}
+
+// MARK: - Dummy Data (추후 제거)
 extension StoreMainViewModel {
   static let dummyNormalProducts: [NormalProductModel] = [
     NormalProductModel(
