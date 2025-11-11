@@ -27,6 +27,7 @@ import ReportUser
 import MatchResult
 import PreviewProfile
 import EditProfile
+import Store
 
 public struct Coordinator {
   public init() { }
@@ -449,6 +450,20 @@ public struct Coordinator {
       NotificationViewFactory.createNotificationListView(
         getNotificationsUseCase: getNotificationsUseCase,
         readNotificationUseCase: readNotificationUseCase
+      )
+      
+      // MARK: - 스토어
+    case .storeMain:
+      let storeRepository = repositoryFactory.createStoreRepository()
+      let iapRepository = repositoryFactory.createIAPRepository()
+      let getCashProductsUseCase = UseCaseFactory.createGetCashProductsUseCase(repository: iapRepository)
+      let deletePaymentHistoryUseCase = UseCaseFactory.createDeletePaymentHistoryUseCase(repository: iapRepository)
+      let fetchValidStoreProductsUseCase = UseCaseFactory.createFetchValidStoreProductsUseCase(repository: storeRepository)
+    
+      StoreViewFactory.createStoreMainView(
+        getCashProductsUseCase: getCashProductsUseCase,
+        deletePaymentHistoryUseCase: deletePaymentHistoryUseCase,
+        fetchValidStoreProductsUseCase: fetchValidStoreProductsUseCase
       )
     }
   }

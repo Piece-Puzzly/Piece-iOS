@@ -102,6 +102,7 @@ public extension Modules {
     case NotificationList
     case EditProfile
     case PCImagePicker
+    case Store
     
     var path: String {
       switch self {

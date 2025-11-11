@@ -45,8 +45,7 @@ struct MatchingNavigationBar: View {
         foregroundColor: .grayscaleWhite,
         leftButton: { PCPuzzleCount(count: 0, style: .dark) },
         leftButtonTap: {
-          // TODO: - 결제 페이지 화면 구현
-          /// 스토어뷰 이동
+          router.push(to: .storeMain)
         },
         rightIcon: DesignSystemAsset.Icons.alarm32.swiftUIImage,
         rightIconTap: {

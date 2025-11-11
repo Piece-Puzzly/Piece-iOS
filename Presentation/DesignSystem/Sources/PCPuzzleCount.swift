@@ -34,7 +34,7 @@ public struct PCPuzzleCount: View {
       HStack(spacing: 8) {
         DesignSystemAsset.Icons.chevronLeft32.swiftUIImage
           .renderingMode(.template)
-          .foregroundStyle(Color.grayscaleWhite)
+          .foregroundStyle(Color.grayscaleBlack)
         
         PCPuzzleCountContent(count: count, style: style)
       }

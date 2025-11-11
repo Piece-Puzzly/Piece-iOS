@@ -18,6 +18,9 @@ let packageSettings = PackageSettings(
     "AppAuth": .framework,
     "GoogleSignIn": .framework,
     "Mantis": .framework,
+    "SDWebImage": .framework,
+    "SDWebImageSwiftUI": .framework,
+    "SDWebImageSVGCoder": .framework,
   ],
   baseSettings: .settings()
 //      .settings(
@@ -48,6 +51,8 @@ enum ExternalDependency: String, CaseIterable {
   case Firebase
   case Mantis
   case AmplitudeSwift
+  case SDWebImageSwiftUI
+  case SDWebImageSVGCoder
 }
 
 extension ExternalDependency {
@@ -61,6 +66,8 @@ extension ExternalDependency {
     case .Firebase: "https://github.com/firebase/firebase-ios-sdk"
     case .Mantis: "https://github.com/guoyingtao/Mantis"
     case .AmplitudeSwift: "https://github.com/amplitude/Amplitude-Swift"
+    case .SDWebImageSwiftUI: "https://github.com/SDWebImage/SDWebImageSwiftUI"
+    case .SDWebImageSVGCoder: "https://github.com/SDWebImage/SDWebImageSVGCoder"
     }
   }
 }
@@ -76,6 +83,8 @@ extension ExternalDependency {
     case .Firebase: "11.8.1"
     case .Mantis: "2.26.0"
     case .AmplitudeSwift: "1.14.0"
+    case .SDWebImageSwiftUI: "3.1.4"
+    case .SDWebImageSVGCoder: "1.7.0"
     }
   }
 }
