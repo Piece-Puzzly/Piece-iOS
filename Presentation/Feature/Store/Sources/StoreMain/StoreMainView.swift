@@ -111,12 +111,12 @@ fileprivate struct StoreMainListContentView: View {
               .padding(.top, 12)
               .padding(.bottom, 60)
           }
-          .immediateScrollTap()
         
         case .failure:
           Text("FAILURE STATE")
         }
       }
+      .immediateScrollTap()
     }
     .scrollIndicators(.hidden)
   }
