@@ -82,3 +82,49 @@ public extension ShimmerStyle {
     }
   }
 }
+
+// MARK: - Preview
+#Preview("ShimmerStyle 전체 비교") {
+  ZStack {
+    Color.grayscaleLight3
+      .edgesIgnoringSafeArea(.all)
+    VStack(spacing: 24) {
+      VStack(alignment: .leading, spacing: 8) {
+        Text("Light")
+          .font(.headline)
+        RoundedRectangle(cornerRadius: 8)
+          .fill(Color.grayscaleWhite)
+          .frame(height: 80)
+          .pcShimmer(style: .light)
+      }
+      
+      VStack(alignment: .leading, spacing: 8) {
+        Text("Dark")
+          .font(.headline)
+        RoundedRectangle(cornerRadius: 8)
+          .fill(Color.grayscaleDark3)
+          .frame(height: 80)
+          .pcShimmer(style: .dark)
+      }
+      
+      VStack(alignment: .leading, spacing: 8) {
+        Text("Subtle")
+          .font(.headline)
+        RoundedRectangle(cornerRadius: 8)
+          .fill(Color.primaryMiddle)
+          .frame(height: 80)
+          .pcShimmer(style: .subtle)
+      }
+      
+      VStack(alignment: .leading, spacing: 8) {
+        Text("Custom (Red → Blue)")
+          .font(.headline)
+        RoundedRectangle(cornerRadius: 8)
+          .fill(Color.purple)
+          .frame(height: 80)
+          .pcShimmer(style: .custom([.clear, .red, .blue, .clear]))
+      }
+    }
+    .padding()
+  }
+}
