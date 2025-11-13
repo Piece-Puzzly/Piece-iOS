@@ -34,3 +34,12 @@ extension PromotionProductModel {
     return formattedString
   }
 }
+
+extension PromotionProductModel {
+  public static let `default`: [PromotionProductModel] = [
+    PromotionProductModel(
+      storeProduct: StoreProductModel(id: "", displayName: "", description: "", price: 19000, displayPrice: ""),
+      backendProduct: PromotionCashProductModel(uuid: "", cardImageUrl: "https://piece-object.s3.ap-northeast-2.amazonaws.com/promtions/First_payment_promotion+_banner.svg")
+    )
+  ]
+}
