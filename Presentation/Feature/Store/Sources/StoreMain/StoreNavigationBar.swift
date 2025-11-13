@@ -20,12 +20,27 @@ struct StoreNavigationBar: View {
   
   // TODO: - viewModel에서 puzzle 개수 바인딩
   var body: some View {
-    HomeNavigationBar(
-      foregroundColor: .grayscaleBlack,
-      leftButton: { PCPuzzleCount(count: 22, style: .light) },
-      leftButtonTap: {
-        router.pop()
-      }
-    )
+    switch viewModel.viewState {
+    case .loading:
+      HomeNavigationBar(
+        foregroundColor: .grayscaleBlack,
+        leftButton: { PCPuzzleCount(style: .skeleton(.light)) },
+      )
+      
+    case .success:
+      HomeNavigationBar(
+        foregroundColor: .grayscaleBlack,
+        leftButton: { PCPuzzleCount(count: 22, style: .light) },
+        leftButtonTap: {
+          router.pop()
+        }
+      )
+    
+    case .failure:
+      HomeNavigationBar(
+        foregroundColor: .grayscaleBlack,
+        leftButton: { PCPuzzleCount(count: 0, style: .light) },
+      )
+    }
   }
 }
