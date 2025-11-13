@@ -13,10 +13,12 @@ import PCNetwork
 import LocalStorage
 import Repository
 import UseCases
+import StoreKit
 import SDWebImageSVGCoder
 
 final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
-  
+  private var transactionListener: Task<Void, Never>?
+
   func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
@@ -73,6 +75,9 @@ final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
       PCNotificationService.shared.checkNotificationPermission()
       self.checkAPNsRegistrationStatus()
     }
+    
+    // Transaction 업데이트 리스너 시작
+    startTransactionListener()
     
     print("🚀 앱 초기화 완료")
     return true
@@ -174,6 +179,50 @@ final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
     DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
       print("🍎 APNs 등록 재시도...")
       UIApplication.shared.registerForRemoteNotifications()
+    }
+  }
+}
+
+// MARK: - IAP 리스너
+extension AppDelegate {
+  private func startTransactionListener() {
+    transactionListener = Task {
+      for await update in Transaction.updates {
+        do {
+          let transaction = try verifyPurchase(update)
+          
+          // 서버 검증
+          let repositoryFactory = RepositoryFactory(
+            networkService: NetworkService.shared,
+            sseService: SSEService.shared
+          )
+          let iapRepository = repositoryFactory.createIAPRepository()
+          
+          do {
+            _ = try await iapRepository.postVerifyIAP(
+              productUUID: transaction.productID,
+              purchaseCredential: update.jwsRepresentation,
+              store: .appStore
+            )
+            print("✅ Transaction 검증 성공")
+          } catch {
+            print("⚠️ Transaction 검증 실패 (finish 호출): \(error)")
+          }
+          
+          await transaction.finish() // 검증 성공/실패 무관하게 항상 호출
+        } catch {
+          print("Transaction 처리 실패: \(error)")
+        }
+      }
+    }
+  }
+  
+  private func verifyPurchase(_ result: VerificationResult<Transaction>) throws -> Transaction {
+    switch result {
+    case .verified(let transaction):
+      return transaction
+    case .unverified(_, let error):
+      throw error
     }
   }
 }
