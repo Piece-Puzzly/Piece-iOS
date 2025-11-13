@@ -50,6 +50,7 @@ final class StoreMainViewModel {
   func handleAction(_ action: Action) {
     switch action {
     case .onAppear:
+//      loadProductsDummy()
       loadProducts()
 
     case .didTapNormalProduct(let product):
@@ -66,11 +67,21 @@ final class StoreMainViewModel {
 
 // MARK: - Private Methods
 private extension StoreMainViewModel {
-  func loadProducts() {
+  func loadProductsDummy() {
     Task {
       try await Task.sleep(for: .seconds(1))
-      self.normalProducts = StoreMainViewModel.dummyNormalProducts
-      self.promotionProducts = StoreMainViewModel.dummyPromotionProducts
+      self.normalProducts = NormalProductModel.default
+      self.promotionProducts = PromotionProductModel.default
+      self.viewState = .success
+    }
+  }
+  
+  func loadProducts() {
+    Task {
+      let cashProducts = try await getCashProductsUseCase.execute()
+      let validProducts = try await fetchValidStoreProductsUseCase.execute(cashProducts: cashProducts)
+      self.normalProducts = validProducts.normalProducts
+      self.promotionProducts = validProducts.promotionProducts
       self.viewState = .success
     }
   }
@@ -108,33 +119,3 @@ private extension StoreMainViewModel {
     }
   }
 }
-
-// MARK: - Dummy Data (추후 제거)
-extension StoreMainViewModel {
-  static let dummyNormalProducts: [NormalProductModel] = [
-    NormalProductModel(
-      storeProduct: StoreProductModel(id: "1", displayName: "", description: "", price: 0, displayPrice: ""),
-      backendProduct: BasicCashProductModel(uuid: "11", name: "5 퍼즐", rewardPuzzleCount: 5, originalAmount: 9900, currencyCode: "", discountRate: 0, discountedAmount: 9900)
-    ),
-    NormalProductModel(
-      storeProduct: StoreProductModel(id: "2", displayName: "", description: "", price: 0, displayPrice: ""),
-      backendProduct: BasicCashProductModel(uuid: "22", name: "10 퍼즐", rewardPuzzleCount: 10, originalAmount: 19000, currencyCode: "", discountRate: 10, discountedAmount: 17100)
-    ),
-    NormalProductModel(
-      storeProduct: StoreProductModel(id: "3", displayName: "", description: "", price: 0, displayPrice: ""),
-      backendProduct: BasicCashProductModel(uuid: "33", name: "20 퍼즐", rewardPuzzleCount: 20, originalAmount: 38000, currencyCode: "", discountRate: 15, discountedAmount: 32300)
-    ),
-    NormalProductModel(
-      storeProduct: StoreProductModel(id: "4", displayName: "", description: "", price: 0, displayPrice: ""),
-      backendProduct: BasicCashProductModel(uuid: "44", name: "50 퍼즐", rewardPuzzleCount: 50, originalAmount: 95000, currencyCode: "", discountRate: 20, discountedAmount: 76000)
-    )
-  ]
-  
-  static let dummyPromotionProducts: [PromotionProductModel] = [
-    PromotionProductModel(
-      storeProduct: StoreProductModel(id: "", displayName: "", description: "", price: 19000, displayPrice: ""),
-      backendProduct: PromotionCashProductModel(uuid: "", cardImageUrl: "https://piece-object.s3.ap-northeast-2.amazonaws.com/promtions/First_payment_promotion+_banner.svg")
-    )
-  ]
-}
-
