@@ -8,7 +8,7 @@
 import SwiftUI
 
 public extension View {
-  func pcShimmer() -> some View {
-    modifier(PCShimmer())
+  func pcShimmer(style: ShimmerStyle = .light) -> some View {
+    modifier(PCShimmer(style: style))
   }
 }

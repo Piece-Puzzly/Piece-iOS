@@ -11,12 +11,13 @@ struct PCShimmer: ViewModifier {
   @State private var startPoint: UnitPoint = .init(x: -1.8, y: -1.2)
   @State private var endPoint: UnitPoint = .init(x: 0, y: -0.2)
 
-  private var gradientColors = [
-    Color.grayscaleWhite,
-    Color.grayscaleLight2.opacity(0.4),
-    Color.grayscaleWhite,
-  ]
-
+  private let style: ShimmerStyle
+  private var gradientColors: [Color] { style.colors }
+  
+  public init(style: ShimmerStyle) {
+    self.style = style
+  }
+  
   func body(content: Content) -> some View {
     content
       .overlay(
