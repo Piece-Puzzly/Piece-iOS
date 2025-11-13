@@ -199,12 +199,12 @@ extension AppDelegate {
           let iapRepository = repositoryFactory.createIAPRepository()
           
           do {
-            _ = try await iapRepository.postVerifyIAP(
+            let verifyResult = try await iapRepository.postVerifyIAP(
               productUUID: transaction.productID,
               purchaseCredential: update.jwsRepresentation,
               store: .appStore
             )
-            print("✅ Transaction 검증 성공")
+            print("✅ Transaction 검증 성공 - PurchaseID: \(verifyResult.purchaseId), RewardPuzzles: \(verifyResult.rewardPuzzleCount)")
           } catch {
             print("⚠️ Transaction 검증 실패 (finish 호출): \(error)")
           }

@@ -9,6 +9,6 @@ import Entities
 
 public protocol IAPRepositoryInterface {
   func getCashProducts() async throws -> CashProductsModel
-  func postVerifyIAP(productUUID: String, purchaseCredential: String, store: AppStoreType) async throws -> VoidModel
+  func postVerifyIAP(productUUID: String, purchaseCredential: String, store: AppStoreType) async throws -> VerifyIAPModel
   func deletePaymentHistory() async throws -> VoidModel
 }
