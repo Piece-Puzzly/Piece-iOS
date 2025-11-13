@@ -20,12 +20,14 @@ struct StoreMainView: View {
     getCashProductsUseCase: GetCashProductsUseCase,
     deletePaymentHistoryUseCase: DeletePaymentHistoryUseCase,
     fetchValidStoreProductsUseCase: FetchValidStoreProductsUseCase,
+    completeIAPUseCase: CompleteIAPUseCase
   ) {
     _viewModel = .init(
       wrappedValue: .init(
         getCashProductsUseCase: getCashProductsUseCase,
         deletePaymentHistoryUseCase: deletePaymentHistoryUseCase,
         fetchValidStoreProductsUseCase: fetchValidStoreProductsUseCase,
+        completeIAPUseCase: completeIAPUseCase,
       )
     )
   }

@@ -27,7 +27,8 @@ final class StoreMainViewModel {
   private let getCashProductsUseCase: GetCashProductsUseCase
   private let deletePaymentHistoryUseCase: DeletePaymentHistoryUseCase
   private let fetchValidStoreProductsUseCase: FetchValidStoreProductsUseCase
-  
+  private let completeIAPUseCase: CompleteIAPUseCase
+
   private(set) var viewState: StoreMainViewState = .loading
   private(set) var normalProducts: [NormalProductModel] = []
   private(set) var promotionProducts: [PromotionProductModel] = []
@@ -36,15 +37,16 @@ final class StoreMainViewModel {
   private(set) var isPurchasing: Bool = false
   var isShowingPurchaseCompleteAlert: Bool = false
   
-  
   init(
     getCashProductsUseCase: GetCashProductsUseCase,
     deletePaymentHistoryUseCase: DeletePaymentHistoryUseCase,
-    fetchValidStoreProductsUseCase: FetchValidStoreProductsUseCase
+    fetchValidStoreProductsUseCase: FetchValidStoreProductsUseCase,
+    completeIAPUseCase: CompleteIAPUseCase,
   ) {
     self.getCashProductsUseCase = getCashProductsUseCase
     self.deletePaymentHistoryUseCase = deletePaymentHistoryUseCase
     self.fetchValidStoreProductsUseCase = fetchValidStoreProductsUseCase
+    self.completeIAPUseCase = completeIAPUseCase
   }
   
   func handleAction(_ action: Action) {
@@ -93,9 +95,13 @@ private extension StoreMainViewModel {
       isPurchasing = true
       defer { isPurchasing = false }
       
-      try await Task.sleep(for: .seconds(1))
-      isShowingPurchaseCompleteAlert = true
-      completedPuzzleCount = product.backendProduct.rewardPuzzleCount
+      do {
+        let result = try await completeIAPUseCase.execute(productID: product.storeProduct.id)
+        completedPuzzleCount = result.rewardPuzzleCount
+        isShowingPurchaseCompleteAlert = true
+      } catch {
+        print("❌ 구매 실패: \(error)")
+      }
     }
   }
   
@@ -106,9 +112,13 @@ private extension StoreMainViewModel {
       isPurchasing = true
       defer { isPurchasing = false }
       
-      try await Task.sleep(for: .seconds(1))
-      isShowingPurchaseCompleteAlert = true
-      completedPuzzleCount = 50
+      do {
+        let result = try await completeIAPUseCase.execute(productID: product.storeProduct.id)
+        completedPuzzleCount = result.rewardPuzzleCount
+        isShowingPurchaseCompleteAlert = true
+      } catch {
+        print("❌ 구매 실패: \(error)")
+      }
     }
   }
   
