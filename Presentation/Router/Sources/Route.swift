@@ -62,4 +62,7 @@ public enum Route: Hashable {
   // MARK: - 기타
   case reportUser(nickname: String)
   case blockUser(matchId: Int, nickname: String)
+  
+  // MARK: - 스토어
+  case storeMain
 }
