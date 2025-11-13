@@ -97,24 +97,26 @@ fileprivate struct StoreMainListContentView: View {
   
   var body: some View {
     ScrollView {
-      LazyVStack(spacing: 0) {
+      VStack(spacing: 0) {
         switch viewModel.viewState {
         case .loading:
-          Text("LOADING STATE")
-        
+          StoreMainSkeletonView()
+
         case .success:
-          PieceProductSectionView(viewModel: viewModel)
-            .padding(.vertical, 20)
+          LazyVStack(spacing: 0) {
+            PieceProductSectionView(viewModel: viewModel)
+              .padding(.vertical, 20)
+            
+            StoreMainDescriptionView()
+              .padding(.top, 12)
+              .padding(.bottom, 60)
+          }
+          .immediateScrollTap()
         
         case .failure:
           Text("FAILURE STATE")
         }
-        
-        StoreMainDescriptionView()
-          .padding(.top, 12)
-          .padding(.bottom, 60)
       }
-      .immediateScrollTap()
     }
     .scrollIndicators(.hidden)
   }

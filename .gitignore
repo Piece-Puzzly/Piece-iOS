@@ -90,3 +90,6 @@ fastlane/.env*
 # Firebase
 App/Resources/GoogleService-Info.plist
 Utility/PCFirebase/Resources/remote_config_defaults.plist
+
+# Claude Code
+.claude/
