@@ -17,16 +17,16 @@ struct MatchingCardListView: View {
     self.viewModel = viewModel
   }
   
-  // TODO: - MatchingCard로 분리
   var body: some View {
     ScrollView(showsIndicators: false) {
       VStack(spacing: 12) {
-        ForEach(0..<100) { val in
-          Text("\(val)")
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        ForEach(viewModel.matchingCards) { cardModel in
+          MatchingCardView(
+            model: cardModel,
+            onSelect: { viewModel.handleAction(.onSelectMatchingCard(matchId: cardModel.id)) },
+            onConfirm: { viewModel.handleAction(.onConfirmMatchingCard(matchId: cardModel.id)) }
+          )
         }
-        .foregroundStyle(.grayscaleWhite)
-        .background(.subLight) // TODO: - LAYOUT DUBUG
       }
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
