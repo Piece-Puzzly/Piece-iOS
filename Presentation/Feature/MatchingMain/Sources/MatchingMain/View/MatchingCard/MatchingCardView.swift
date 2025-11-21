@@ -25,8 +25,8 @@ struct MatchingCardView: View {
   }
 
   var body: some View {
-    ZStack{
-      BackgroundView(matchStatus: model.matchStatus)
+//    ZStack{
+//      BackgroundView(model: model)
       
       VStack(spacing: 0) {
         if model.isSelected {
@@ -43,27 +43,47 @@ struct MatchingCardView: View {
             ))
         }
       }
-    }
-    // MARK:  legacy 선택값과 관련 있는 카드만 애니메이션
-//    .animation(.interactiveSpring(response: 0.45), value: model.isSelected)
+      .background(
+        BackgroundView(model: model)
+          .allowsHitTesting(false)
+      )
+      .clipped()
+      .cornerRadius(12)
   }
 }
 
 // MARK: - Background View
 fileprivate struct BackgroundView: View {
-  private let matchStatus: MatchStatus
+  private let model: MatchingCardModel
   
-  init(matchStatus: MatchStatus) {
-    self.matchStatus = matchStatus
+  init(model: MatchingCardModel) {
+    self.model = model
   }
     
   var body: some View {
-    Rectangle()
-      .fill(
-        matchStatus == .GREEN_LIGHT
-        ? .primaryLight
-        : .grayscaleWhite
-      )
-      .cornerRadius(12)
+    if model.matchStatus == .MATCHED {
+      DesignSystemAsset.Images.matchingCardBG.swiftUIImage
+        .resizable()
+        .aspectRatio(contentMode: .fill)
+        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+    } else {
+      Rectangle()
+        .fill(backgroundColor)
+    }
+  }
+
+  private var backgroundColor: Color {
+    switch model.matchStatus {
+    case .GREEN_LIGHT:
+      return model.matchingType == .auto
+      ? .primaryLight
+      : .grayscaleWhite
+      
+    case .MATCHED:
+      return .primaryDefault
+      
+    default:
+      return .grayscaleWhite
+    }
   }
 }

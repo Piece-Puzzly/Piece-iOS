@@ -29,7 +29,6 @@ struct MatchingCardListView: View {
         }
       }
     }
-    // MARK: 선택값과 관련 없는 카드도 애니메이션
     .animation(.interactiveSpring(response: 0.45), value: viewModel.selectedMatchId)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .contentMargins(.horizontal, Constants.horizontalMargin)

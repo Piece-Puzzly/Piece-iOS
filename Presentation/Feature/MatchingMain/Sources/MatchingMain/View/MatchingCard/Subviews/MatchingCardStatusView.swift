@@ -30,7 +30,7 @@ struct MatchingCardStatusView: View {
         } else {
           Text(model.nickname)
             .pretendard(.heading_S_SB)
-            .foregroundStyle(Color.grayscaleBlack)
+            .foregroundStyle(config.nickNameColor)
         }
         
         Spacer()
@@ -42,7 +42,7 @@ struct MatchingCardStatusView: View {
           Text(model.reamainingTime)
             .pretendard(.body_S_M)
         }
-        .foregroundStyle(Color.subDefault)
+        .foregroundStyle(config.subColor)
       }
     }
   }

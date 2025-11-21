@@ -10,7 +10,7 @@ import DesignSystem
 import Entities
 
 struct MatchingCardOpenView: View {
-  private let model: MatchingCardModel
+  private(set) var model: MatchingCardModel
   private let action: () -> Void
   
   init(model: MatchingCardModel, action: @escaping () -> Void) {
@@ -28,14 +28,14 @@ struct MatchingCardOpenView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .multilineTextAlignment(.leading)
             .lineLimit(2)
-            .foregroundStyle(Color.grayscaleDark2)
+            .foregroundStyle(config.textColor)
             
           Text(model.nickname)
-            .foregroundStyle(Color.grayscaleBlack)
+            .foregroundStyle(config.hilightedTextColor)
           
-          Text("나와 ").foregroundStyle(Color.grayscaleDark2) +
-          Text("\(model.matchedValueCount)가지").foregroundStyle(Color.grayscaleBlack) +
-          Text(" 생각이 닮았어요").foregroundStyle(Color.grayscaleDark2)
+          Text("나와 ").foregroundStyle(config.textColor) +
+          Text("\(model.matchedValueCount)가지").foregroundStyle(config.hilightedTextColor) +
+          Text(" 생각이 닮았어요").foregroundStyle(config.textColor)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .pretendard(.heading_L_SB)
@@ -44,17 +44,17 @@ struct MatchingCardOpenView: View {
         
         HStack(spacing: 4) {
           Text("\(model.birthYear.suffix(2))년생")
-          Divider(color: .grayscaleLight1, weight: .normal, isVertical: true)
+          Divider(color: config.subTextColor, weight: .normal, isVertical: true)
             .frame(height: 12)
           Text(model.location)
-          Divider(color: .grayscaleLight1, weight: .normal, isVertical: true)
+          Divider(color: config.subTextColor, weight: .normal, isVertical: true)
             .frame(height: 12)
           Text(model.job)
           
           Spacer()
         }
         .pretendard(.body_M_M)
-        .foregroundStyle(Color.grayscaleDark2)
+        .foregroundStyle(config.textColor)
       }
       .padding(.top, 20)
       .padding(.bottom, 80)

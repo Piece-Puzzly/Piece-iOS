@@ -10,7 +10,7 @@ import DesignSystem
 import Entities
 
 struct MatchingCardClosedView: View {
-  private let model: MatchingCardModel
+  private(set) var model: MatchingCardModel
   private let action: () -> Void
   
   init(model: MatchingCardModel, action: @escaping () -> Void) {
@@ -25,15 +25,21 @@ struct MatchingCardClosedView: View {
         
         HStack(spacing: 4) {
           Text("\(model.birthYear.suffix(2))년생")
-          Divider(color: .grayscaleLight1, weight: .normal, isVertical: true)
+            .foregroundStyle(config.textColor)
+          
+          Divider(color: config.subTextColor, weight: .normal, isVertical: true)
             .frame(height: 12)
+          
           Text(model.location)
-          Divider(color: .grayscaleLight1, weight: .normal, isVertical: true)
+            .foregroundStyle(config.textColor)
+          
+          Divider(color: config.subTextColor, weight: .normal, isVertical: true)
             .frame(height: 12)
+          
           Text(model.job)
+            .foregroundStyle(config.textColor)
         }
         .pretendard(.body_M_M)
-        .foregroundStyle(Color.grayscaleDark2)
         .padding(.vertical, 4)
       }
       .padding(.vertical, 20)
