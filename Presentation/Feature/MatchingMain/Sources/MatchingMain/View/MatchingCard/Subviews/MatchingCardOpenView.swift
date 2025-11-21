@@ -21,13 +21,7 @@ struct MatchingCardOpenView: View {
   var body: some View {
     Button(action: action) {
       VStack(alignment: .leading, spacing: 0) {
-        HStack {
-          MatchingCardStatusView(model: model)
-          Spacer()
-          Text(model.reamainingTime)
-            .pretendard(.body_S_M)
-            .foregroundStyle(Color.subDefault)
-        }
+        MatchingCardStatusView(model: model)
         
         VStack(alignment: .leading, spacing: 4) {
           Text(model.description)

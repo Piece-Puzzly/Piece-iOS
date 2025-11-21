@@ -21,13 +21,7 @@ struct MatchingCardClosedView: View {
   var body: some View {
     Button(action: action) {
       VStack(alignment: .leading, spacing: 4) {
-        HStack {
-          MatchingCardStatusView(model: model)
-          Spacer()
-          Text(model.reamainingTime)
-            .pretendard(.body_S_M)
-            .foregroundStyle(Color.subDefault)
-        }
+        MatchingCardStatusView(model: model)
         
         HStack(spacing: 4) {
           Text("\(model.birthYear.suffix(2))년생")

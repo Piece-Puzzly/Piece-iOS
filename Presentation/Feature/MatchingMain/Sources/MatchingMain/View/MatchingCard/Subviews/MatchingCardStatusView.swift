@@ -32,6 +32,17 @@ struct MatchingCardStatusView: View {
             .pretendard(.heading_S_SB)
             .foregroundStyle(Color.grayscaleBlack)
         }
+        
+        Spacer()
+        
+        HStack(spacing: 4) {
+          DesignSystemAsset.Icons.variant2.swiftUIImage
+            .renderingMode(.template)
+
+          Text(model.reamainingTime)
+            .pretendard(.body_S_M)
+        }
+        .foregroundStyle(Color.subDefault)
       }
     }
   }
