@@ -38,13 +38,15 @@ final class MatchingHomeViewModel {
   private(set) var selectedMatchId: Int?
   
   var matchingCards: [MatchingCardModel] {
-    matchInfosList.map { matchInfo in
-      MatchingCardModel(
-        matchId: matchInfo.matchId,
-        matchInfosModel: matchInfo,
-        isSelected: matchInfo.matchId == selectedMatchId
-      )
-    }
+    matchInfosList
+      .filter { $0.matchStatus != .REFUSED } // 카드가 사라지는 경우 (인연 거절/차단/유효시간 만료/상대방 탈퇴), Figma [매칭홈/기본] 참고
+      .map { matchInfo in
+        MatchingCardModel(
+          matchId: matchInfo.matchId,
+          matchInfosModel: matchInfo,
+          isSelected: matchInfo.matchId == selectedMatchId
+        )
+      }
   }
   
   init(
@@ -86,9 +88,10 @@ private extension MatchingHomeViewModel {
   }
   
   func handleOnConfirmMatchingCard(_ matchId: Int) {
-    // TODO: matchId를 통해 (유료/무료) 카드 분기 처리
-    // - 유료 카드 (trialPremium): 퍼즐 사용 알럿 표시
-    // - 무료 카드 (basic): 매칭 디테일로 라우팅
+    // TODO: (매칭상세/연락처확인) 분기
+    // - 1. `BEFORE_OPEN`상태의 경우, 구 매칭 조각 확인 체크 API(/api/matches/pieces/check) 콜 해야함
+    // - 2.1. `MATCHED`상태의 경우 "연락처 확인 알럿"으로 진입
+    // - 2.2. `MATCHED`상태가 아닌 경우 유/무료 카드 (basic, trialPremium, auto) 상관 없이 "매칭 상세"로 진입
     print("DEBUG: onConfirmMatchingCard: \(matchId)")
   }
 }

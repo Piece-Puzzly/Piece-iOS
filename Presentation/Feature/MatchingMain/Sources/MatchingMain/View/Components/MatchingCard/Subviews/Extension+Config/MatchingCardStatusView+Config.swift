@@ -65,11 +65,11 @@ extension MatchingCardStatusView {
         nickNameColor: .grayscaleWhite
       )
       
-      /// 차단 상태 인 것 같은데 일단 보류
+    /// (인연 거절) 상태 -> 보이면 안됨 그냥 더미 상태 값
     case .REFUSED:
       return StatusConfig(
         icon: DesignSystemAsset.Icons.matchingModeLoading20.swiftUIImage,
-        statusText: "NULL",
+        statusText: "거절 완료",
         statusColor: .grayscaleDark2,
         subColor: .subDefault,
         nickNameColor: .grayscaleBlack
