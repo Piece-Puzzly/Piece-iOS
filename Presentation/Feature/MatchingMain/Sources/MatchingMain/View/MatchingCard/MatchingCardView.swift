@@ -25,9 +25,6 @@ struct MatchingCardView: View {
   }
 
   var body: some View {
-//    ZStack{
-//      BackgroundView(model: model)
-      
       VStack(spacing: 0) {
         if model.isSelected {
           MatchingCardOpenView(model: model, action: onConfirm)
