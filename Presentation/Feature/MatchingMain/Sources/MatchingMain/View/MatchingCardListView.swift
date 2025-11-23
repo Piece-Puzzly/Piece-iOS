@@ -27,6 +27,13 @@ struct MatchingCardListView: View {
             onConfirm: { viewModel.handleAction(.onConfirmMatchingCard(matchId: cardModel.id)) }
           )
         }
+        
+        // TODO: - API 나온 이후 상세 구현
+        CreateNewMatchButton(
+          isTrial: true, // API CALL
+          trialAction: { /* SHOW ALERT */ },
+          premiumAction: { /* SHOW ALERT */ },
+        )
       }
     }
     .animation(.interactiveSpring(response: 0.45), value: viewModel.selectedMatchId)
