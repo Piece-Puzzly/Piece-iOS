@@ -275,7 +275,7 @@ final class MatchingMainViewModel {
       job = matchesInfo.job
       tags = matchesInfo.matchedValueList
       
-      if matchesInfo.blocked {
+      if matchesInfo.isBlocked {
         isShowMatchingNodataCard = true
         matchingButtonState = .pending
       } else {

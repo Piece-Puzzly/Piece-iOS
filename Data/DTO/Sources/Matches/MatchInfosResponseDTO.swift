@@ -19,7 +19,7 @@ public struct MatchInfosResponseDTO: Decodable {
   public let job: String
   public let matchedValueCount: Int
   public let matchedValueList: [String]
-  public let blocked: Bool
+  public let isBlocked: Bool
 }
 
 public extension MatchInfosResponseDTO {
@@ -35,7 +35,8 @@ public extension MatchInfosResponseDTO {
       job: job,
       matchedValueCount: matchedValueCount,
       matchedValueList: matchedValueList,
-      blocked: blocked
+      isBlocked: isBlocked,
+      matchingType: .basic,
     )
   }
 }
