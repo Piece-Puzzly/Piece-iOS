@@ -39,7 +39,7 @@ struct MatchingCardStatusView: View {
           DesignSystemAsset.Icons.variant2.swiftUIImage
             .renderingMode(.template)
 
-          Text(model.reamainingTime)
+          Text(model.remainingTime)
             .pretendard(.body_S_M)
         }
         .foregroundStyle(config.subColor)
