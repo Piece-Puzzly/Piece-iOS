@@ -89,10 +89,22 @@ private extension MatchingHomeViewModel {
   
   func handleOnConfirmMatchingCard(_ matchId: Int) {
     // TODO: (매칭상세/연락처확인) 분기
-    // - 1. `BEFORE_OPEN`상태의 경우, 구 매칭 조각 확인 체크 API(/api/matches/pieces/check) 콜 해야함
-    // - 2.1. `MATCHED`상태의 경우 "연락처 확인 알럿"으로 진입
-    // - 2.2. `MATCHED`상태가 아닌 경우 유/무료 카드 (basic, trialPremium, auto) 상관 없이 "매칭 상세"로 진입
-    print("DEBUG: onConfirmMatchingCard: \(matchId)")
+    guard let targetIndex = matchingCards.firstIndex(where: { $0.id == matchId }) else { return }
+    let targetMatchingCard = matchingCards[targetIndex]
+    
+    switch targetMatchingCard.matchStatus {
+    case .BEFORE_OPEN:
+      break // - 1. `BEFORE_OPEN`상태의 경우, 구 매칭 조각 확인 체크 API(/api/matches/pieces/check) 콜 해야함 // 아직 API 안나옴
+      
+    case .WAITING, .RESPONDED, .GREEN_LIGHT:
+      break // - 2.2. `MATCHED`상태가 아닌 경우 유/무료 카드 (basic, trialPremium, auto) 상관 없이 "매칭 상세"로 진입
+      
+    case .MATCHED:
+      break // - 2.1. `MATCHED`상태의 경우 "연락처 확인 알럿"으로 진입
+    
+    case .REFUSED: // 거절한 상대는 안나옴
+      break
+    }
   }
 }
 
