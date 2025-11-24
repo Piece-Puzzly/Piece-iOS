@@ -43,6 +43,10 @@ public struct UseCaseFactory {
   public static func createGetUserInfoUseCase(repository: UserRepositoryInterface) -> GetUserInfoUseCase {
     GetUserRoleUseCaseImpl(repository: repository)
   }
+
+  public static func createGetPuzzleCountUseCase(repository: UserRepositoryInterface) -> GetPuzzleCountUseCase {
+    GetPuzzleCountUseCaseImpl(repository: repository)
+  }
   
   // MARK: - 로그인
   
