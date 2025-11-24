@@ -31,6 +31,7 @@ public struct MatchMainViewFactory {
   
   public static func createMatchMainView(
     getUserInfoUseCase: GetUserInfoUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
     getUserRejectUseCase: GetUserRejectUseCase,
@@ -38,6 +39,7 @@ public struct MatchMainViewFactory {
   ) -> some View {
     MatchingHomeView(
       getUserInfoUseCase: getUserInfoUseCase,
+      getPuzzleCountUseCase: getPuzzleCountUseCase,
       acceptMatchUseCase: acceptMatchUseCase,
       getMatchesInfoUseCase: getMatchesInfoUseCase,
       getUserRejectUseCase: getUserRejectUseCase,

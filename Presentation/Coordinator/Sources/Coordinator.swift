@@ -71,6 +71,7 @@ public struct Coordinator {
       let getProfileUseCase = UseCaseFactory.createGetProfileUseCase(repository: profileRepository)
       // matchMain
       let getUserInfoUseCase = UseCaseFactory.createGetUserInfoUseCase(repository: userRepository)
+      let getPuzzleCountUseCase = UseCaseFactory.createGetPuzzleCountUseCase(repository: userRepository)
       let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
       let getMatchesInfoUseCase = UseCaseFactory.createGetMatchesInfoUseCase(repository: matchesRepository)
       let getUserRejectUseCase = UseCaseFactory.createGetUserRejectUseCase(repository: matchesRepository)
@@ -93,6 +94,7 @@ public struct Coordinator {
         selectedTab: .home,
         getProfileUseCase: getProfileUseCase,
         getUserInfoUseCase: getUserInfoUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
         getMatchesInfoUseCase: getMatchesInfoUseCase,
         getUserRejectUseCase: getUserRejectUseCase,
@@ -127,12 +129,14 @@ public struct Coordinator {
       let matchesRepository = repositoryFactory.createMatchesRepository()
       let userRepository = repositoryFactory.createUserRepository()
       let getUserInfoUseCase = UseCaseFactory.createGetUserInfoUseCase(repository: userRepository)
+      let getPuzzleCountUseCase = UseCaseFactory.createGetPuzzleCountUseCase(repository: userRepository)
       let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
       let getMatchesInfoUseCase = UseCaseFactory.createGetMatchesInfoUseCase(repository: matchesRepository)
       let getUserRejectUseCase = UseCaseFactory.createGetUserRejectUseCase(repository: matchesRepository)
       let patchMatchesCheckPieceUseCase = UseCaseFactory.createPatchMatchesCheckPieceUseCase(repository: matchesRepository)
       MatchMainViewFactory.createMatchMainView(
         getUserInfoUseCase: getUserInfoUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
         getMatchesInfoUseCase: getMatchesInfoUseCase,
         getUserRejectUseCase: getUserRejectUseCase,
@@ -305,6 +309,7 @@ public struct Coordinator {
       let getProfileUseCase = UseCaseFactory.createGetProfileUseCase(repository: profileRepository)
       // matchMain
       let getUserInfoUseCase = UseCaseFactory.createGetUserInfoUseCase(repository: userRepository)
+      let getPuzzleCountUseCase = UseCaseFactory.createGetPuzzleCountUseCase(repository: userRepository)
       let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
       let getMatchesInfoUseCase = UseCaseFactory.createGetMatchesInfoUseCase(repository: matchesRepository)
       let getUserRejectUseCase = UseCaseFactory.createGetUserRejectUseCase(repository: matchesRepository)
@@ -327,6 +332,7 @@ public struct Coordinator {
         selectedTab: .profile,
         getProfileUseCase: getProfileUseCase,
         getUserInfoUseCase: getUserInfoUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
         getMatchesInfoUseCase: getMatchesInfoUseCase,
         getUserRejectUseCase: getUserRejectUseCase,
