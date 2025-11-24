@@ -32,22 +32,13 @@ final class MatchingHomeViewModel {
   private let acceptMatchUseCase: AcceptMatchUseCase
   private let getMatchesInfoUseCase: GetMatchesInfoUseCase
   private let patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
+
+  private var matchInfosList: [MatchInfosModel] = []                  // Card의 Entity 원본
+  private var timerManagers: [Int: MatchingTimerManager] = [:]
   
   private(set) var viewState: MatchingHomeViewState = .loading
-  private(set) var matchInfosList: [MatchInfosModel] = []
   private(set) var selectedMatchId: Int?
-  
-  var matchingCards: [MatchingCardModel] {
-    matchInfosList
-      .filter { $0.matchStatus != .REFUSED } // 카드가 사라지는 경우 (인연 거절/차단/유효시간 만료/상대방 탈퇴), Figma [매칭홈/기본] 참고
-      .map { matchInfo in
-        MatchingCardModel(
-          matchId: matchInfo.matchId,
-          matchInfosModel: matchInfo,
-          isSelected: matchInfo.matchId == selectedMatchId
-        )
-      }
-  }
+  private(set) var matchingCards: [MatchingCardModel] = []            // View에서 사용하는 매핑된 Card Entity
   
   init(
     getUserInfoUseCase: GetUserInfoUseCase,
@@ -85,6 +76,11 @@ private extension MatchingHomeViewModel {
   
   func handleOnSelectMatchingCard(_ matchId: Int) {
     selectedMatchId = matchId
+    
+    for i in matchingCards.indices {
+      let isSelected = matchingCards[i].id == matchId
+      matchingCards[i].setIsSelected(for: isSelected)
+    }
   }
   
   func handleOnConfirmMatchingCard(_ matchId: Int) {
@@ -144,6 +140,7 @@ private extension MatchingHomeViewModel {
     }
     
     selectedMatchId = determineInitialSelection()
+    updateMatchingCards()
   }
   
   func determineInitialSelection() -> Int? {
@@ -153,5 +150,31 @@ private extension MatchingHomeViewModel {
     }
     // 2. 타의적 매칭만 있는 경우 첫 번째 카드
     return matchInfosList.first?.matchId
+  }
+  
+  // TODO: (필수) 새 카드 생성 및 API 호출 시 호출
+  func updateMatchingCards() {
+    let filteredInfos = matchInfosList.filter { $0.matchStatus != .REFUSED }
+    let currentIds = Set(filteredInfos.map { $0.matchId })
+    
+    timerManagers = timerManagers.filter { currentIds.contains($0.key) }
+    matchingCards = filteredInfos.map { info in
+      MatchingCardModel(
+        matchId: info.matchId,
+        matchInfosModel: info,
+        isSelected: info.matchId == selectedMatchId,
+        matchingTimerManager: getOrCreateTimer(for: info.matchId)
+      )
+    }
+  }
+  
+  private func getOrCreateTimer(for matchId: Int) -> MatchingTimerManager {
+    if let existing = timerManagers[matchId] {
+      return existing
+    }
+    // TODO: 향후 matchInfo.matchedDateTime 사용
+    let newTimer = MatchingTimerManager(matchedDateTime: "2025-11-22T20:09:50")
+    timerManagers[matchId] = newTimer
+    return newTimer
   }
 }
