@@ -18,6 +18,7 @@ public struct HomeViewFactory {
     getProfileUseCase: GetProfileBasicUseCase,
     // matchMain
     getUserInfoUseCase: GetUserInfoUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
     getUserRejectUseCase: GetUserRejectUseCase,
@@ -44,6 +45,7 @@ public struct HomeViewFactory {
       getProfileUseCase: getProfileUseCase,
       // matchMain
       getUserInfoUseCase: getUserInfoUseCase,
+      getPuzzleCountUseCase: getPuzzleCountUseCase,
       acceptMatchUseCase: acceptMatchUseCase,
       getMatchesInfoUseCase: getMatchesInfoUseCase,
       getUserRejectUseCase: getUserRejectUseCase,

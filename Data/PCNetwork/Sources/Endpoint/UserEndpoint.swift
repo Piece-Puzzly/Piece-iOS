@@ -14,12 +14,14 @@ public enum UserEndpoint: TargetType {
   case withdrawWithPiece(WithdrawRequestDTO)
   case getUserRole
   case userReject
+  case getPuzzleCount
   
   public var method: Alamofire.HTTPMethod {
     switch self {
     case .withdrawWithPiece: .delete
     case .getUserRole: .get
     case .userReject: .get
+    case .getPuzzleCount: .get
     }
   }
   
@@ -31,6 +33,7 @@ public enum UserEndpoint: TargetType {
       : "api/users"
     case .getUserRole: "api/users/info"
     case .userReject: "api/users/reject"
+    case .getPuzzleCount: "api/users/puzzle"
     }
   }
   
@@ -49,6 +52,10 @@ public enum UserEndpoint: TargetType {
       [
         NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
       ]
+    case .getPuzzleCount:
+      [
+        NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
+      ]
     }
   }
   
@@ -57,6 +64,7 @@ public enum UserEndpoint: TargetType {
     case let .withdrawWithPiece(body): .body(body)
     case .getUserRole: .plain
     case .userReject: .plain
+    case .getPuzzleCount: .plain
     }
   }
 }

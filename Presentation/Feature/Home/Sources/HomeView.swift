@@ -22,6 +22,7 @@ struct HomeView: View {
     selectedTab: HomeViewTab,
     getProfileUseCase: GetProfileBasicUseCase,
     getUserInfoUseCase: GetUserInfoUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
     getUserRejectUseCase: GetUserRejectUseCase,
@@ -45,6 +46,7 @@ struct HomeView: View {
         selectedTab: selectedTab,
         getProfileUseCase: getProfileUseCase,
         getUserInfoUseCase: getUserInfoUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
         getMatchesInfoUseCase: getMatchesInfoUseCase,
         getUserRejectUseCase: getUserRejectUseCase,
@@ -102,6 +104,7 @@ struct HomeView: View {
     case .home:
       MatchMainViewFactory.createMatchMainView(
         getUserInfoUseCase: viewModel.getUserInfoUseCase,
+        getPuzzleCountUseCase: viewModel.getPuzzleCountUseCase,
         acceptMatchUseCase: viewModel.acceptMatchUseCase,
         getMatchesInfoUseCase: viewModel.getMatchesInfoUseCase,
         getUserRejectUseCase: viewModel.getUserRejectUseCase,

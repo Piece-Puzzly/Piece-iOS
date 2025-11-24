@@ -27,6 +27,12 @@ final class UserRepository: UserRepositoryInterface {
     
     return response.toDomain()
   }
+
+  func getPuzzleCount() async throws -> PuzzleCountModel {
+    let endpoint = UserEndpoint.getPuzzleCount
+    let response: PuzzleCountResponseDTO = try await networkService.request(endpoint: endpoint)
+    return response.toDomain()
+  }
 }
 
 private extension UserRepository {

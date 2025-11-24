@@ -32,6 +32,7 @@ final class MatchingHomeViewModel {
   private let acceptMatchUseCase: AcceptMatchUseCase
   private let getMatchesInfoUseCase: GetMatchesInfoUseCase
   private let patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
+  private let getPuzzleCountUseCase: GetPuzzleCountUseCase
 
   private var matchInfosList: [MatchInfosModel] = []                  // Card의 Entity 원본
   private var timerManagers: [Int: MatchingTimerManager] = [:]
@@ -39,17 +40,20 @@ final class MatchingHomeViewModel {
   private(set) var viewState: MatchingHomeViewState = .loading
   private(set) var selectedMatchId: Int?
   private(set) var matchingCards: [MatchingCardModel] = []            // View에서 사용하는 매핑된 Card Entity
+  private(set) var puzzleCount: Int = 0
   
   init(
     getUserInfoUseCase: GetUserInfoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
-    patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
+    patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) {
     self.getUserInfoUseCase = getUserInfoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
     self.getMatchesInfoUseCase = getMatchesInfoUseCase
     self.patchMatchesCheckPieceUseCase = patchMatchesCheckPieceUseCase
+    self.getPuzzleCountUseCase = getPuzzleCountUseCase
   }
   
   func handleAction(_ action: Action) {
@@ -115,8 +119,12 @@ private extension MatchingHomeViewModel {
       case .PENDING:
         viewState = .userRolePending
         
-      case .USER:
-        await loadMatches()
+      case .USER: // (매칭&퍼즐개수)조회는 "USER" 상태에 병렬호출로 성능 개선
+        await withTaskGroup(of: Void.self) { group in
+          group.addTask { await self.loadMatches() }
+          group.addTask { await self.loadPuzzleCount() }
+        }
+        
         viewState = .userRoleUser
         
       default:
@@ -127,7 +135,17 @@ private extension MatchingHomeViewModel {
       print("Get User Role :\(error.localizedDescription)")
     }
   }
-  
+
+  func loadPuzzleCount() async {
+    do {
+      let result = try await getPuzzleCountUseCase.execute()
+      puzzleCount = result.puzzleCount
+    } catch {
+      print("Get Puzzle Count: \(error.localizedDescription)")
+      puzzleCount = 0
+    }
+  }
+
   func loadMatches() async {
     // TODO: 향후 GetMatchesListUseCase로 대체 (3가지 매칭정보 병렬 콜)
 //    matchInfosList = MatchInfosModel.dummy

@@ -23,6 +23,7 @@ final class HomeViewModel {
     getProfileUseCase: GetProfileBasicUseCase,
     // matchmain
     getUserInfoUseCase: GetUserInfoUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
     getUserRejectUseCase: GetUserRejectUseCase,
@@ -48,6 +49,7 @@ final class HomeViewModel {
     self.getProfileUseCase = getProfileUseCase
     // matchmain
     self.getUserInfoUseCase = getUserInfoUseCase
+    self.getPuzzleCountUseCase = getPuzzleCountUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
     self.getMatchesInfoUseCase = getMatchesInfoUseCase
     self.getUserRejectUseCase = getUserRejectUseCase
@@ -72,6 +74,7 @@ final class HomeViewModel {
   let getProfileUseCase: GetProfileBasicUseCase
   // matchmain
   let getUserInfoUseCase: GetUserInfoUseCase
+  let getPuzzleCountUseCase: GetPuzzleCountUseCase
   let acceptMatchUseCase: AcceptMatchUseCase
   let getMatchesInfoUseCase: GetMatchesInfoUseCase
   let getUserRejectUseCase: GetUserRejectUseCase

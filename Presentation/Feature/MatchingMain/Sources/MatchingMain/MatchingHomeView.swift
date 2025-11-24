@@ -20,17 +20,19 @@ struct MatchingHomeView: View {
   
   init(
     getUserInfoUseCase: GetUserInfoUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
     getUserRejectUseCase: GetUserRejectUseCase,
-    patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
+    patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
   ) {
     _matchingHomeViewModel = .init(
       wrappedValue: .init(
         getUserInfoUseCase: getUserInfoUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
         getMatchesInfoUseCase: getMatchesInfoUseCase,
-        patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase
+        patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
       )
     )
     
