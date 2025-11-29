@@ -12,7 +12,7 @@ import UseCases
 import PCAmplitude
 
 struct MatchingHomeView: View {
-  @State private var matchingHomeViewModel: MatchingHomeViewModel
+  @State private(set) var matchingHomeViewModel: MatchingHomeViewModel
   @State private var profileRejectedViewModel: ProfileRejectedViewModel
   
   @Environment(Router.self) private var router: Router
@@ -57,39 +57,7 @@ struct MatchingHomeView: View {
       matchingHomeViewModel.handleAction(.onAppear)
     }
     .pcAlert(item: $matchingHomeViewModel.presentedAlert) { alertType in
-      switch alertType {
-      case .contactConfirm(let matchId):
-        AlertView(
-          title: { Text(matchingHomeViewModel.matchingCards.first(where: { $0.id == matchId })?.nickname ?? "").foregroundColor(.primaryDefault) + Text("님의\n연락처를 확인할까요?") },
-          message: { Text("퍼즐") + Text("3개").foregroundColor(.primaryDefault) + Text("를 사용하면,\n지금 바로 연락처를 확인할 수 있어요.") },
-          firstButtonText: "뒤로",
-          secondButtonText: "3",
-          firstButtonAction: { matchingHomeViewModel.handleAction(.didTapContactConfirmAlertCancel) },
-          secondButtonAction: { matchingHomeViewModel.handleAction(.didTapContactConfirmAlertConfirm(matchId: matchId)) },
-          secondButtonIcon: DesignSystemAsset.Icons.puzzleSolidRotate32.swiftUIImage
-        )
-        
-      case .insufficientPuzzle:
-        AlertView(
-          title: { Text("앗, 퍼즐이 부족해요!") },
-          message: "스토어에서 퍼즐을 구매하시겠어요?",
-          firstButtonText: "뒤로",
-          secondButtonText: "구매하기",
-          firstButtonAction: { matchingHomeViewModel.handleAction(.didTapInsufficientPuzzleAlertCancel) },
-          secondButtonAction: { matchingHomeViewModel.handleAction(.didTapInsufficientPuzzleAlertConfirm) }
-        )
-      
-      case .createNewMatch:
-        AlertView(
-          title: { Text("새로운 인연을 만나볼까요?") },
-          message: { Text("퍼즐") + Text("2개").foregroundColor(.primaryDefault) + Text("로 나와 맞는 인연을 찾아보세요.") },
-          firstButtonText: "뒤로",
-          secondButtonText: "2",
-          firstButtonAction: { matchingHomeViewModel.handleAction(.didTapInsufficientPuzzleAlertCancel) },
-          secondButtonAction: { matchingHomeViewModel.handleAction(.didTapInsufficientPuzzleAlertConfirm) },
-          secondButtonIcon: DesignSystemAsset.Icons.puzzleSolidRotate32.swiftUIImage
-        )
-      }
+      MatchingHomeAlertView(matchingHomeViewModel: matchingHomeViewModel, alertType: alertType)
     }
   }
 }

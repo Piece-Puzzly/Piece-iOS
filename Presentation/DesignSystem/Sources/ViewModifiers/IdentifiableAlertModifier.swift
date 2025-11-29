@@ -7,10 +7,9 @@
 
 import SwiftUI
 
-public struct IdentifiableAlertModifier<Item: Identifiable, Title: View, Message: View>: ViewModifier {
+public struct IdentifiableAlertModifier<Item: Identifiable, Alert: View>: ViewModifier {
   @Binding var item: Item?
-  
-  let alert: (Item) -> AlertView<Title, Message>
+  let alert: (Item) -> Alert
   
   public func body(content: Content) -> some View {
     let isPresented = Binding(
@@ -31,9 +30,9 @@ public struct IdentifiableAlertModifier<Item: Identifiable, Title: View, Message
 }
 
 public extension View {
-  func pcAlert<Item: Identifiable, Title: View, Message: View>(
+  func pcAlert<Item: Identifiable, Alert: View>(
     item: Binding<Item?>,
-    alert: @escaping (Item) -> AlertView<Title, Message>
+    @ViewBuilder alert: @escaping (Item) -> Alert
   ) -> some View {
     return modifier(IdentifiableAlertModifier(item: item, alert: alert))
   }
