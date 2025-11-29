@@ -36,9 +36,8 @@ struct MatchingCardListView: View {
 
           // TODO: - API 나온 이후 상세 구현
           CreateNewMatchButton(
-            isTrial: true, // API CALL
-            trialAction: { /* SHOW ALERT */ },
-            premiumAction: { /* SHOW ALERT */ }
+            isTrial: viewModel.isTrial,
+            action: { viewModel.handleAction(.didTapCreateNewMatchButton) }
           )
 //          .background(
 //            GeometryReader { geometry in

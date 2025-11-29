@@ -15,6 +15,23 @@ import PCAmplitude
 @MainActor
 @Observable
 final class MatchingHomeViewModel {
+  enum AlertType: Identifiable {
+    case contactConfirm(matchId: Int)  // 연락처 확인 알럿
+    case insufficientPuzzle            // 퍼즐 부족 알럿
+    case createNewMatch                // 새로운 인연 알럿
+    
+    var id: String {
+      switch self {
+      case .contactConfirm(let matchId):
+        return "contactConfirm_\(matchId)"
+      case .insufficientPuzzle:
+        return "insufficientPuzzle"
+      case .createNewMatch:
+        return "createNewMatch"
+      }
+    }
+  }
+
   enum MatchingHomeViewState: Equatable {
     case loading
     case profileStatusRejected
@@ -26,6 +43,19 @@ final class MatchingHomeViewModel {
     case onAppear
     case onSelectMatchingCard(matchId: Int)
     case onConfirmMatchingCard(matchId: Int)
+    case didTapCreateNewMatchButton
+    
+    // 연락처 확인 알럿
+    case didTapContactConfirmAlertConfirm(matchId: Int)
+    case didTapContactConfirmAlertCancel
+    
+    // 퍼즐 부족 알럿
+    case didTapInsufficientPuzzleAlertConfirm
+    case didTapInsufficientPuzzleAlertCancel
+    
+    // 새로운 인연 만나기 알럿
+    case didTapCreateNewMatchAlertConfirm
+    case didTapCreateNewMatchAlertCancel
   }
   
   private let getUserInfoUseCase: GetUserInfoUseCase
@@ -41,6 +71,9 @@ final class MatchingHomeViewModel {
   private(set) var selectedMatchId: Int?
   private(set) var matchingCards: [MatchingCardModel] = []            // View에서 사용하는 매핑된 Card Entity
   private(set) var puzzleCount: Int = 0
+  private(set) var isTrial: Bool = false
+  
+  var presentedAlert: AlertType? = nil
   
   init(
     getUserInfoUseCase: GetUserInfoUseCase,
@@ -66,6 +99,29 @@ final class MatchingHomeViewModel {
 
     case .onConfirmMatchingCard(let matchId):
       handleOnConfirmMatchingCard(matchId)
+      
+    case .didTapCreateNewMatchButton:
+      Task {
+        await handleDidTapCreateNewMatchButton()
+      }
+      
+    case .didTapContactConfirmAlertConfirm(let matchId):
+      Task {
+        await handleDidTapContactConfirmAlertConfirm(matchId)
+      }
+      
+    case .didTapInsufficientPuzzleAlertConfirm:
+      Task {
+        await handleDidTapInsufficientPuzzleAlertConfirm()
+      }
+      
+    case .didTapCreateNewMatchAlertConfirm:
+      Task {
+        await handleDidTapCreateNewMatchAlertConfirm()
+      }
+      
+    case .didTapContactConfirmAlertCancel, .didTapInsufficientPuzzleAlertCancel, .didTapCreateNewMatchAlertCancel:
+      presentedAlert = nil
     }
   }
 }
@@ -79,11 +135,13 @@ private extension MatchingHomeViewModel {
   }
   
   func handleOnSelectMatchingCard(_ matchId: Int) {
-    selectedMatchId = matchId
-    
-    for i in matchingCards.indices {
-      let isSelected = matchingCards[i].id == matchId
-      matchingCards[i].setIsSelected(for: isSelected)
+    withAnimation(.interactiveSpring(response :0.45)) {
+      selectedMatchId = matchId
+      
+      for i in matchingCards.indices {
+        let isSelected = matchingCards[i].id == matchId
+        matchingCards[i].setIsSelected(for: isSelected)
+      }
     }
   }
   
@@ -102,8 +160,57 @@ private extension MatchingHomeViewModel {
     case .MATCHED:
       break // - 2.1. `MATCHED`상태의 경우 "연락처 확인 알럿"으로 진입
     
+      switch targetMatchingCard.matchingType {
+      case .basic:
+        break
+      case .trialPremium, .auto:
+        presentedAlert = .contactConfirm(matchId: matchId) // "연락처 확인 알럿"으로 진입 (✅)
+      }
+
     case .REFUSED: // 거절한 상대는 안나옴
       break
+    }
+  }
+  
+  func handleDidTapCreateNewMatchButton() async {
+    presentedAlert = nil
+
+    // TODO: [방어로직 한번 더] await 새로운 인연 만나기 Free 여부 조회해서 `self.isTrial`에 바인딩
+    
+    if self.isTrial {
+      print("새로운 인연 만나기 Instant 매칭 콜")
+    } else {
+      presentedAlert =  .createNewMatch// premium이면 "새로운 인연 만나기 알럿"으로 진입
+    }
+  }
+  
+  func handleDidTapContactConfirmAlertConfirm(_ matchId: Int) async {
+    presentedAlert = nil
+    await loadPuzzleCount() // [방어로직] 퍼즐 개수 동기화 (✅)
+
+    if puzzleCount >= 3 { // - 2.1.2.2.1.1 사용자 퍼즐 개수가 충분한 경우 -> MatchResultView 이동 (✅)
+      // TODO: 연락처확인 퍼즐 소모(구매) API
+      // TODO: MatchResultView(with: matchId) 이동
+    } else { // - 2.1.2.2.2.2 사용자 퍼즐 개수가 모자란 경우 -> 스토어 이동 (✅)
+      presentedAlert = .insufficientPuzzle // 퍼즐 부족 알럿 표시
+    }
+  }
+  
+  func handleDidTapInsufficientPuzzleAlertConfirm() async {
+    presentedAlert = nil
+    
+    // TODO: 스토어로 이동 로직
+  }
+  
+  func handleDidTapCreateNewMatchAlertConfirm() async {
+    presentedAlert = nil
+    await loadPuzzleCount() // [방어로직] 퍼즐 개수 동기화 (✅)
+
+    if puzzleCount >= 2 {
+      // TODO: 프리미엄 instant 매칭 추가 API 호출 -> 응답은 생성된 matchId
+      // TODO: 매칭상세(with: matchId) 이동
+    } else {
+      presentedAlert = .insufficientPuzzle // 퍼즐 부족 알럿 표시
     }
   }
 }
