@@ -12,7 +12,7 @@ import UseCases
 import PCAmplitude
 
 struct MatchingHomeView: View {
-  @State private var matchingHomeViewModel: MatchingHomeViewModel
+  @State private(set) var matchingHomeViewModel: MatchingHomeViewModel
   @State private var profileRejectedViewModel: ProfileRejectedViewModel
   
   @Environment(Router.self) private var router: Router
@@ -56,6 +56,10 @@ struct MatchingHomeView: View {
     .onAppear {
       matchingHomeViewModel.handleAction(.onAppear)
     }
+    .pcAlert(item: $matchingHomeViewModel.presentedAlert) { alertType in
+      MatchingHomeAlertView(matchingHomeViewModel: matchingHomeViewModel, alertType: alertType)
+    }
+    .spinning(of: matchingHomeViewModel.showSpinner)
   }
 }
 

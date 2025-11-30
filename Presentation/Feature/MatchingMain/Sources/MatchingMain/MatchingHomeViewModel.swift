@@ -26,6 +26,9 @@ final class MatchingHomeViewModel {
     case onAppear
     case onSelectMatchingCard(matchId: Int)
     case onConfirmMatchingCard(matchId: Int)
+    case didTapCreateNewMatchButton
+    case didTapAlertConfirm(MatchingAlertType)
+    case dismissAlert // 알럿 취소
   }
   
   private let getUserInfoUseCase: GetUserInfoUseCase
@@ -41,6 +44,10 @@ final class MatchingHomeViewModel {
   private(set) var selectedMatchId: Int?
   private(set) var matchingCards: [MatchingCardModel] = []            // View에서 사용하는 매핑된 Card Entity
   private(set) var puzzleCount: Int = 0
+  private(set) var showSpinner: Bool = false
+  private(set) var isTrial: Bool = false
+  
+  var presentedAlert: MatchingAlertType? = nil
   
   init(
     getUserInfoUseCase: GetUserInfoUseCase,
@@ -66,6 +73,19 @@ final class MatchingHomeViewModel {
 
     case .onConfirmMatchingCard(let matchId):
       handleOnConfirmMatchingCard(matchId)
+      
+    case .didTapAlertConfirm(let alertType):
+      withSpinner {
+        await self.handleDidTapAlertConfirm(alertType)
+      }
+      
+    case .didTapCreateNewMatchButton:
+      withSpinner {
+        await self.handleDidTapCreateNewMatchButton()
+      }
+      
+    case .dismissAlert:
+      dismissAlert()
     }
   }
 }
@@ -79,20 +99,66 @@ private extension MatchingHomeViewModel {
   }
   
   func handleOnSelectMatchingCard(_ matchId: Int) {
-    selectedMatchId = matchId
-    
-    for i in matchingCards.indices {
-      let isSelected = matchingCards[i].id == matchId
-      matchingCards[i].setIsSelected(for: isSelected)
+    withAnimation(.interactiveSpring(response :0.45)) {
+      selectedMatchId = matchId
+      
+      for i in matchingCards.indices {
+        let isSelected = matchingCards[i].id == matchId
+        matchingCards[i].setIsSelected(for: isSelected)
+      }
     }
   }
   
   func handleOnConfirmMatchingCard(_ matchId: Int) {
     // TODO: (매칭상세/연락처확인) 분기
-    // - 1. `BEFORE_OPEN`상태의 경우, 구 매칭 조각 확인 체크 API(/api/matches/pieces/check) 콜 해야함
-    // - 2.1. `MATCHED`상태의 경우 "연락처 확인 알럿"으로 진입
-    // - 2.2. `MATCHED`상태가 아닌 경우 유/무료 카드 (basic, trialPremium, auto) 상관 없이 "매칭 상세"로 진입
-    print("DEBUG: onConfirmMatchingCard: \(matchId)")
+    guard let targetIndex = matchingCards.firstIndex(where: { $0.id == matchId }) else { return }
+    let targetMatchingCard = matchingCards[targetIndex]
+    
+    switch targetMatchingCard.matchStatus {
+    case .BEFORE_OPEN:
+      break // - 1. `BEFORE_OPEN`상태의 경우, 구 매칭 조각 확인 체크 API(/api/matches/pieces/check) 콜 해야함 // 아직 API 안나옴
+      
+    case .WAITING, .RESPONDED, .GREEN_LIGHT:
+      break // - 2.2. `MATCHED`상태가 아닌 경우 유/무료 카드 (basic, trialPremium, auto) 상관 없이 "매칭 상세"로 진입
+      
+    case .MATCHED:
+      break // - 2.1. `MATCHED`상태의 경우 "연락처 확인 알럿"으로 진입
+    
+      switch targetMatchingCard.matchingType {
+      case .basic:
+        break
+      case .trialPremium, .auto:
+        presentedAlert = .contactConfirm(matchId: matchId) // "연락처 확인 알럿"으로 진입 (✅)
+      }
+
+    case .REFUSED: // 거절한 상대는 안나옴
+      break
+    }
+  }
+  
+  func handleDidTapCreateNewMatchButton() async {
+    // TODO: [방어로직 한번 더] await 새로운 인연 만나기 Free 여부 조회해서 `self.isTrial`에 바인딩
+    
+    if self.isTrial {
+      print("새로운 인연 만나기 Instant 매칭 콜")
+    } else {
+      presentedAlert =  .createNewMatch// premium이면 "새로운 인연 만나기 알럿"으로 진입
+    }
+  }
+  
+  func handleDidTapAlertConfirm(_ alertType: MatchingAlertType) async {
+    dismissAlert()
+    
+    switch alertType {
+    case .contactConfirm(let matchId):
+        await handleDidTapContactConfirmAlertConfirm(matchId)
+      
+    case .insufficientPuzzle:
+        await handleDidTapInsufficientPuzzleAlertConfirm()
+      
+    case .createNewMatch:
+        await handleDidTapCreateNewMatchAlertConfirm()
+    }
   }
 }
 
@@ -194,5 +260,52 @@ private extension MatchingHomeViewModel {
     let newTimer = MatchingTimerManager(matchedDateTime: "2025-11-22T20:09:50")
     timerManagers[matchId] = newTimer
     return newTimer
+  }
+}
+
+// MARK: - MatchingAlert
+private extension MatchingHomeViewModel {
+  func dismissAlert() {
+    presentedAlert = nil
+  }
+  
+  func handleDidTapContactConfirmAlertConfirm(_ matchId: Int) async {
+    await loadPuzzleCount() // [방어로직] 퍼즐 개수 동기화 (✅)
+    if puzzleCount >= DomainConstants.PuzzleCost.checkContact { // - 2.1.2.2.1.1 사용자 퍼즐 개수가 충분한 경우 -> MatchResultView 이동 (✅)
+      // TODO: 연락처확인 퍼즐 소모(구매) API
+      // TODO: MatchResultView(with: matchId) 이동
+    } else { // - 2.1.2.2.2.2 사용자 퍼즐 개수가 모자란 경우 -> 스토어 이동 (✅)
+      presentedAlert = .insufficientPuzzle // 퍼즐 부족 알럿 표시
+    }
+  }
+  
+  func handleDidTapInsufficientPuzzleAlertConfirm() async {
+    // TODO: 스토어로 이동 로직
+  }
+  
+  func handleDidTapCreateNewMatchAlertConfirm() async {
+    await loadPuzzleCount() // [방어로직] 퍼즐 개수 동기화 (✅)
+
+    if puzzleCount >= DomainConstants.PuzzleCost.createNewMatch {
+      // TODO: 프리미엄 instant 매칭 추가 API 호출 -> 응답은 생성된 matchId
+      // TODO: 매칭상세(with: matchId) 이동
+    } else {
+      presentedAlert = .insufficientPuzzle // 퍼즐 부족 알럿 표시
+    }
+  }
+}
+
+// MARK: - Spinner
+private extension MatchingHomeViewModel {
+  func setSpinnerVisible(_ visible: Bool) {
+    showSpinner = visible
+  }
+  
+  func withSpinner(_ action: @escaping () async -> Void) {
+    Task {
+      setSpinnerVisible(true)
+      defer { setSpinnerVisible(false) }  // 에러 발생해도 false 처리
+      await action()
+    }
   }
 }

@@ -10,11 +10,10 @@ import DesignSystem
 
 struct CreateNewMatchButton: View {
   let isTrial: Bool
-  let trialAction: () -> Void
-  let premiumAction: () -> Void
+  let action: () -> Void
 
   var body: some View {
-    Button(action: { isTrial ? trialAction() : premiumAction() }) {
+    Button(action: action) {
       HStack(spacing: Constants.contentSpacing) {
         makePlusIcon()
         makeDescription()
