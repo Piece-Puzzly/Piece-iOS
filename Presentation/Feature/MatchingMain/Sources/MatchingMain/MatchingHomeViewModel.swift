@@ -44,6 +44,7 @@ final class MatchingHomeViewModel {
   private(set) var selectedMatchId: Int?
   private(set) var matchingCards: [MatchingCardModel] = []            // View에서 사용하는 매핑된 Card Entity
   private(set) var puzzleCount: Int = 0
+  private(set) var showSpinner: Bool = false
   private(set) var isTrial: Bool = false
   
   var presentedAlert: MatchingAlertType? = nil
@@ -74,13 +75,13 @@ final class MatchingHomeViewModel {
       handleOnConfirmMatchingCard(matchId)
       
     case .didTapAlertConfirm(let alertType):
-      Task {
-        await handleDidTapAlertConfirm(alertType)
+      withSpinner {
+        await self.handleDidTapAlertConfirm(alertType)
       }
-    
+      
     case .didTapCreateNewMatchButton:
-      Task {
-        await handleDidTapCreateNewMatchButton()
+      withSpinner {
+        await self.handleDidTapCreateNewMatchButton()
       }
       
     case .dismissAlert:
@@ -290,6 +291,21 @@ private extension MatchingHomeViewModel {
       // TODO: 매칭상세(with: matchId) 이동
     } else {
       presentedAlert = .insufficientPuzzle // 퍼즐 부족 알럿 표시
+    }
+  }
+}
+
+// MARK: - Spinner
+private extension MatchingHomeViewModel {
+  func setSpinnerVisible(_ visible: Bool) {
+    showSpinner = visible
+  }
+  
+  func withSpinner(_ action: @escaping () async -> Void) {
+    Task {
+      setSpinnerVisible(true)
+      defer { setSpinnerVisible(false) }  // 에러 발생해도 false 처리
+      await action()
     }
   }
 }

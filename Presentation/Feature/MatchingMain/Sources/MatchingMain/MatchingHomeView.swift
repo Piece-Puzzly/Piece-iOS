@@ -59,6 +59,7 @@ struct MatchingHomeView: View {
     .pcAlert(item: $matchingHomeViewModel.presentedAlert) { alertType in
       MatchingHomeAlertView(matchingHomeViewModel: matchingHomeViewModel, alertType: alertType)
     }
+    .spinning(of: matchingHomeViewModel.showSpinner)
   }
 }
 
