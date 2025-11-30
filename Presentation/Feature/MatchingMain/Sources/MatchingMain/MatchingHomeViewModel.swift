@@ -270,8 +270,7 @@ private extension MatchingHomeViewModel {
   
   func handleDidTapContactConfirmAlertConfirm(_ matchId: Int) async {
     await loadPuzzleCount() // [방어로직] 퍼즐 개수 동기화 (✅)
-
-    if puzzleCount >= 3 { // - 2.1.2.2.1.1 사용자 퍼즐 개수가 충분한 경우 -> MatchResultView 이동 (✅)
+    if puzzleCount >= DomainConstants.PuzzleCost.checkContact { // - 2.1.2.2.1.1 사용자 퍼즐 개수가 충분한 경우 -> MatchResultView 이동 (✅)
       // TODO: 연락처확인 퍼즐 소모(구매) API
       // TODO: MatchResultView(with: matchId) 이동
     } else { // - 2.1.2.2.2.2 사용자 퍼즐 개수가 모자란 경우 -> 스토어 이동 (✅)
@@ -286,7 +285,7 @@ private extension MatchingHomeViewModel {
   func handleDidTapCreateNewMatchAlertConfirm() async {
     await loadPuzzleCount() // [방어로직] 퍼즐 개수 동기화 (✅)
 
-    if puzzleCount >= 2 {
+    if puzzleCount >= DomainConstants.PuzzleCost.createNewMatch {
       // TODO: 프리미엄 instant 매칭 추가 API 호출 -> 응답은 생성된 matchId
       // TODO: 매칭상세(with: matchId) 이동
     } else {

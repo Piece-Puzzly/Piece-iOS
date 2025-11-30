@@ -7,6 +7,7 @@
 
 import SwiftUI
 import DesignSystem
+import Entities
 
 extension MatchingHomeView {
   struct MatchingHomeAlertView: View {
@@ -38,9 +39,13 @@ private extension MatchingHomeView.MatchingHomeAlertView {
   func contactConfirmAlert(matchId: Int) -> some View {
     AlertView(
       title: { Text(matchingHomeViewModel.matchingCards.first(where: { $0.id == matchId })?.nickname ?? "").foregroundColor(.primaryDefault) + Text("님의\n연락처를 확인할까요?") },
-      message: { Text("퍼즐") + Text("3개").foregroundColor(.primaryDefault) + Text("를 사용하면,\n지금 바로 연락처를 확인할 수 있어요.") },
+      message: {
+        Text("퍼즐 ") +
+        Text("\(DomainConstants.PuzzleCost.checkContact)개").foregroundColor(.primaryDefault) +
+        Text("를 사용하면,\n지금 바로 연락처를 확인할 수 있어요.")
+      },
       firstButtonText: "뒤로",
-      secondButtonText: "3",
+      secondButtonText: "\(DomainConstants.PuzzleCost.checkContact)",
       firstButtonAction: { matchingHomeViewModel.handleAction(.dismissAlert) },
       secondButtonAction: { matchingHomeViewModel.handleAction(.didTapAlertConfirm(.contactConfirm(matchId: matchId))) },
       secondButtonIcon: DesignSystemAsset.Icons.puzzleSolidRotate32.swiftUIImage
@@ -61,9 +66,13 @@ private extension MatchingHomeView.MatchingHomeAlertView {
   func createNewMatchAlert() -> some View {
     AlertView(
       title: { Text("새로운 인연을 만나볼까요?") },
-      message: { Text("퍼즐") + Text("2개").foregroundColor(.primaryDefault) + Text("로 나와 맞는 인연을 찾아보세요.") },
+      message: {
+        Text("퍼즐 ") +
+        Text("\(DomainConstants.PuzzleCost.createNewMatch)개").foregroundColor(.primaryDefault) +
+        Text("로 나와 맞는 인연을 찾아보세요.")
+      },
       firstButtonText: "뒤로",
-      secondButtonText: "2",
+      secondButtonText: "\(DomainConstants.PuzzleCost.createNewMatch)",
       firstButtonAction: { matchingHomeViewModel.handleAction(.dismissAlert) },
       secondButtonAction: { matchingHomeViewModel.handleAction(.didTapAlertConfirm(.createNewMatch)) },
       secondButtonIcon: DesignSystemAsset.Icons.puzzleSolidRotate32.swiftUIImage
