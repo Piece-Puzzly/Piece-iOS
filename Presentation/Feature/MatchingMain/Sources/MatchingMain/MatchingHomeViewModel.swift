@@ -37,6 +37,7 @@ final class MatchingHomeViewModel {
   private let patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
   private let getPuzzleCountUseCase: GetPuzzleCountUseCase
   private let createNewMatchUseCase: CreateNewMatchUseCase
+  private let checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase
 
   private var matchInfosList: [MatchInfosModel] = []                  // Card의 Entity 원본
   private var timerManagers: [Int: MatchingTimerManager] = [:]
@@ -57,6 +58,7 @@ final class MatchingHomeViewModel {
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
     getPuzzleCountUseCase: GetPuzzleCountUseCase,
     createNewMatchUseCase: CreateNewMatchUseCase,
+    checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase
   ) {
     self.getUserInfoUseCase = getUserInfoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
@@ -64,6 +66,7 @@ final class MatchingHomeViewModel {
     self.patchMatchesCheckPieceUseCase = patchMatchesCheckPieceUseCase
     self.getPuzzleCountUseCase = getPuzzleCountUseCase
     self.createNewMatchUseCase = createNewMatchUseCase
+    self.checkCanFreeMatchUseCase = checkCanFreeMatchUseCase
   }
   
   func handleAction(_ action: Action) {
@@ -144,12 +147,21 @@ private extension MatchingHomeViewModel {
   }
   
   func handleDidTapCreateNewMatchButton() async {
-    // TODO: [방어로직 한번 더] await 새로운 인연 만나기 Free 여부 조회해서 `self.isTrial`에 바인딩
-    
-    if self.isTrial {
-      print("새로운 인연 만나기 Instant 매칭 콜")
-    } else {
-      presentedAlert =  .createNewMatch// premium이면 "새로운 인연 만나기 알럿"으로 진입
+    do {
+      let result = try await checkCanFreeMatchUseCase.execute()
+      isTrial = result.canFreeMatch
+
+      if isTrial {
+        let result = try await createNewMatchUseCase.execute()
+        let matchId = result.matchId
+        // TODO: 매칭상세(with: matchId) 이동
+      } else {
+        presentedAlert = .createNewMatch // premium이면 "새로운 인연 만나기 알럿"으로 진입
+      }
+    } catch {
+      print("Check Can Free Match Error: \(error.localizedDescription)")
+      // 에러 발생 시 기본적으로 프리미엄 알럿 표시
+      presentedAlert = .createNewMatch
     }
   }
   

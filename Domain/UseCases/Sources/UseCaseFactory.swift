@@ -178,6 +178,10 @@ public struct UseCaseFactory {
     CreateNewMatchUseCaseImpl(repository: repository)
   }
 
+  public static func createCheckCanFreeMatchUseCase(repository: MatchesRepositoryInterface) -> CheckCanFreeMatchUseCase {
+    CheckCanFreeMatchUseCaseImpl(repository: repository)
+  }
+
   // MARK: - 매칭 상세
   public static func createGetMatchProfileBasicUseCase(repository: MatchesRepositoryInterface) -> GetMatchProfileBasicUseCase {
     GetMatchProfileBasicUseCaseImpl(repository: repository)

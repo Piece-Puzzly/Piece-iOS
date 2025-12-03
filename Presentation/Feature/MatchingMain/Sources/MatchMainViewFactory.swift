@@ -37,6 +37,7 @@ public struct MatchMainViewFactory {
     getUserRejectUseCase: GetUserRejectUseCase,
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
     createNewMatchUseCase: CreateNewMatchUseCase,
+    checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase
   ) -> some View {
     MatchingHomeView(
       getUserInfoUseCase: getUserInfoUseCase,
@@ -46,6 +47,7 @@ public struct MatchMainViewFactory {
       getUserRejectUseCase: getUserRejectUseCase,
       patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase,
       createNewMatchUseCase: createNewMatchUseCase,
+      checkCanFreeMatchUseCase: checkCanFreeMatchUseCase
     )
   }
 }

@@ -97,4 +97,10 @@ final class MatchesRepository: MatchesRepositoryInterface {
     let responseDTO: CreateNewMatchResponseDTO = try await networkService.request(endpoint: endpoint)
     return responseDTO.toDomain()
   }
+
+  func getCanFreeMatchToday() async throws -> CanFreeMatchModel {
+    let endpoint = MatchesEndpoint.canFreeMatchToday
+    let responseDTO: CanFreeMatchResponseDTO = try await networkService.request(endpoint: endpoint)
+    return responseDTO.toDomain()
+  }
 }

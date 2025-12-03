@@ -28,6 +28,7 @@ struct HomeView: View {
     getUserRejectUseCase: GetUserRejectUseCase,
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
     createNewMatchUseCase: CreateNewMatchUseCase,
+    checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
     getSettingsInfoUseCase: GetSettingsInfoUseCase,
     fetchTermsUseCase: FetchTermsUseCase,
     checkNotificationPermissionUseCase: CheckNotificationPermissionUseCase,
@@ -53,6 +54,7 @@ struct HomeView: View {
         getUserRejectUseCase: getUserRejectUseCase,
         patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase,
         createNewMatchUseCase: createNewMatchUseCase,
+        checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
         getSettingsInfoUseCase: getSettingsInfoUseCase,
         fetchTermsUseCase: fetchTermsUseCase,
         checkNotificationPermissionUseCase: checkNotificationPermissionUseCase,
@@ -111,7 +113,8 @@ struct HomeView: View {
         getMatchesInfoUseCase: viewModel.getMatchesInfoUseCase,
         getUserRejectUseCase: viewModel.getUserRejectUseCase,
         patchMatchesCheckPieceUseCase: viewModel.patchMatchesCheckPieceUseCase,
-        createNewMatchUseCase: viewModel.createNewMatchUseCase
+        createNewMatchUseCase: viewModel.createNewMatchUseCase,
+        checkCanFreeMatchUseCase: viewModel.checkCanFreeMatchUseCase
       )
     case .settings:
       SettingsViewFactory.createSettingsView(

@@ -77,6 +77,7 @@ public struct Coordinator {
       let getUserRejectUseCase = UseCaseFactory.createGetUserRejectUseCase(repository: matchesRepository)
       let patchMatchesCheckPieceUseCase = UseCaseFactory.createPatchMatchesCheckPieceUseCase(repository: matchesRepository)
       let createNewMatchUseCase = UseCaseFactory.createCreateNewMatchUseCase(repository: matchesRepository)
+      let checkCanFreeMatchUseCase = UseCaseFactory.createCheckCanFreeMatchUseCase(repository: matchesRepository)
       // setting
       let getSettingsInfoUseCase = UseCaseFactory.createGetSettingsInfoUseCase(repository: settingsRepository)
       let fetchTermsUseCase = UseCaseFactory.createFetchTermsUseCase(repository: termsRepository)
@@ -101,6 +102,7 @@ public struct Coordinator {
         getUserRejectUseCase: getUserRejectUseCase,
         patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase,
         createNewMatchUseCase: createNewMatchUseCase,
+        checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
         getSettingsInfoUseCase: getSettingsInfoUseCase,
         fetchTermsUseCase: fetchTermsUseCase,
         checkNotificationPermissionUseCase: checkNotificationPermissionUseCase,
@@ -137,6 +139,7 @@ public struct Coordinator {
       let getUserRejectUseCase = UseCaseFactory.createGetUserRejectUseCase(repository: matchesRepository)
       let patchMatchesCheckPieceUseCase = UseCaseFactory.createPatchMatchesCheckPieceUseCase(repository: matchesRepository)
       let createNewMatchUseCase = UseCaseFactory.createCreateNewMatchUseCase(repository: matchesRepository)
+      let checkCanFreeMatchUseCase = UseCaseFactory.createCheckCanFreeMatchUseCase(repository: matchesRepository)
       MatchMainViewFactory.createMatchMainView(
         getUserInfoUseCase: getUserInfoUseCase,
         getPuzzleCountUseCase: getPuzzleCountUseCase,
@@ -144,7 +147,8 @@ public struct Coordinator {
         getMatchesInfoUseCase: getMatchesInfoUseCase,
         getUserRejectUseCase: getUserRejectUseCase,
         patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase,
-        createNewMatchUseCase: createNewMatchUseCase
+        createNewMatchUseCase: createNewMatchUseCase,
+        checkCanFreeMatchUseCase: checkCanFreeMatchUseCase
       )
       
       // MARK: - 매칭 상세
@@ -319,6 +323,7 @@ public struct Coordinator {
       let getUserRejectUseCase = UseCaseFactory.createGetUserRejectUseCase(repository: matchesRepository)
       let patchMatchesCheckPieceUseCase = UseCaseFactory.createPatchMatchesCheckPieceUseCase(repository: matchesRepository)
       let createNewMatchUseCase = UseCaseFactory.createCreateNewMatchUseCase(repository: matchesRepository)
+      let checkCanFreeMatchUseCase = UseCaseFactory.createCheckCanFreeMatchUseCase(repository: matchesRepository)
       // setting
       let getSettingsInfoUseCase = UseCaseFactory.createGetSettingsInfoUseCase(repository: settingsRepository)
       let fetchTermsUseCase = UseCaseFactory.createFetchTermsUseCase(repository: termsRepository)
@@ -343,6 +348,7 @@ public struct Coordinator {
         getUserRejectUseCase: getUserRejectUseCase,
         patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase,
         createNewMatchUseCase: createNewMatchUseCase,
+        checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
         getSettingsInfoUseCase: getSettingsInfoUseCase,
         fetchTermsUseCase: fetchTermsUseCase,
         checkNotificationPermissionUseCase: checkNotificationPermissionUseCase,

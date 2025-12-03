@@ -22,7 +22,8 @@ public enum MatchesEndpoint: TargetType {
   case image
   case checkMatchPiece
   case createNewMatch
-  
+  case canFreeMatchToday
+
   public var method: HTTPMethod {
     switch self {
     case .profileBasic: .get
@@ -36,6 +37,7 @@ public enum MatchesEndpoint: TargetType {
     case .image: .get
     case .checkMatchPiece: .patch
     case .createNewMatch: .post
+    case .canFreeMatchToday: .get
     }
   }
   
@@ -52,6 +54,7 @@ public enum MatchesEndpoint: TargetType {
     case .image: "api/matches/images"
     case .checkMatchPiece: "api/matches/pieces/check"
     case .createNewMatch: "api/matches/instants/new"
+    case .canFreeMatchToday: "api/matches/instants/free/today"
     }
   }
   
@@ -104,6 +107,9 @@ public enum MatchesEndpoint: TargetType {
         NetworkHeader.contentType: NetworkHeader.applicationJson,
         NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
       ]
+
+    case .canFreeMatchToday:
+      [NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")]
     }
   }
   
@@ -120,6 +126,7 @@ public enum MatchesEndpoint: TargetType {
     case .image: .plain
     case .checkMatchPiece: .plain
     case .createNewMatch: .plain
+    case .canFreeMatchToday: .plain
     }
   }
 }

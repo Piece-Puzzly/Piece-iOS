@@ -29,6 +29,7 @@ final class HomeViewModel {
     getUserRejectUseCase: GetUserRejectUseCase,
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
     createNewMatchUseCase: CreateNewMatchUseCase,
+    checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
     // settings
     getSettingsInfoUseCase: GetSettingsInfoUseCase,
     fetchTermsUseCase: FetchTermsUseCase,
@@ -56,6 +57,7 @@ final class HomeViewModel {
     self.getUserRejectUseCase = getUserRejectUseCase
     self.patchMatchesCheckPieceUseCase = patchMatchesCheckPieceUseCase
     self.createNewMatchUseCase = createNewMatchUseCase
+    self.checkCanFreeMatchUseCase = checkCanFreeMatchUseCase
     // settings
     self.getSettingsInfoUseCase = getSettingsInfoUseCase
     self.fetchTermsUseCase = fetchTermsUseCase
@@ -82,6 +84,7 @@ final class HomeViewModel {
   let getUserRejectUseCase: GetUserRejectUseCase
   let patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
   let createNewMatchUseCase: CreateNewMatchUseCase
+  let checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase
   // settings
   let getSettingsInfoUseCase: GetSettingsInfoUseCase
   let fetchTermsUseCase: FetchTermsUseCase
