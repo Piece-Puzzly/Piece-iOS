@@ -170,7 +170,7 @@ public class NetworkService {
       let microsecondsFormatter = DateFormatter()
       microsecondsFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
       microsecondsFormatter.locale = Locale(identifier: "en_US_POSIX")
-      microsecondsFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+      microsecondsFormatter.timeZone = TimeZone(identifier: "Asia/Seoul")  // KST (UTC+9)
       if let date = microsecondsFormatter.date(from: dateString) {
         return date
       }
