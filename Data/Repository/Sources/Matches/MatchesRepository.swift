@@ -19,10 +19,10 @@ final class MatchesRepository: MatchesRepositoryInterface {
     self.networkService = networkService
   }
   
-  func getMatchInfos() async throws -> Entities.MatchInfosModel {
+  func getMatchInfos() async throws -> [MatchInfosModel] {
     let endpoint = MatchesEndpoint.matchesInfos
-    let responseDTO: MatchInfosResponseDTO = try await networkService.request(endpoint: endpoint)
-    return responseDTO.toDomain()
+    let responseDTO: [MatchInfosResponseDTO] = try await networkService.request(endpoint: endpoint)
+    return responseDTO.map { $0.toDomain() }
   }
   
   func getMatchesProfileBasic() async throws -> MatchProfileBasicModel {

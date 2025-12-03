@@ -8,7 +8,7 @@
 import Entities
 
 public protocol MatchesRepositoryInterface {
-  func getMatchInfos() async throws -> MatchInfosModel
+  func getMatchInfos() async throws -> [MatchInfosModel]
   func getMatchesProfileBasic() async throws -> MatchProfileBasicModel
   func getMatchValueTalks() async throws -> MatchValueTalkModel
   func getMatchValuePicks() async throws -> MatchValuePickModel
