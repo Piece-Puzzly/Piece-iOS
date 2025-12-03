@@ -52,8 +52,8 @@ public class NetworkService {
   public func request<T: Decodable>(endpoint: TargetType) async throws -> T {
     print("🛰 request path: \(endpoint.path)")
     let decoder = JSONDecoder()
-    decoder.dateDecodingStrategy = .formatted(dateFormatter)
-    
+    configureDateDecoder(decoder)
+
     return try await withCheckedThrowingContinuation { continuation in
       session.request(endpoint)
         .validate()
@@ -156,6 +156,34 @@ public class NetworkService {
       self.session = Session(
         interceptor: interceptor,
         eventMonitors: [self.networkLogger]
+      )
+    }
+  }
+
+  /// JSONDecoder에 날짜 디코딩 전략 설정 (마이크로초 포함 형식 + 기존 형식 호환)
+  private func configureDateDecoder(_ decoder: JSONDecoder) {
+    decoder.dateDecodingStrategy = .custom { [weak self] decoder in
+      let container = try decoder.singleValueContainer()
+      let dateString = try container.decode(String.self)
+
+      // 1. 마이크로초 포함 형식 시도 (신규 API: yyyy-MM-dd'T'HH:mm:ss.SSSSSS)
+      let microsecondsFormatter = DateFormatter()
+      microsecondsFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
+      microsecondsFormatter.locale = Locale(identifier: "en_US_POSIX")
+      microsecondsFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+      if let date = microsecondsFormatter.date(from: dateString) {
+        return date
+      }
+
+      // 2. 기존 형식 시도 (하위 호환성 유지)
+      if let self = self,
+         let date = self.dateFormatter.date(from: dateString) { // "yyyy-MM-dd'T'HH:mm:ssX"
+        return date
+      }
+
+      throw DecodingError.dataCorruptedError(
+        in: container,
+        debugDescription: "날짜 형식을 파싱할 수 없습니다: \(dateString)"
       )
     }
   }
