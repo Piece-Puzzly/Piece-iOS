@@ -23,6 +23,7 @@ public struct HomeViewFactory {
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
     getUserRejectUseCase: GetUserRejectUseCase,
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
+    createNewMatchUseCase: CreateNewMatchUseCase,
     // settings
     getSettingsInfoUseCase: GetSettingsInfoUseCase,
     fetchTermsUseCase: FetchTermsUseCase,
@@ -50,6 +51,7 @@ public struct HomeViewFactory {
       getMatchesInfoUseCase: getMatchesInfoUseCase,
       getUserRejectUseCase: getUserRejectUseCase,
       patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase,
+      createNewMatchUseCase: createNewMatchUseCase,
       // settings
       getSettingsInfoUseCase: getSettingsInfoUseCase,
       fetchTermsUseCase: fetchTermsUseCase,

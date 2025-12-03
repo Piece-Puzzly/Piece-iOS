@@ -21,6 +21,7 @@ public enum MatchesEndpoint: TargetType {
   case contacts
   case image
   case checkMatchPiece
+  case createNewMatch
   
   public var method: HTTPMethod {
     switch self {
@@ -34,6 +35,7 @@ public enum MatchesEndpoint: TargetType {
     case .contacts: .get
     case .image: .get
     case .checkMatchPiece: .patch
+    case .createNewMatch: .post
     }
   }
   
@@ -49,6 +51,7 @@ public enum MatchesEndpoint: TargetType {
     case .contacts: "api/matches/contacts"
     case .image: "api/matches/images"
     case .checkMatchPiece: "api/matches/pieces/check"
+    case .createNewMatch: "api/matches/instants/new"
     }
   }
   
@@ -56,28 +59,34 @@ public enum MatchesEndpoint: TargetType {
     switch self {
     case .profileBasic:
       [NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")]
+    
     case .valueTalks:
       [
         NetworkHeader.contentType: NetworkHeader.applicationJson,
         NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
       ]
+    
     case .valuePicks:
       [
         NetworkHeader.contentType: NetworkHeader.applicationJson,
         NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
       ]
+    
     case .accept:
       [
         NetworkHeader.contentType: NetworkHeader.applicationJson,
         NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
       ]
+    
     case .matchesInfos:
       [NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")]
+    
     case .refuse:
       [
         NetworkHeader.contentType: NetworkHeader.applicationJson,
         NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
       ]
+      
     case .block:
       [NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")]
       
@@ -86,8 +95,15 @@ public enum MatchesEndpoint: TargetType {
       
     case .image:
       [NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")]
+    
     case .checkMatchPiece:
       [NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")]
+    
+    case .createNewMatch:
+      [
+        NetworkHeader.contentType: NetworkHeader.applicationJson,
+        NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
+      ]
     }
   }
   
@@ -103,6 +119,7 @@ public enum MatchesEndpoint: TargetType {
     case .contacts: .plain
     case .image: .plain
     case .checkMatchPiece: .plain
+    case .createNewMatch: .plain
     }
   }
 }

@@ -36,6 +36,7 @@ final class MatchingHomeViewModel {
   private let getMatchesInfoUseCase: GetMatchesInfoUseCase
   private let patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
   private let getPuzzleCountUseCase: GetPuzzleCountUseCase
+  private let createNewMatchUseCase: CreateNewMatchUseCase
 
   private var matchInfosList: [MatchInfosModel] = []                  // Card의 Entity 원본
   private var timerManagers: [Int: MatchingTimerManager] = [:]
@@ -55,12 +56,14 @@ final class MatchingHomeViewModel {
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
     getPuzzleCountUseCase: GetPuzzleCountUseCase,
+    createNewMatchUseCase: CreateNewMatchUseCase,
   ) {
     self.getUserInfoUseCase = getUserInfoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
     self.getMatchesInfoUseCase = getMatchesInfoUseCase
     self.patchMatchesCheckPieceUseCase = patchMatchesCheckPieceUseCase
     self.getPuzzleCountUseCase = getPuzzleCountUseCase
+    self.createNewMatchUseCase = createNewMatchUseCase
   }
   
   func handleAction(_ action: Action) {
@@ -116,18 +119,22 @@ private extension MatchingHomeViewModel {
     
     switch targetMatchingCard.matchStatus {
     case .BEFORE_OPEN:
-      break // - 1. `BEFORE_OPEN`상태의 경우, 구 매칭 조각 확인 체크 API(/api/matches/pieces/check) 콜 해야함 // 아직 API 안나옴
+      break // TODO:  - 1. `BEFORE_OPEN`상태의 경우, 구 매칭 조각 확인 체크 API(/api/matches/pieces/check) 콜 해야함 // 아직 API 안나옴
       
     case .WAITING, .RESPONDED, .GREEN_LIGHT:
-      break // - 2.2. `MATCHED`상태가 아닌 경우 유/무료 카드 (basic, trialPremium, auto) 상관 없이 "매칭 상세"로 진입
-      
+      // - 2.2.   `MATCHED`상태가 아닌 정상적인 경우 (✅)
+      // - 2.2.1. 유/무료 카드 (basic, trialPremium, auto) 상관 없이 "매칭 상세"로 진입 (✅)
+      // - 2.2.2. matchId를 View의 router에게 줘서 화면전환 구현 (✅)
+      break
+
+      // - 2.1.1.       `MATCHED`상태의 경우 (✅)
     case .MATCHED:
-      break // - 2.1. `MATCHED`상태의 경우 "연락처 확인 알럿"으로 진입
-    
-      switch targetMatchingCard.matchingType {
-      case .basic:
+      switch targetMatchingCard.matchType {
+      case .BASIC:
+        // - 2.1.2.1.   (기본 매칭, basic) 무료로 바로 MatchResultView 이동 (✅)
+        // - 2.1.2.2.   matchId를 View의 router에게 줘서 화면전환 구현 (✅)
         break
-      case .trialPremium, .auto:
+      case .TRIAL, .PREMIUM, .AUTO:
         presentedAlert = .contactConfirm(matchId: matchId) // "연락처 확인 알럿"으로 진입 (✅)
       }
 
@@ -212,13 +219,14 @@ private extension MatchingHomeViewModel {
     }
   }
 
+  // TODO: - 새로운 인연 버튼 UI 까지 구현하고 이번 1312는 마무리하자 ✅
+  // TODO: - 그리고 이제 타이머 구현해야해. ✅
   func loadMatches() async {
     // TODO: 향후 GetMatchesListUseCase로 대체 (3가지 매칭정보 병렬 콜)
 //    matchInfosList = MatchInfosModel.dummy
     
-    if let matchInfo = try? await getMatchesInfoUseCase.execute() {
-      matchInfosList.append(matchInfo)
-      print(matchInfo)
+    if let matchInfos = try? await getMatchesInfoUseCase.execute() {
+      matchInfosList = matchInfos
     } else {
       matchInfosList = MatchInfosModel.dummy
     }
@@ -229,7 +237,7 @@ private extension MatchingHomeViewModel {
   
   func determineInitialSelection() -> Int? {
     // 1. 타의적 매칭이 아닌 첫 번째 카드
-    if let firstNonAuto = matchInfosList.first(where: { $0.matchingType != .auto }) {
+    if let firstNonAuto = matchInfosList.first(where: { $0.matchType != .AUTO }) {
       return firstNonAuto.matchId
     }
     // 2. 타의적 매칭만 있는 경우 첫 번째 카드
@@ -247,18 +255,17 @@ private extension MatchingHomeViewModel {
         matchId: info.matchId,
         matchInfosModel: info,
         isSelected: info.matchId == selectedMatchId,
-        matchingTimerManager: getOrCreateTimer(for: info.matchId)
+        matchingTimerManager: getOrCreateTimer(for: info)
       )
     }
   }
-  
-  private func getOrCreateTimer(for matchId: Int) -> MatchingTimerManager {
-    if let existing = timerManagers[matchId] {
+
+  private func getOrCreateTimer(for matchInfo: MatchInfosModel) -> MatchingTimerManager {
+    if let existing = timerManagers[matchInfo.matchId] {
       return existing
     }
-    // TODO: 향후 matchInfo.matchedDateTime 사용
-    let newTimer = MatchingTimerManager(matchedDateTime: "2025-11-22T20:09:50")
-    timerManagers[matchId] = newTimer
+    let newTimer = MatchingTimerManager(matchedDate: matchInfo.createdAt)
+    timerManagers[matchInfo.matchId] = newTimer
     return newTimer
   }
 }
@@ -287,8 +294,14 @@ private extension MatchingHomeViewModel {
     await loadPuzzleCount() // [방어로직] 퍼즐 개수 동기화 (✅)
 
     if puzzleCount >= DomainConstants.PuzzleCost.createNewMatch {
-      // TODO: 프리미엄 instant 매칭 추가 API 호출 -> 응답은 생성된 matchId
-      // TODO: 매칭상세(with: matchId) 이동
+      do {
+        let result = try await createNewMatchUseCase.execute()
+        let matchId = result.matchId
+        // TODO: 매칭상세(with: matchId) 이동
+      } catch {
+        print("Create New Match Error: \(error.localizedDescription)")
+        // TODO: Handle error
+      }
     } else {
       presentedAlert = .insufficientPuzzle // 퍼즐 부족 알럿 표시
     }

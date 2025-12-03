@@ -91,4 +91,10 @@ final class MatchesRepository: MatchesRepositoryInterface {
     let responseDTO: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
     return responseDTO.toDomain()
   }
+  
+  func postCreateNewMatch() async throws -> CreateNewMatchModel {
+    let endpoint = MatchesEndpoint.createNewMatch
+    let responseDTO: CreateNewMatchResponseDTO = try await networkService.request(endpoint: endpoint)
+    return responseDTO.toDomain()
+  }
 }

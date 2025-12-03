@@ -19,4 +19,5 @@ public protocol MatchesRepositoryInterface {
   func getMatchContacts() async throws -> MatchContactsModel
   func getUserRejectReason() async throws -> UserRejectReasonModel
   func patchCheckMatchPiece() async throws -> VoidModel
+  func postCreateNewMatch() async throws -> CreateNewMatchModel
 }
