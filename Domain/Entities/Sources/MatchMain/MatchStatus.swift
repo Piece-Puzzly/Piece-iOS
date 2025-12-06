@@ -8,10 +8,10 @@
 import SwiftUI
 
 public enum MatchStatus: String {
-  case BEFORE_OPEN
-  case WAITING
+  case BEFORE_OPEN = "UNCHECKED" // TODO: 임시->서버에서 값 잘못 넣음
+  case WAITING = "CHECKED"
   case REFUSED
-  case RESPONDED
+  case RESPONDED = "ACCEPTED"
   case GREEN_LIGHT
   case MATCHED
   

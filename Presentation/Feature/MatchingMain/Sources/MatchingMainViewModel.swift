@@ -238,56 +238,56 @@ final class MatchingMainViewModel {
   }
   
   private func getMatchesInfo() async {
-    do {
-      let matchesInfo = try await getMatchesInfoUseCase.execute() // 매칭 상태 확인해야함
-      let matchStatus = matchesInfo.matchStatus
-      
-      switch matchStatus {
-      case .BEFORE_OPEN:
-        // 자신이 매칭 조각 열람 전
-        matchingStatus = .BEFORE_OPEN
-        matchingButtonState = .checkMatchingPiece
-      case .WAITING:
-        //자신은 매칭조각 열람, 상대는 인연 수락 안함(열람했는지도 모름)
-        matchingStatus = .WAITING
-        matchingButtonState = .acceptMatching
-      case .REFUSED:
-        matchingStatus = .REFUSED
-        matchingButtonState = .responseComplete
-      case .RESPONDED:
-        // 자신은 수락, 상대는 모름
-        matchingStatus = .RESPONDED
-        matchingButtonState = .responseComplete
-      case .GREEN_LIGHT:
-        // 자신은 열람만, 상대는 수락
-        matchingStatus = .GREEN_LIGHT
-        matchingButtonState = .acceptMatching
-      case .MATCHED:
-          // 둘다 수락
-        matchingStatus = .MATCHED
-        matchingButtonState = .checkContact(nickname: matchesInfo.nickname)
-      }
-      
-      name = matchesInfo.nickname
-      description = matchesInfo.description
-      age = matchesInfo.birthYear
-      location = matchesInfo.location
-      job = matchesInfo.job
-      tags = matchesInfo.matchedValueList
-      
-      if matchesInfo.isBlocked {
-        isShowMatchingNodataCard = true
-        matchingButtonState = .pending
-      } else {
-        isShowMatchingMainBasicCard = true
-        currentTrackedScreen = .home
-      }
-    } catch {
-      print("Get Match Status :\(error.localizedDescription)")
-      isShowMatchingNodataCard = true
-      matchingButtonState = .pending
-      currentTrackedScreen = .nodata
-    }
+//    do {
+//      let matchesInfo = try await getMatchesInfoUseCase.execute() // 매칭 상태 확인해야함
+//      let matchStatus = matchesInfo.matchStatus
+//      
+//      switch matchStatus {
+//      case .BEFORE_OPEN:
+//        // 자신이 매칭 조각 열람 전
+//        matchingStatus = .BEFORE_OPEN
+//        matchingButtonState = .checkMatchingPiece
+//      case .WAITING:
+//        //자신은 매칭조각 열람, 상대는 인연 수락 안함(열람했는지도 모름)
+//        matchingStatus = .WAITING
+//        matchingButtonState = .acceptMatching
+//      case .REFUSED:
+//        matchingStatus = .REFUSED
+//        matchingButtonState = .responseComplete
+//      case .RESPONDED:
+//        // 자신은 수락, 상대는 모름
+//        matchingStatus = .RESPONDED
+//        matchingButtonState = .responseComplete
+//      case .GREEN_LIGHT:
+//        // 자신은 열람만, 상대는 수락
+//        matchingStatus = .GREEN_LIGHT
+//        matchingButtonState = .acceptMatching
+//      case .MATCHED:
+//          // 둘다 수락
+//        matchingStatus = .MATCHED
+//        matchingButtonState = .checkContact(nickname: matchesInfo.nickname)
+//      }
+//      
+//      name = matchesInfo.nickname
+//      description = matchesInfo.description
+//      age = matchesInfo.birthYear
+//      location = matchesInfo.location
+//      job = matchesInfo.job
+//      tags = matchesInfo.matchedValueList
+//      
+//      if matchesInfo.isBlocked {
+//        isShowMatchingNodataCard = true
+//        matchingButtonState = .pending
+//      } else {
+//        isShowMatchingMainBasicCard = true
+//        currentTrackedScreen = .home
+//      }
+//    } catch {
+//      print("Get Match Status :\(error.localizedDescription)")
+//      isShowMatchingNodataCard = true
+//      matchingButtonState = .pending
+//      currentTrackedScreen = .nodata
+//    }
   }
   
   private func fetchUserRejectState() async {
@@ -312,7 +312,7 @@ final class MatchingMainViewModel {
   
   private func patchCheckMatchingPiece() async {
     do {
-      _ = try await patchMatchesCheckPieceUseCase.execute()
+      _ = try await patchMatchesCheckPieceUseCase.execute(matchId: 0)
     } catch {
       self.error = error
     }

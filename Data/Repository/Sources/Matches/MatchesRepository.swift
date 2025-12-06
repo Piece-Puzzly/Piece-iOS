@@ -19,10 +19,10 @@ final class MatchesRepository: MatchesRepositoryInterface {
     self.networkService = networkService
   }
   
-  func getMatchInfos() async throws -> Entities.MatchInfosModel {
+  func getMatchInfos() async throws -> [MatchInfosModel] {
     let endpoint = MatchesEndpoint.matchesInfos
-    let responseDTO: MatchInfosResponseDTO = try await networkService.request(endpoint: endpoint)
-    return responseDTO.toDomain()
+    let responseDTO: [MatchInfosResponseDTO] = try await networkService.request(endpoint: endpoint)
+    return responseDTO.map { $0.toDomain() }
   }
   
   func getMatchesProfileBasic() async throws -> MatchProfileBasicModel {
@@ -86,9 +86,21 @@ final class MatchesRepository: MatchesRepositoryInterface {
     return responseDTO.toDomain()
   }
   
-  func patchCheckMatchPiece() async throws -> VoidModel {
-    let endpoint = MatchesEndpoint.checkMatchPiece
+  func patchCheckMatchPiece(matchId: Int) async throws -> VoidModel {
+    let endpoint = MatchesEndpoint.checkMatchPiece(matchId: matchId)
     let responseDTO: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
+    return responseDTO.toDomain()
+  }
+  
+  func postCreateNewMatch() async throws -> CreateNewMatchModel {
+    let endpoint = MatchesEndpoint.createNewMatch
+    let responseDTO: CreateNewMatchResponseDTO = try await networkService.request(endpoint: endpoint)
+    return responseDTO.toDomain()
+  }
+
+  func getCanFreeMatchToday() async throws -> CanFreeMatchModel {
+    let endpoint = MatchesEndpoint.canFreeMatchToday
+    let responseDTO: CanFreeMatchResponseDTO = try await networkService.request(endpoint: endpoint)
     return responseDTO.toDomain()
   }
 }

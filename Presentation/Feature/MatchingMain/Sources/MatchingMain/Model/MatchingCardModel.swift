@@ -33,7 +33,7 @@ struct MatchingCardModel: Identifiable {
 }
 
 extension MatchingCardModel {
-  var matchingType: MatchingType { matchInfosModel.matchingType }
+  var matchType: MatchType { matchInfosModel.matchType }
   
   var matchStatus: MatchStatus { matchInfosModel.matchStatus }
   var remainingTime: String { matchingTimerManager.remainingTime }

@@ -9,6 +9,8 @@ import SwiftUI
 
 public struct MatchInfosModel {
   public let matchId: Int
+  public let matchType: MatchType
+  public let createdAt: Date
   public let matchedUserId: Int
   public let matchStatus: MatchStatus
   public let description: String
@@ -19,11 +21,14 @@ public struct MatchInfosModel {
   public let matchedValueCount: Int
   public let matchedValueList: [String]
   public let isBlocked: Bool
-  public let matchingType: MatchingType
+  public let imageViewed: Bool
+  public let contactViewed: Bool
   
   public init(
     matchId: Int,
     matchedUserId: Int,
+    matchType: MatchType,
+    createdAt: Date,
     matchStatus: MatchStatus,
     description: String,
     nickname: String,
@@ -33,10 +38,13 @@ public struct MatchInfosModel {
     matchedValueCount: Int,
     matchedValueList: [String],
     isBlocked: Bool,
-    matchingType: MatchingType,
+    imageViewed: Bool,
+    contactViewed: Bool,
   ) {
     self.matchId = matchId
     self.matchedUserId = matchedUserId
+    self.matchType = matchType
+    self.createdAt = createdAt
     self.matchStatus = matchStatus
     self.description = description
     self.nickname = nickname
@@ -46,7 +54,8 @@ public struct MatchInfosModel {
     self.matchedValueCount = matchedValueCount
     self.matchedValueList = matchedValueList
     self.isBlocked = isBlocked
-    self.matchingType = matchingType
+    self.imageViewed = imageViewed
+    self.contactViewed = contactViewed
   }
 }
 
@@ -55,6 +64,8 @@ public extension MatchInfosModel {
     MatchInfosModel(
       matchId: 1,
       matchedUserId: 101,
+      matchType: .BASIC,
+      createdAt: Date(),
       matchStatus: .WAITING,
       description: "바깥 데이트를 즐기는",
       nickname: "김민수",
@@ -64,11 +75,14 @@ public extension MatchInfosModel {
       matchedValueCount: 3,
       matchedValueList: ["운동", "여행", "독서"],
       isBlocked: false,
-      matchingType: .basic
+      imageViewed: false,
+      contactViewed: false
     ),
     MatchInfosModel(
       matchId: 2,
       matchedUserId: 102,
+      matchType: .BASIC,
+      createdAt: Date(),
       matchStatus: .BEFORE_OPEN,
       description: "바깥 데이트를 마음껏 재미있게 즐기는",
       nickname: "퍼즐리",
@@ -78,11 +92,14 @@ public extension MatchInfosModel {
       matchedValueCount: 2,
       matchedValueList: ["미술", "음악"],
       isBlocked: false,
-      matchingType: .basic
+      imageViewed: false,
+      contactViewed: false
     ),
     MatchInfosModel(
       matchId: 3,
       matchedUserId: 103,
+      matchType: .TRIAL,
+      createdAt: Date(),
       matchStatus: .RESPONDED,
       description: "자연과 함께하는 삶을 지향합니다.",
       nickname: "이서현",
@@ -92,11 +109,14 @@ public extension MatchInfosModel {
       matchedValueCount: 4,
       matchedValueList: ["등산", "캠핑", "요가", "환경보호"],
       isBlocked: false,
-      matchingType: .trialPremium
+      imageViewed: false,
+      contactViewed: false
     ),
     MatchInfosModel(
       matchId: 4,
       matchedUserId: 104,
+      matchType: .AUTO,
+      createdAt: Date(),
       matchStatus: .GREEN_LIGHT,
       description: "맛집 탐방과 요리를 좋아합니다.",
       nickname: "최준호",
@@ -106,11 +126,14 @@ public extension MatchInfosModel {
       matchedValueCount: 2,
       matchedValueList: ["요리", "맛집"],
       isBlocked: false,
-      matchingType: .auto
+      imageViewed: false,
+      contactViewed: false
     ),
     MatchInfosModel(
       matchId: 5,
       matchedUserId: 105,
+      matchType: .AUTO,
+      createdAt: Date(),
       matchStatus: .MATCHED,
       description: "영화와 책으로 세상을 배웁니다.",
       nickname: "정수민",
@@ -120,7 +143,8 @@ public extension MatchInfosModel {
       matchedValueCount: 5,
       matchedValueList: ["영화", "독서", "글쓰기", "커피", "산책"],
       isBlocked: false,
-      matchingType: .auto
+      imageViewed: false,
+      contactViewed: false
     )
   ]
 }

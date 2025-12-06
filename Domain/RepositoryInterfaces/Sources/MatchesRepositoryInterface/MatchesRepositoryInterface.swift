@@ -8,7 +8,7 @@
 import Entities
 
 public protocol MatchesRepositoryInterface {
-  func getMatchInfos() async throws -> MatchInfosModel
+  func getMatchInfos() async throws -> [MatchInfosModel]
   func getMatchesProfileBasic() async throws -> MatchProfileBasicModel
   func getMatchValueTalks() async throws -> MatchValueTalkModel
   func getMatchValuePicks() async throws -> MatchValuePickModel
@@ -18,5 +18,7 @@ public protocol MatchesRepositoryInterface {
   func getMatchImage() async throws -> MatchImageModel
   func getMatchContacts() async throws -> MatchContactsModel
   func getUserRejectReason() async throws -> UserRejectReasonModel
-  func patchCheckMatchPiece() async throws -> VoidModel
+  func patchCheckMatchPiece(matchId: Int) async throws -> VoidModel
+  func postCreateNewMatch() async throws -> CreateNewMatchModel
+  func getCanFreeMatchToday() async throws -> CanFreeMatchModel
 }

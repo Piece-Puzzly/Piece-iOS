@@ -72,7 +72,7 @@ fileprivate struct BackgroundView: View {
   private var backgroundColor: Color {
     switch model.matchStatus {
     case .GREEN_LIGHT:
-      return model.matchingType == .auto
+      return model.matchType == .AUTO
       ? .primaryLight
       : .grayscaleWhite
       

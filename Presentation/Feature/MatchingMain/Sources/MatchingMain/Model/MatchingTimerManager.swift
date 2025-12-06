@@ -11,14 +11,14 @@ import PCFoundationExtension
 
 @Observable
 final class MatchingTimerManager {
-  private let matchedDateTime: String
+  private let matchedDate: Date
   private var timer: Timer?
   private var expirationDate: Date?
 
   var remainingTime: String = "24:00:00"
 
-  init(matchedDateTime: String) {
-    self.matchedDateTime = matchedDateTime
+  init(matchedDate: Date) {
+    self.matchedDate = matchedDate
     setupTimer()
   }
 
@@ -27,17 +27,6 @@ final class MatchingTimerManager {
   }
 
   private func setupTimer() {
-    // ISO8601 문자열을 Date로 변환 (타임존 없는 형식)
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-    formatter.locale = Locale(identifier: "en_US_POSIX") // 국제 표준: ISO8601 같은 표준 날짜 형식을 파싱할 때는 언어/지역과 무관한 POSIX 로케일 사용
-    formatter.timeZone = TimeZone.current
-
-    guard let matchedDate = formatter.date(from: matchedDateTime) else {
-      remainingTime = "00:00:00"
-      return
-    }
-
     // 매칭 시간 + 24시간 = 만료 시간
     expirationDate = Calendar.current.date(byAdding: .hour, value: 24, to: matchedDate)
 
