@@ -20,7 +20,7 @@ public enum MatchesEndpoint: TargetType {
   case block(matchId: Int)
   case contacts
   case image
-  case checkMatchPiece
+  case checkMatchPiece(matchId: Int)
   case createNewMatch
   case canFreeMatchToday
 
@@ -52,7 +52,7 @@ public enum MatchesEndpoint: TargetType {
     case let .block(matchId): "api/matches/\(matchId)/blocks"
     case .contacts: "api/matches/contacts"
     case .image: "api/matches/images"
-    case .checkMatchPiece: "api/matches/pieces/check"
+    case let .checkMatchPiece(matchId): "api/matches/\(matchId)/pieces/check"
     case .createNewMatch: "api/matches/instants/new"
     case .canFreeMatchToday: "api/matches/instants/free/today"
     }

@@ -86,8 +86,8 @@ final class MatchesRepository: MatchesRepositoryInterface {
     return responseDTO.toDomain()
   }
   
-  func patchCheckMatchPiece() async throws -> VoidModel {
-    let endpoint = MatchesEndpoint.checkMatchPiece
+  func patchCheckMatchPiece(matchId: Int) async throws -> VoidModel {
+    let endpoint = MatchesEndpoint.checkMatchPiece(matchId: matchId)
     let responseDTO: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
     return responseDTO.toDomain()
   }

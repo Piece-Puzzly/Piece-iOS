@@ -122,12 +122,16 @@ private extension MatchingHomeViewModel {
     
     switch targetMatchingCard.matchStatus {
     case .BEFORE_OPEN:
-      break // TODO:  - 1. `BEFORE_OPEN`상태의 경우, 구 매칭 조각 확인 체크 API(/api/matches/pieces/check) 콜 해야함 // 아직 API 안나옴
+      Task {
+        _ = try await patchMatchesCheckPieceUseCase.execute(matchId: matchId)
+        // TODO: 매칭 상세 이동
+      }
       
     case .WAITING, .RESPONDED, .GREEN_LIGHT:
       // - 2.2.   `MATCHED`상태가 아닌 정상적인 경우 (✅)
       // - 2.2.1. 유/무료 카드 (basic, trialPremium, auto) 상관 없이 "매칭 상세"로 진입 (✅)
       // - 2.2.2. matchId를 View의 router에게 줘서 화면전환 구현 (✅)
+      // TODO: 매칭 상세 이동
       break
 
       // - 2.1.1.       `MATCHED`상태의 경우 (✅)
@@ -136,6 +140,7 @@ private extension MatchingHomeViewModel {
       case .BASIC:
         // - 2.1.2.1.   (기본 매칭, basic) 무료로 바로 MatchResultView 이동 (✅)
         // - 2.1.2.2.   matchId를 View의 router에게 줘서 화면전환 구현 (✅)
+        // TODO: 연락처 확인 화면 이동
         break
       case .TRIAL, .PREMIUM, .AUTO:
         presentedAlert = .contactConfirm(matchId: matchId) // "연락처 확인 알럿"으로 진입 (✅)

@@ -312,7 +312,7 @@ final class MatchingMainViewModel {
   
   private func patchCheckMatchingPiece() async {
     do {
-      _ = try await patchMatchesCheckPieceUseCase.execute()
+      _ = try await patchMatchesCheckPieceUseCase.execute(matchId: 0)
     } catch {
       self.error = error
     }

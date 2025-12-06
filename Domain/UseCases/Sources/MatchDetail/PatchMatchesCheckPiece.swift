@@ -9,7 +9,7 @@ import Entities
 import RepositoryInterfaces
 
 public protocol PatchMatchesCheckPieceUseCase {
-  func execute() async throws -> VoidModel
+  func execute(matchId: Int) async throws -> VoidModel
 }
 
 final class PatchMatchesCheckPieceUseCaseImpl: PatchMatchesCheckPieceUseCase {
@@ -19,7 +19,7 @@ final class PatchMatchesCheckPieceUseCaseImpl: PatchMatchesCheckPieceUseCase {
     self.repository = repository
   }
   
-  func execute() async throws -> VoidModel {
-    try await repository.patchCheckMatchPiece()
+  func execute(matchId: Int) async throws -> VoidModel {
+    try await repository.patchCheckMatchPiece(matchId: matchId)
   }
 }
