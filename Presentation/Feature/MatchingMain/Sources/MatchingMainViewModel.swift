@@ -312,7 +312,7 @@ final class MatchingMainViewModel {
   
   private func acceptMatch() async {
     do {
-      _ = try await acceptMatchUseCase.execute()
+      _ = try await acceptMatchUseCase.execute(matchId: matchId)
       await getMatchesInfo()
     } catch {
       self.error = error

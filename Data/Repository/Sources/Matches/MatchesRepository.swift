@@ -43,8 +43,8 @@ final class MatchesRepository: MatchesRepositoryInterface {
     return responseDTO.toDomain()
   }
   
-  func acceptMatch() async throws -> VoidModel {
-    let endpoint = MatchesEndpoint.accept
+  func acceptMatch(matchId: Int) async throws -> VoidModel {
+    let endpoint = MatchesEndpoint.accept(matchId: matchId)
     let responseDTO: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
     return responseDTO.toDomain()
   }
@@ -56,8 +56,8 @@ final class MatchesRepository: MatchesRepositoryInterface {
     return responseDTO.toDomain()
   }
 
-  func refuseMatch() async throws -> VoidModel {
-    let endpoint = MatchesEndpoint.refuse
+  func refuseMatch(matchId: Int) async throws -> VoidModel {
+    let endpoint = MatchesEndpoint.refuse(matchId: matchId)
     let responseDTO: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
     return responseDTO.toDomain()
   }

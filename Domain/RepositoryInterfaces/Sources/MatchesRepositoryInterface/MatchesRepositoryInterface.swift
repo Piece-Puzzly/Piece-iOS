@@ -12,8 +12,8 @@ public protocol MatchesRepositoryInterface {
   func getMatchesProfileBasic(matchId: Int) async throws -> MatchProfileBasicModel
   func getMatchValueTalks(matchId: Int) async throws -> MatchValueTalkModel
   func getMatchValuePicks(matchId: Int) async throws -> MatchValuePickModel
-  func acceptMatch() async throws -> VoidModel
-  func refuseMatch() async throws -> VoidModel
+  func acceptMatch(matchId: Int) async throws -> VoidModel
+  func refuseMatch(matchId: Int) async throws -> VoidModel
   func blockUser(matchId: Int) async throws -> VoidModel
   func getMatchImage() async throws -> MatchImageModel
   func getMatchContacts() async throws -> MatchContactsModel

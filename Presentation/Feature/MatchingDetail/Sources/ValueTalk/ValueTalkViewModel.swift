@@ -165,7 +165,7 @@ final class ValueTalkViewModel {
   
   private func acceptMatch() async {
     do {
-      _ = try await acceptMatchUseCase.execute()
+      _ = try await acceptMatchUseCase.execute(matchId: matchId)
     } catch {
       self.error = error
     }
@@ -173,7 +173,7 @@ final class ValueTalkViewModel {
   
   private func refuseMatch() async {
     do {
-      _ = try await refuseMatchUseCase.execute()
+      _ = try await refuseMatchUseCase.execute(matchId: matchId)
     } catch {
       self.error = error
     }

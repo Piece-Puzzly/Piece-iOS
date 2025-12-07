@@ -14,9 +14,9 @@ public enum MatchesEndpoint: TargetType {
   case profile(matchId: Int)
   case valueTalks(matchId: Int)
   case valuePicks(matchId: Int)
-  case accept
+  case accept(matchId: Int)
   case matchesInfos
-  case refuse
+  case refuse(matchId: Int)
   case block(matchId: Int)
   case contacts
   case image
@@ -46,9 +46,9 @@ public enum MatchesEndpoint: TargetType {
     case let .profile(matchId): "api/matches/\(matchId)/profiles"
     case let .valueTalks(matchId): "api/matches/\(matchId)/values/talks"
     case let .valuePicks(matchId): "api/matches/\(matchId)/values/picks"
-    case .accept: "api/matches/accept"
+    case let .accept(matchId): "api/matches/\(matchId)/accept"
     case .matchesInfos: "api/matches/infos"
-    case .refuse: "api/matches/refuse"
+    case let .refuse(matchId): "api/matches/\(matchId)/refuse"
     case let .block(matchId): "api/matches/\(matchId)/blocks"
     case .contacts: "api/matches/contacts"
     case .image: "api/matches/images"

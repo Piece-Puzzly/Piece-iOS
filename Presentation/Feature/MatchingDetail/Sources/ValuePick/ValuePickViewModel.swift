@@ -132,7 +132,7 @@ final class ValuePickViewModel {
   
   private func acceptMatch() async {
     do {
-      _ = try await acceptMatchUseCase.execute()
+      _ = try await acceptMatchUseCase.execute(matchId: matchId)
     } catch {
       self.error = error
     }
