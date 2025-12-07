@@ -148,7 +148,7 @@ private extension MatchingHomeViewModel {
         presentedAlert = .contactConfirm(matchId: matchId) // "연락처 확인 알럿"으로 진입 (✅)
       }
 
-    case .REFUSED: // 거절한 상대는 안나옴
+    case .REFUSED, .BLOCKED: // 거절한 상대는 안나옴
       break
     }
   }

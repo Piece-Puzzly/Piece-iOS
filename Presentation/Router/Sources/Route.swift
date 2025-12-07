@@ -28,7 +28,7 @@ public enum Route: Hashable {
   case matchProfileBasic(matchId: Int)
   case matchValueTalk(matchId: Int)
   case matchValuePick(matchId: Int)
-  case matchResult(nickname: String)
+  case matchResult(matchId: Int, nickname: String)
   
   // MARK: - 프로필
   case profileBasic

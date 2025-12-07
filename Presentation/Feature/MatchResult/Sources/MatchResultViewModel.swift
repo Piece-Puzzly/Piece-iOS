@@ -27,14 +27,17 @@ final class MatchResultViewModel {
   private(set) var matchingAnimationOpacity: Double = 1
   private(set) var photoOpacity: Double = 0
   
+  private(set) var matchId: Int
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
   private let getMatchContactsUseCase: GetMatchContactsUseCase
   
   init(
+    matchId: Int,
     nickname: String,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     getMatchContactsUseCase: GetMatchContactsUseCase
   ) {
+    self.matchId = matchId
     self.nickname = nickname
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
     self.getMatchContactsUseCase = getMatchContactsUseCase
@@ -69,7 +72,7 @@ final class MatchResultViewModel {
   
   private func getMatchPhoto() async {
     do {
-      let imageUri = try await getMatchPhotoUseCase.execute()
+      let imageUri = try await getMatchPhotoUseCase.execute(matchId: matchId)
       self.imageUri = imageUri
     } catch {
       print(error)
@@ -78,7 +81,7 @@ final class MatchResultViewModel {
   
   private func getMatchContacts() async {
     do {
-      let contacts = try await getMatchContactsUseCase.execute().contacts
+      let contacts = try await getMatchContactsUseCase.execute(matchId: matchId).contacts
       self.contacts = contacts.map { ContactButtonModel(contact: $0) }
       selectedContact = self.contacts.first
     } catch {

@@ -52,7 +52,7 @@ final class ValueTalkViewModel {
       switch matchStatus {
       case .BEFORE_OPEN: isAcceptButtonEnabled = true
       case .WAITING: isAcceptButtonEnabled = true
-      case .REFUSED: isAcceptButtonEnabled = false
+      case .REFUSED, .BLOCKED: isAcceptButtonEnabled = false
       case .RESPONDED: isAcceptButtonEnabled = false
       case .GREEN_LIGHT: isAcceptButtonEnabled = true
       case .MATCHED: isAcceptButtonEnabled = false
@@ -156,7 +156,7 @@ final class ValueTalkViewModel {
   
   private func fetchMatchPhoto() async {
     do {
-      let uri = try await getMatchPhotoUseCase.execute()
+      let uri = try await getMatchPhotoUseCase.execute(matchId: matchId)
       photoUri = uri
     } catch {
       self.error = error

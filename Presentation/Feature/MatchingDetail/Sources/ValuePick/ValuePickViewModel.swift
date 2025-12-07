@@ -123,7 +123,7 @@ final class ValuePickViewModel {
   
   private func fetchMatchPhoto() async {
     do {
-      let uri = try await getMatchPhotoUseCase.execute()
+      let uri = try await getMatchPhotoUseCase.execute(matchId: matchId)
       photoUri = uri
     } catch {
       self.error = error

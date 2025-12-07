@@ -9,7 +9,7 @@ import Entities
 import RepositoryInterfaces
 
 public protocol GetMatchContactsUseCase {
-  func execute() async throws -> MatchContactsModel
+  func execute(matchId: Int) async throws -> MatchContactsModel
 }
 
 final class GetMatchContactsUseCaseImpl: GetMatchContactsUseCase {
@@ -19,7 +19,7 @@ final class GetMatchContactsUseCaseImpl: GetMatchContactsUseCase {
     self.repository = repository
   }
   
-  func execute() async throws -> MatchContactsModel {
-    try await repository.getMatchContacts()
+  func execute(matchId: Int) async throws -> MatchContactsModel {
+    try await repository.getMatchContacts(matchId: matchId)
   }
 }

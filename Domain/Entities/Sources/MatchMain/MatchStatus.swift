@@ -14,6 +14,7 @@ public enum MatchStatus: String {
   case RESPONDED = "ACCEPTED"
   case GREEN_LIGHT
   case MATCHED
+  case BLOCKED
   
   public init(_ status: String) {
     self = MatchStatus(rawValue: status) ?? .BEFORE_OPEN

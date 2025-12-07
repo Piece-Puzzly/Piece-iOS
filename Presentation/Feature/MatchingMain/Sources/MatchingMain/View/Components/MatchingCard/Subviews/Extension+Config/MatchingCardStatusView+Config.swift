@@ -66,7 +66,7 @@ extension MatchingCardStatusView {
       )
       
     /// (인연 거절) 상태 -> 보이면 안됨 그냥 더미 상태 값
-    case .REFUSED:
+    case .REFUSED, .BLOCKED:
       return StatusConfig(
         icon: DesignSystemAsset.Icons.matchingModeLoading20.swiftUIImage,
         statusText: "거절 완료",

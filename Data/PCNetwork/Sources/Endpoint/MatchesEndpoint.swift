@@ -18,8 +18,8 @@ public enum MatchesEndpoint: TargetType {
   case matchesInfos
   case refuse(matchId: Int)
   case block(matchId: Int)
-  case contacts
-  case image
+  case contacts(matchId: Int)
+  case image(matchId: Int)
   case checkMatchPiece(matchId: Int)
   case createNewMatch
   case canFreeMatchToday
@@ -50,8 +50,8 @@ public enum MatchesEndpoint: TargetType {
     case .matchesInfos: "api/matches/infos"
     case let .refuse(matchId): "api/matches/\(matchId)/refuse"
     case let .block(matchId): "api/matches/\(matchId)/blocks"
-    case .contacts: "api/matches/contacts"
-    case .image: "api/matches/images"
+    case let .contacts(matchId): "api/matches/\(matchId)/contacts"
+    case let .image(matchId): "api/matches/\(matchId)/images"
     case let .checkMatchPiece(matchId): "api/matches/\(matchId)/pieces/check"
     case .createNewMatch: "api/matches/instants/new"
     case .canFreeMatchToday: "api/matches/instants/free/today"

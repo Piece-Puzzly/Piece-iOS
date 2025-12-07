@@ -35,7 +35,7 @@ struct MatchDetailPhotoView: View {
       switch matchStatus {
       case .BEFORE_OPEN: isAcceptButtonEnabled = true
       case .WAITING: isAcceptButtonEnabled = true
-      case .REFUSED: isAcceptButtonEnabled = false
+      case .REFUSED, .BLOCKED: isAcceptButtonEnabled = false
       case .RESPONDED: isAcceptButtonEnabled = false
       case .GREEN_LIGHT: isAcceptButtonEnabled = true
       case .MATCHED: isAcceptButtonEnabled = false

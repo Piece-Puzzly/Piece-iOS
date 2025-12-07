@@ -200,12 +200,13 @@ public struct Coordinator {
       )
       
       // MARK: - 매칭 결과
-    case let .matchResult(nickname): // 연락처 공개
+    case let .matchResult(matchId, nickname): // 연락처 공개
       let matchesRepository = repositoryFactory.createMatchesRepository()
       let matchPhotoUseCase = UseCaseFactory.createGetMatchPhotoUseCase(repository: matchesRepository)
       let matchContactsUseCase = UseCaseFactory.createGetMatchContactsUseCase(repository: matchesRepository)
       
       MatchResultViewFactory.createMatchResultView(
+        matchId: matchId,
         nickname: nickname,
         getMatchPhotoUseCase: matchPhotoUseCase,
         getMatchContactsUseCase: matchContactsUseCase
