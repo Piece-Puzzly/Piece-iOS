@@ -35,11 +35,13 @@ final class ValueTalkViewModel {
   }
   
   init(
+    matchId: Int,
     getMatchValueTalkUseCase: GetMatchValueTalkUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     refuseMatchUseCase: RefuseMatchUseCase
   ) {
+    self.matchId = matchId
     self.getMatchValueTalkUseCase = getMatchValueTalkUseCase
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
@@ -78,6 +80,7 @@ final class ValueTalkViewModel {
   private(set) var photoUri: String = ""
   private(set) var isAcceptButtonEnabled: Bool
   private(set) var completedMatchAction: MatchActionType? = nil
+  private(set) var matchId: Int
   private let getMatchValueTalkUseCase: GetMatchValueTalkUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
@@ -129,7 +132,7 @@ final class ValueTalkViewModel {
   
   private func fetchMatchValueTalk() async {
     do {
-      let entity = try await getMatchValueTalkUseCase.execute(matchId: 5640)
+      let entity = try await getMatchValueTalkUseCase.execute(matchId: matchId)
       valueTalkModel = ValueTalkModel(
         id: entity.id,
         description: entity.description,

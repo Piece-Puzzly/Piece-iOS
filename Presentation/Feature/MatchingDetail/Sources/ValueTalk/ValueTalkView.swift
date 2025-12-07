@@ -40,6 +40,7 @@ struct ValueTalkView: View {
   ]
   
   init(
+    matchId: Int,
     getMatchValueTalkUseCase: GetMatchValueTalkUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
@@ -47,6 +48,7 @@ struct ValueTalkView: View {
   ) {
     _viewModel = .init(
       wrappedValue: .init(
+        matchId: matchId,
         getMatchValueTalkUseCase: getMatchValueTalkUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
         acceptMatchUseCase: acceptMatchUseCase,

@@ -29,12 +29,14 @@ public struct MatchDetailViewFactory {
   
   @ViewBuilder
   public static func createMatchValueTalkView(
+    matchId: Int,
     getMatchValueTalkUseCase: GetMatchValueTalkUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     refuseMatchUseCase: RefuseMatchUseCase
   ) -> some View {
     ValueTalkView(
+      matchId: matchId,
       getMatchValueTalkUseCase: getMatchValueTalkUseCase,
       getMatchPhotoUseCase: getMatchPhotoUseCase,
       acceptMatchUseCase: acceptMatchUseCase,
@@ -45,11 +47,13 @@ public struct MatchDetailViewFactory {
   
   @ViewBuilder
   public static func createMatchValuePickView(
+    matchId: Int,
     getMatchValuePickUseCase: GetMatchValuePickUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase
   ) -> some View {
     ValuePickView(
+      matchId: matchId,
       getMatchValuePickUseCase: getMatchValuePickUseCase,
       getMatchPhotoUseCase: getMatchPhotoUseCase,
       acceptMatchUseCase: acceptMatchUseCase

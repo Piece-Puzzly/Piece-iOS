@@ -29,10 +29,12 @@ final class ValuePickViewModel {
   }
   
   init(
+    matchId: Int,
     getMatchValuePickUseCase: GetMatchValuePickUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase
   ) {
+    self.matchId = matchId
     self.getMatchValuePickUseCase = getMatchValuePickUseCase
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
@@ -59,6 +61,7 @@ final class ValuePickViewModel {
   private(set) var differentFromMeCount: Int = 0
   private(set) var photoUri: String = ""
   private(set) var isMatchAccepted: Bool = false
+  private(set) var matchId: Int
   private var valuePicks: [MatchValuePickItemModel] = []
   private let getMatchValuePickUseCase: GetMatchValuePickUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
@@ -103,7 +106,7 @@ final class ValuePickViewModel {
   
   func fetchMatchValuePick() async {
     do {
-      let entity = try await getMatchValuePickUseCase.execute(matchId: 5640)
+      let entity = try await getMatchValuePickUseCase.execute(matchId: matchId)
       valuePickModel = entity
       valuePicks = entity.valuePicks
       displayedValuePicks = entity.valuePicks

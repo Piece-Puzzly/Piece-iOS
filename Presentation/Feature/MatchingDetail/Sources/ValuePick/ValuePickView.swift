@@ -18,12 +18,14 @@ struct ValuePickView: View {
   @Environment(PCToastManager.self) private var toastManager: PCToastManager
 
   init(
+    matchId: Int,
     getMatchValuePickUseCase: GetMatchValuePickUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase
   ) {
     _viewModel = .init(
       wrappedValue: .init(
+        matchId: matchId,
         getMatchValuePickUseCase: getMatchValuePickUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
         acceptMatchUseCase: acceptMatchUseCase
@@ -201,7 +203,7 @@ struct ValuePickView: View {
     CircleButton(
       type: .solid_primary,
       icon: DesignSystemAsset.Icons.arrowRight32.swiftUIImage,
-      action: { router.push(to: .matchValueTalk) }
+      action: { router.push(to: .matchValueTalk(matchId: viewModel.matchId)) }
     )
   }
   

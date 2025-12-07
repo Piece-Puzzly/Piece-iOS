@@ -164,25 +164,27 @@ public struct Coordinator {
         acceptMatchUseCase: acceptMatchUseCase
       )
       
-    case .matchValueTalk:
+    case let .matchValueTalk(matchId):
       let matchesRepository = repositoryFactory.createMatchesRepository()
       let getMatchValueTalkUseCase = UseCaseFactory.createGetMatchValueTalkUseCase(repository: matchesRepository)
       let getMatchPhotoUseCase = UseCaseFactory.createGetMatchPhotoUseCase(repository: matchesRepository)
       let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
       let refuseMatchUseCase = UseCaseFactory.createRefuseMatchUseCase(repository: matchesRepository)
       MatchDetailViewFactory.createMatchValueTalkView(
+        matchId: matchId,
         getMatchValueTalkUseCase: getMatchValueTalkUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
         refuseMatchUseCase: refuseMatchUseCase
       )
       
-    case .matchValuePick:
+    case let .matchValuePick(matchId):
       let matchesRepository = repositoryFactory.createMatchesRepository()
       let getMatchValuePickUseCase = UseCaseFactory.createGetMatchValuePickUseCase(repository: matchesRepository)
       let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
       let getMatchPhotoUseCase = UseCaseFactory.createGetMatchPhotoUseCase(repository: matchesRepository)
       MatchDetailViewFactory.createMatchValuePickView(
+        matchId: matchId,
         getMatchValuePickUseCase: getMatchValuePickUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
         acceptMatchUseCase: acceptMatchUseCase

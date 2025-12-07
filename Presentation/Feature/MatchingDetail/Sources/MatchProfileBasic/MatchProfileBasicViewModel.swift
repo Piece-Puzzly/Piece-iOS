@@ -33,7 +33,7 @@ final class MatchProfileBasicViewModel {
   private(set) var matchingBasicInfoModel: BasicInfoModel?
   private(set) var photoUri: String = ""
   private(set) var isMatchAccepted: Bool = false
-  private let matchId: Int
+  private(set) var matchId: Int
   private let getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
