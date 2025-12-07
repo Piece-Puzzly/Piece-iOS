@@ -238,6 +238,7 @@ struct MatchProfileBasicView: View {
       nextButton
     }
     .padding(.top, 12)
+    .padding(.bottom, 10)
   }
   
   private var photoButton: some View {
