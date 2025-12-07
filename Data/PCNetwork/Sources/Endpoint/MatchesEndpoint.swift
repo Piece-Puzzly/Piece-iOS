@@ -12,8 +12,8 @@ import LocalStorage
 
 public enum MatchesEndpoint: TargetType {
   case profile(matchId: Int)
-  case valueTalks
-  case valuePicks
+  case valueTalks(matchId: Int)
+  case valuePicks(matchId: Int)
   case accept
   case matchesInfos
   case refuse
@@ -44,8 +44,8 @@ public enum MatchesEndpoint: TargetType {
   public var path: String {
     switch self {
     case let .profile(matchId): "api/matches/\(matchId)/profiles"
-    case .valueTalks: "api/matches/values/talks"
-    case .valuePicks: "api/matches/values/picks"
+    case let .valueTalks(matchId): "api/matches/\(matchId)/values/talks"
+    case let .valuePicks(matchId): "api/matches/\(matchId)/values/picks"
     case .accept: "api/matches/accept"
     case .matchesInfos: "api/matches/infos"
     case .refuse: "api/matches/refuse"

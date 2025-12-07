@@ -31,14 +31,14 @@ final class MatchesRepository: MatchesRepositoryInterface {
     return responseDTO.toDomain()
   }
   
-  func getMatchValueTalks() async throws -> MatchValueTalkModel {
-    let endpoint = MatchesEndpoint.valueTalks
+  func getMatchValueTalks(matchId: Int) async throws -> MatchValueTalkModel {
+    let endpoint = MatchesEndpoint.valueTalks(matchId: matchId)
     let responseDTO: MatchValueTalksResponseDTO = try await networkService.request(endpoint: endpoint)
     return responseDTO.toDomain()
   }
   
-  func getMatchValuePicks() async throws -> MatchValuePickModel {
-    let endpoint = MatchesEndpoint.valuePicks
+  func getMatchValuePicks(matchId: Int) async throws -> MatchValuePickModel {
+    let endpoint = MatchesEndpoint.valuePicks(matchId: matchId)
     let responseDTO: MatchValuePicksResponseDTO = try await networkService.request(endpoint: endpoint)
     return responseDTO.toDomain()
   }

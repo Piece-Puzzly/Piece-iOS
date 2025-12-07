@@ -129,7 +129,7 @@ final class ValueTalkViewModel {
   
   private func fetchMatchValueTalk() async {
     do {
-      let entity = try await getMatchValueTalkUseCase.execute()
+      let entity = try await getMatchValueTalkUseCase.execute(matchId: 5640)
       valueTalkModel = ValueTalkModel(
         id: entity.id,
         description: entity.description,

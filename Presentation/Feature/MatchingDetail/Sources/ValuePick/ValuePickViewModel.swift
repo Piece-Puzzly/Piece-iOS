@@ -103,7 +103,7 @@ final class ValuePickViewModel {
   
   func fetchMatchValuePick() async {
     do {
-      let entity = try await getMatchValuePickUseCase.execute()
+      let entity = try await getMatchValuePickUseCase.execute(matchId: 5640)
       valuePickModel = entity
       valuePicks = entity.valuePicks
       displayedValuePicks = entity.valuePicks
