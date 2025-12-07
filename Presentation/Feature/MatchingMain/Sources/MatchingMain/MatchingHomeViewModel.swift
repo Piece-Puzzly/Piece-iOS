@@ -101,6 +101,8 @@ final class MatchingHomeViewModel {
 private extension MatchingHomeViewModel {
   func handleOnAppear() {
     destination = nil
+    selectedMatchId = nil
+    presentedAlert = nil
     
     Task {
       await getUserRole()
@@ -255,8 +257,13 @@ private extension MatchingHomeViewModel {
   }
   
   func determineInitialSelection() -> Int? {
+    let filteredInfos = matchInfosList
+      .filter { $0.matchStatus != .REFUSED }
+      .filter { $0.matchStatus != .BLOCKED }
+      .filter { !$0.isBlocked }
+    
     // 1. 타의적 매칭이 아닌 첫 번째 카드
-    if let firstNonAuto = matchInfosList.first(where: { $0.matchType != .AUTO }) {
+    if let firstNonAuto = filteredInfos.first(where: { $0.matchType != .AUTO }) {
       return firstNonAuto.matchId
     }
     // 2. 타의적 매칭만 있는 경우 첫 번째 카드
@@ -265,7 +272,10 @@ private extension MatchingHomeViewModel {
   
   // TODO: (필수) 새 카드 생성 및 API 호출 시 호출
   func updateMatchingCards() {
-    let filteredInfos = matchInfosList.filter { $0.matchStatus != .REFUSED }
+    let filteredInfos = matchInfosList
+      .filter { $0.matchStatus != .REFUSED }
+      .filter { $0.matchStatus != .BLOCKED }
+      .filter { !$0.isBlocked }
     let currentIds = Set(filteredInfos.map { $0.matchId })
     
     timerManagers = timerManagers.filter { currentIds.contains($0.key) }
