@@ -59,7 +59,7 @@ final class MatchingMainViewModel {
     var destination: Route? {
       switch self {
       case .pending: .previewProfileBasic
-      case .checkMatchingPiece: .matchProfileBasic
+      case .checkMatchingPiece: nil // matchId is needed, set in ViewModel
       case .acceptMatching: nil
       case .responseComplete: nil
       case let .checkContact(nickname): .matchResult(nickname: nickname)
@@ -102,6 +102,7 @@ final class MatchingMainViewModel {
   private(set) var error: Error?
   private(set) var rejectReasonImage: Bool = false
   private(set) var rejectReasonValues: Bool = false
+  private(set) var matchId: Int = 0
   private let getUserInfoUseCase: GetUserInfoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
   private let getMatchesInfoUseCase: GetMatchesInfoUseCase
@@ -159,7 +160,14 @@ final class MatchingMainViewModel {
   }
   
   private func handleMatchingButtonTap() {
-    if matchingButtonDestination == nil || matchingButtonDestination == .matchProfileBasic {
+    let isMatchProfileBasic: Bool
+    if case .matchProfileBasic = matchingButtonDestination {
+      isMatchProfileBasic = true
+    } else {
+      isMatchProfileBasic = false
+    }
+
+    if matchingButtonDestination == nil || isMatchProfileBasic {
       switch matchingButtonState {
       case .acceptMatching:
         isMatchAcceptAlertPresented = true
@@ -167,7 +175,8 @@ final class MatchingMainViewModel {
       case .checkMatchingPiece:
         Task {
           await patchCheckMatchingPiece()
-          
+          destination = .matchProfileBasic(matchId: matchId)
+
           PCAmplitude.trackButtonClick(
             screenName: .matchMainHome,
             buttonName: .checkRelationShip
@@ -180,8 +189,8 @@ final class MatchingMainViewModel {
   }
   
   private func handleProfileInfoTap() {
-    destination = .matchProfileBasic
-    
+    destination = .matchProfileBasic(matchId: matchId)
+
     switch matchingButtonState {
     case .pending:
       break
@@ -312,7 +321,7 @@ final class MatchingMainViewModel {
   
   private func patchCheckMatchingPiece() async {
     do {
-      _ = try await patchMatchesCheckPieceUseCase.execute(matchId: 0)
+      _ = try await patchMatchesCheckPieceUseCase.execute(matchId: matchId)
     } catch {
       self.error = error
     }

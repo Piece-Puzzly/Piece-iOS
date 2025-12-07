@@ -63,6 +63,10 @@ struct MatchingHomeView: View {
     .pcAlert(item: $matchingHomeViewModel.presentedAlert) { alertType in
       MatchingHomeAlertView(matchingHomeViewModel: matchingHomeViewModel, alertType: alertType)
     }
+    .onChange(of: matchingHomeViewModel.destination) { _, destination in
+      guard let destination else { return }
+      router.push(to: destination)
+    }
     .spinning(of: matchingHomeViewModel.showSpinner)
   }
 }

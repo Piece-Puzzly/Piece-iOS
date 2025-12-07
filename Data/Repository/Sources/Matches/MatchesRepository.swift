@@ -25,8 +25,8 @@ final class MatchesRepository: MatchesRepositoryInterface {
     return responseDTO.map { $0.toDomain() }
   }
   
-  func getMatchesProfileBasic() async throws -> MatchProfileBasicModel {
-    let endpoint = MatchesEndpoint.profileBasic
+  func getMatchesProfileBasic(matchId: Int) async throws -> MatchProfileBasicModel {
+    let endpoint = MatchesEndpoint.profile(matchId: matchId)
     let responseDTO: MatchProfileBasicResponseDTO = try await networkService.request(endpoint: endpoint)
     return responseDTO.toDomain()
   }

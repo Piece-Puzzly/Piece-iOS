@@ -48,6 +48,7 @@ final class MatchingHomeViewModel {
   private(set) var puzzleCount: Int = 0
   private(set) var showSpinner: Bool = false
   private(set) var isTrial: Bool = false
+  private(set) var destination: Route? = nil
   
   var presentedAlert: MatchingAlertType? = nil
   
@@ -99,6 +100,8 @@ final class MatchingHomeViewModel {
 // MARK: - Private Methods
 private extension MatchingHomeViewModel {
   func handleOnAppear() {
+    destination = nil
+    
     Task {
       await getUserRole()
     }
@@ -122,19 +125,18 @@ private extension MatchingHomeViewModel {
     
     switch targetMatchingCard.matchStatus {
     case .BEFORE_OPEN:
-      Task {
-        _ = try await patchMatchesCheckPieceUseCase.execute(matchId: matchId)
-        // TODO: 매칭 상세 이동
+      withSpinner { [weak self] in
+        _ = try? await self?.patchMatchesCheckPieceUseCase.execute(matchId: matchId)
+        PCAmplitude.trackButtonClick(
+          screenName: .matchMainHome,
+          buttonName: .checkRelationShip
+        )
+        self?.destination = .matchProfileBasic(matchId: matchId)
       }
       
     case .WAITING, .RESPONDED, .GREEN_LIGHT:
-      // - 2.2.   `MATCHED`상태가 아닌 정상적인 경우 (✅)
-      // - 2.2.1. 유/무료 카드 (basic, trialPremium, auto) 상관 없이 "매칭 상세"로 진입 (✅)
-      // - 2.2.2. matchId를 View의 router에게 줘서 화면전환 구현 (✅)
-      // TODO: 매칭 상세 이동
-      break
+      destination = .matchProfileBasic(matchId: matchId)
 
-      // - 2.1.1.       `MATCHED`상태의 경우 (✅)
     case .MATCHED:
       switch targetMatchingCard.matchType {
       case .BASIC:
@@ -159,7 +161,7 @@ private extension MatchingHomeViewModel {
       if isTrial {
         let result = try await createNewMatchUseCase.execute()
         let matchId = result.matchId
-        // TODO: 매칭상세(with: matchId) 이동
+        destination = .matchProfileBasic(matchId: matchId)
       } else {
         presentedAlert = .createNewMatch // premium이면 "새로운 인연 만나기 알럿"으로 진입
       }
@@ -314,7 +316,7 @@ private extension MatchingHomeViewModel {
       do {
         let result = try await createNewMatchUseCase.execute()
         let matchId = result.matchId
-        // TODO: 매칭상세(with: matchId) 이동
+        destination = .matchProfileBasic(matchId: matchId)
       } catch {
         print("Create New Match Error: \(error.localizedDescription)")
         // TODO: Handle error

@@ -10,6 +10,8 @@ import Foundation
 
 public struct MatchProfileBasicResponseDTO: Decodable {
   public let matchId: Int
+  public let matchType: MatchType
+  public let createdAt: Date
   public let description: String
   public let nickname: String
   public let age: Int
@@ -19,12 +21,15 @@ public struct MatchProfileBasicResponseDTO: Decodable {
   public let location: String
   public let job: String
   public let smokingStatus: String
+  public let imageViewed: Bool
 }
 
 public extension MatchProfileBasicResponseDTO {
   func toDomain() -> MatchProfileBasicModel {
     MatchProfileBasicModel(
       id: matchId,
+      matchType: matchType,
+      createdAt: createdAt,
       description: description,
       nickname: nickname,
       age: age,
@@ -33,7 +38,8 @@ public extension MatchProfileBasicResponseDTO {
       weight: weight,
       location: location,
       job: job,
-      smokingStatus: smokingStatus
+      smokingStatus: smokingStatus,
+      imageViewed: imageViewed
     )
   }
 }

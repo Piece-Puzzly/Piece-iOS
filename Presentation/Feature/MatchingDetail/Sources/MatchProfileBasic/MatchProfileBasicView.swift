@@ -21,12 +21,14 @@ struct MatchProfileBasicView: View {
   @Environment(PCToastManager.self) private var toastManager: PCToastManager
   
   init(
+    matchId: Int,
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase
   ) {
     _viewModel = .init(
       wrappedValue: .init(
+        matchId: matchId,
         getMatchProfileBasicUseCase: getMatchProfileBasicUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
         acceptMatchUseCase: acceptMatchUseCase
@@ -299,46 +301,3 @@ struct MatchProfileBasicView: View {
     }
   }
 }
-
-#Preview {
-  MatchProfileBasicView(
-    getMatchProfileBasicUseCase: DummyGetMatchProfileUseCase(),
-    getMatchPhotoUseCase: DummyGetMatchPhotoUseCase(),
-    acceptMatchUseCase: DummyAcceptMatchUseCase()
-  )
-  .environment(Router())
-}
-
-private final class DummyGetMatchProfileUseCase: GetMatchProfileBasicUseCase {
-  func execute() async throws -> Entities.MatchProfileBasicModel {
-    return MatchProfileBasicModel(
-      id: 0,
-      description: "음악과 요리를 좋아하는",
-      nickname: "수줍은 수달",
-      age: 25,
-      birthYear: "00",
-      height: 180,
-      weight: 72,
-      location: "세종특별자치시",
-      job: "프리랜서",
-      smokingStatus: "비흡연"
-    )
-  }
-}
-
-private final class DummyGetMatchPhotoUseCase: GetMatchPhotoUseCase {
-  func execute() async throws -> String {
-    return "https://www.thesprucepets.com/thmb/AyzHgPQM_X8OKhXEd8XTVIa-UT0=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-145577979-d97e955b5d8043fd96747447451f78b7.jpg"
-  }
-}
-
-private final class DummyAcceptMatchUseCase: AcceptMatchUseCase {
-  func execute() async throws -> VoidModel {
-    VoidModel()
-  }
-  
-  func execute() async throws -> String {
-    return "https://www.thesprucepets.com/thmb/AyzHgPQM_X8OKhXEd8XTVIa-UT0=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-145577979-d97e955b5d8043fd96747447451f78b7.jpg"
-  }
-}
-

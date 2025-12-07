@@ -12,11 +12,13 @@ import PCAmplitude
 public struct MatchDetailViewFactory {
   @ViewBuilder
   public static func createMatchProfileBasicView(
+    matchId: Int,
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase
   ) -> some View {
     MatchProfileBasicView(
+      matchId: matchId,
       getMatchProfileBasicUseCase: getMatchProfileBasicUseCase,
       getMatchPhotoUseCase: getMatchPhotoUseCase,
       acceptMatchUseCase: acceptMatchUseCase

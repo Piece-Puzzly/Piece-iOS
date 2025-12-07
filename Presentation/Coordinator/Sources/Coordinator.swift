@@ -152,15 +152,16 @@ public struct Coordinator {
       )
       
       // MARK: - 매칭 상세
-    case .matchProfileBasic:
+    case let .matchProfileBasic(matchId):
       let matchesRepository = repositoryFactory.createMatchesRepository()
       let getMatchProfileBasicUseCase = UseCaseFactory.createGetMatchProfileBasicUseCase(repository: matchesRepository)
       let getMatchPhotoUseCase = UseCaseFactory.createGetMatchPhotoUseCase(repository: matchesRepository)
       let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
       MatchDetailViewFactory.createMatchProfileBasicView(
+        matchId: matchId,
         getMatchProfileBasicUseCase: getMatchProfileBasicUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
-        acceptMatchUseCase: acceptMatchUseCase,
+        acceptMatchUseCase: acceptMatchUseCase
       )
       
     case .matchValueTalk:

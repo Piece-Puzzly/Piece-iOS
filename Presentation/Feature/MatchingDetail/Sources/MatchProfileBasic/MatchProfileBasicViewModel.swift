@@ -33,15 +33,18 @@ final class MatchProfileBasicViewModel {
   private(set) var matchingBasicInfoModel: BasicInfoModel?
   private(set) var photoUri: String = ""
   private(set) var isMatchAccepted: Bool = false
+  private let matchId: Int
   private let getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
   
   init(
+    matchId: Int,
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase
   ) {
+    self.matchId = matchId
     self.getMatchProfileBasicUseCase = getMatchProfileBasicUseCase
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
@@ -76,7 +79,7 @@ final class MatchProfileBasicViewModel {
   
   private func fetchMatchingBasicInfo() async {
     do {
-      let entity = try await getMatchProfileBasicUseCase.execute()
+      let entity = try await getMatchProfileBasicUseCase.execute(matchId: matchId)
       matchingBasicInfoModel = BasicInfoModel(
         id: entity.id,
         nickname: entity.nickname,

@@ -11,7 +11,7 @@ import Foundation
 import LocalStorage
 
 public enum MatchesEndpoint: TargetType {
-  case profileBasic
+  case profile(matchId: Int)
   case valueTalks
   case valuePicks
   case accept
@@ -26,7 +26,7 @@ public enum MatchesEndpoint: TargetType {
 
   public var method: HTTPMethod {
     switch self {
-    case .profileBasic: .get
+    case .profile: .get
     case .valueTalks: .get
     case .valuePicks: .get
     case .accept: .post
@@ -43,7 +43,7 @@ public enum MatchesEndpoint: TargetType {
   
   public var path: String {
     switch self {
-    case .profileBasic: "api/matches/profiles/basic"
+    case let .profile(matchId): "api/matches/\(matchId)/profiles"
     case .valueTalks: "api/matches/values/talks"
     case .valuePicks: "api/matches/values/picks"
     case .accept: "api/matches/accept"
@@ -60,7 +60,7 @@ public enum MatchesEndpoint: TargetType {
   
   public var headers: [String : String] {
     switch self {
-    case .profileBasic:
+    case .profile:
       [NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")]
     
     case .valueTalks:
@@ -115,7 +115,7 @@ public enum MatchesEndpoint: TargetType {
   
   public var requestType: RequestType {
     switch self {
-    case .profileBasic: .plain
+    case .profile: .plain
     case .valueTalks: .plain
     case .valuePicks: .plain
     case .accept: .plain
