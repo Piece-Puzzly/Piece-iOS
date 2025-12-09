@@ -20,7 +20,6 @@ final class MatchResultViewModel {
     case didTapCopyButton
   }
   
-  let nickname: String
   var contacts: [ContactButtonModel] = []
   private(set) var selectedContact: ContactButtonModel?
   private(set) var imageUri: String = ""
@@ -28,18 +27,14 @@ final class MatchResultViewModel {
   private(set) var photoOpacity: Double = 0
   
   private(set) var matchId: Int
-  private let getMatchPhotoUseCase: GetMatchPhotoUseCase
+  private(set) var nickname: String = ""
   private let getMatchContactsUseCase: GetMatchContactsUseCase
   
   init(
     matchId: Int,
-    nickname: String,
-    getMatchPhotoUseCase: GetMatchPhotoUseCase,
     getMatchContactsUseCase: GetMatchContactsUseCase
   ) {
     self.matchId = matchId
-    self.nickname = nickname
-    self.getMatchPhotoUseCase = getMatchPhotoUseCase
     self.getMatchContactsUseCase = getMatchContactsUseCase
   }
   
@@ -66,23 +61,15 @@ final class MatchResultViewModel {
   private func onAppear() {
     Task {
       await getMatchContacts()
-      await getMatchPhoto()
-    }
-  }
-  
-  private func getMatchPhoto() async {
-    do {
-      let imageUri = try await getMatchPhotoUseCase.execute(matchId: matchId)
-      self.imageUri = imageUri
-    } catch {
-      print(error)
     }
   }
   
   private func getMatchContacts() async {
     do {
-      let contacts = try await getMatchContactsUseCase.execute(matchId: matchId).contacts
-      self.contacts = contacts.map { ContactButtonModel(contact: $0) }
+      let result = try await getMatchContactsUseCase.execute(matchId: matchId)
+      self.contacts = result.contacts.map { ContactButtonModel(contact: $0) }
+      self.imageUri = result.imageUrl
+      self.nickname = result.nickname
       selectedContact = self.contacts.first
     } catch {
       print(error)

@@ -181,6 +181,10 @@ public struct UseCaseFactory {
   public static func createCheckCanFreeMatchUseCase(repository: MatchesRepositoryInterface) -> CheckCanFreeMatchUseCase {
     CheckCanFreeMatchUseCaseImpl(repository: repository)
   }
+  
+  public static func createpostMatchContactsUseCase(repository: MatchesRepositoryInterface) -> PostMatchContactsUseCase {
+    PostMatchContactsUseCaseImpl(repository: repository)
+  }
 
   // MARK: - 매칭 상세
   public static func createGetMatchProfileBasicUseCase(repository: MatchesRepositoryInterface) -> GetMatchProfileBasicUseCase {

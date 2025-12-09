@@ -32,12 +32,12 @@ final class MatchingHomeViewModel {
   }
   
   private let getUserInfoUseCase: GetUserInfoUseCase
-  private let acceptMatchUseCase: AcceptMatchUseCase
   private let getMatchesInfoUseCase: GetMatchesInfoUseCase
   private let patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
   private let getPuzzleCountUseCase: GetPuzzleCountUseCase
   private let createNewMatchUseCase: CreateNewMatchUseCase
   private let checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase
+  private let postMatchContactsUseCase: PostMatchContactsUseCase
 
   private var matchInfosList: [MatchInfosModel] = []                  // Card의 Entity 원본
   private var timerManagers: [Int: MatchingTimerManager] = [:]
@@ -54,20 +54,20 @@ final class MatchingHomeViewModel {
   
   init(
     getUserInfoUseCase: GetUserInfoUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase,
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
     getPuzzleCountUseCase: GetPuzzleCountUseCase,
     createNewMatchUseCase: CreateNewMatchUseCase,
-    checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase
+    checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
+    postMatchContactsUseCase: PostMatchContactsUseCase,
   ) {
     self.getUserInfoUseCase = getUserInfoUseCase
-    self.acceptMatchUseCase = acceptMatchUseCase
     self.getMatchesInfoUseCase = getMatchesInfoUseCase
     self.patchMatchesCheckPieceUseCase = patchMatchesCheckPieceUseCase
     self.getPuzzleCountUseCase = getPuzzleCountUseCase
     self.createNewMatchUseCase = createNewMatchUseCase
     self.checkCanFreeMatchUseCase = checkCanFreeMatchUseCase
+    self.postMatchContactsUseCase = postMatchContactsUseCase
   }
   
   func handleAction(_ action: Action) {
@@ -142,12 +142,19 @@ private extension MatchingHomeViewModel {
     case .MATCHED:
       switch targetMatchingCard.matchType {
       case .BASIC:
-        // - 2.1.2.1.   (기본 매칭, basic) 무료로 바로 MatchResultView 이동 (✅)
-        // - 2.1.2.2.   matchId를 View의 router에게 줘서 화면전환 구현 (✅)
-        // TODO: 연락처 확인 화면 이동
-        break
+        withSpinner { [weak self] in
+          await self?.navigateToContact(matchId)
+        }
+       
       case .TRIAL, .PREMIUM, .AUTO:
-        presentedAlert = .contactConfirm(matchId: matchId) // "연락처 확인 알럿"으로 진입 (✅)
+        if targetMatchingCard.matchInfosModel.isContactViewed {
+          withSpinner { [weak self] in
+            await self?.navigateToContact(matchId)
+          }
+        }
+        else {
+          presentedAlert = .contactConfirm(matchId: matchId)
+        }
       }
 
     case .REFUSED, .BLOCKED: // 거절한 상대는 안나옴
@@ -308,11 +315,31 @@ private extension MatchingHomeViewModel {
   func handleDidTapContactConfirmAlertConfirm(_ matchId: Int) async {
     await loadPuzzleCount() // [방어로직] 퍼즐 개수 동기화 (✅)
     if puzzleCount >= DomainConstants.PuzzleCost.checkContact { // - 2.1.2.2.1.1 사용자 퍼즐 개수가 충분한 경우 -> MatchResultView 이동 (✅)
-      // TODO: 연락처확인 퍼즐 소모(구매) API
-      // TODO: MatchResultView(with: matchId) 이동
+      withSpinner { [weak self] in
+        await self?.navigateToContact(matchId)
+      }
     } else { // - 2.1.2.2.2.2 사용자 퍼즐 개수가 모자란 경우 -> 스토어 이동 (✅)
       presentedAlert = .insufficientPuzzle // 퍼즐 부족 알럿 표시
     }
+  }
+  
+  func navigateToContact(_ matchId: Int) async {
+    guard let match = matchInfosList.first(where: { $0.matchId == matchId }) else { return }
+    let isContactViewed = match.isContactViewed
+    let isBasic = match.matchType == .BASIC
+    
+    guard isContactViewed || isBasic else {
+      do {
+        _ = try await postMatchContactsUseCase.execute(matchId: matchId)
+        destination = .matchResult(matchId: matchId)
+      } catch {
+        print("Post Match Contacts Error: \(error.localizedDescription)")
+      }
+      
+      return
+    }
+    
+    destination = .matchResult(matchId: matchId)
   }
   
   func handleDidTapInsufficientPuzzleAlertConfirm() async {

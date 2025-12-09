@@ -30,7 +30,7 @@ final class MatchingMainViewModel {
     case checkMatchingPiece // 매칭 조각 확인하기
     case acceptMatching // 인연 수락하기
     case responseComplete // 응답 완료
-    case checkContact(matchId: Int, nickname: String) // 연락처 확인하기
+    case checkContact(matchId: Int) // 연락처 확인하기
     
     var title: String {
       switch self {
@@ -62,7 +62,7 @@ final class MatchingMainViewModel {
       case .checkMatchingPiece: nil // matchId is needed, set in ViewModel
       case .acceptMatching: nil
       case .responseComplete: nil
-      case let .checkContact(matchId, nickname): .matchResult(matchId: matchId, nickname: nickname)
+      case let .checkContact(matchId): .matchResult(matchId: matchId)
       }
     }
   }

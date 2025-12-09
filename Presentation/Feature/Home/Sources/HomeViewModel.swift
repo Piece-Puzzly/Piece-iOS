@@ -30,6 +30,7 @@ final class HomeViewModel {
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
     createNewMatchUseCase: CreateNewMatchUseCase,
     checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
+    postMatchContactsUseCase: PostMatchContactsUseCase,
     // settings
     getSettingsInfoUseCase: GetSettingsInfoUseCase,
     fetchTermsUseCase: FetchTermsUseCase,
@@ -58,6 +59,7 @@ final class HomeViewModel {
     self.patchMatchesCheckPieceUseCase = patchMatchesCheckPieceUseCase
     self.createNewMatchUseCase = createNewMatchUseCase
     self.checkCanFreeMatchUseCase = checkCanFreeMatchUseCase
+    self.postMatchContactsUseCase = postMatchContactsUseCase
     // settings
     self.getSettingsInfoUseCase = getSettingsInfoUseCase
     self.fetchTermsUseCase = fetchTermsUseCase
@@ -85,6 +87,7 @@ final class HomeViewModel {
   let patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
   let createNewMatchUseCase: CreateNewMatchUseCase
   let checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase
+  let postMatchContactsUseCase: PostMatchContactsUseCase
   // settings
   let getSettingsInfoUseCase: GetSettingsInfoUseCase
   let fetchTermsUseCase: FetchTermsUseCase

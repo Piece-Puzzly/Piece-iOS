@@ -9,12 +9,18 @@ import Entities
 import Foundation
 
 public struct MatchContactsResponseDTO: Decodable {
+  public let nickname: String
+  public let imageUrl: String
   public let contacts: [ContactResponseDTO]
 }
 
 public extension MatchContactsResponseDTO {
   func toDomain() -> MatchContactsModel {
-    MatchContactsModel(contacts: contacts.map { $0.toDomain() })
+    MatchContactsModel(
+      nickname: nickname,
+      imageUrl: imageUrl,
+      contacts: contacts.map { $0.toDomain() },
+    )
   }
 }
   

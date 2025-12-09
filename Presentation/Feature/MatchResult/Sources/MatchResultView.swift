@@ -17,14 +17,10 @@ struct MatchResultView: View {
   
   init(
     matchId: Int,
-    nickname: String,
-    getMatchPhotoUseCase: GetMatchPhotoUseCase,
     getMatchContactsUseCase: GetMatchContactsUseCase
   ) {
     _viewModel = .init(wrappedValue: .init(
       matchId: matchId,
-      nickname: nickname,
-      getMatchPhotoUseCase: getMatchPhotoUseCase,
       getMatchContactsUseCase: getMatchContactsUseCase
     ))
   }
@@ -156,8 +152,6 @@ struct MatchResultView: View {
   
   return MatchResultView(
     matchId: 1,
-    nickname: "수줍은 수달",
-    getMatchPhotoUseCase: dummyMatchPhotoUseCase,
     getMatchContactsUseCase: dummyMatchContactsUseCase
   )
   .environment(Router())
@@ -172,10 +166,13 @@ private final class DummyGetMatchPhotoUseCase: GetMatchPhotoUseCase {
 private final class DummyGetMatchContactsUseCase: GetMatchContactsUseCase {
   func execute(matchId: Int) async throws -> MatchContactsModel {
     MatchContactsModel(
+      nickname: "nickNameDummy",
+      imageUrl: "https://fastly-s3.allmusic.com/artist/mn0003475903/400/eznhFWvkuIfytZytXtr9bR_TZlp6n_cq-Emr2zx15tU=.jpg",
       contacts: [
         ContactModel(type: .kakao, value: "kakao id"),
         ContactModel(type: .instagram, value: "instagram id"),
-      ]
+      ],
+      
     )
   }
 }

@@ -29,6 +29,7 @@ struct HomeView: View {
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
     createNewMatchUseCase: CreateNewMatchUseCase,
     checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
+    postMatchContactsUseCase: PostMatchContactsUseCase,
     getSettingsInfoUseCase: GetSettingsInfoUseCase,
     fetchTermsUseCase: FetchTermsUseCase,
     checkNotificationPermissionUseCase: CheckNotificationPermissionUseCase,
@@ -55,6 +56,7 @@ struct HomeView: View {
         patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase,
         createNewMatchUseCase: createNewMatchUseCase,
         checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
+        postMatchContactsUseCase: postMatchContactsUseCase,
         getSettingsInfoUseCase: getSettingsInfoUseCase,
         fetchTermsUseCase: fetchTermsUseCase,
         checkNotificationPermissionUseCase: checkNotificationPermissionUseCase,
@@ -109,12 +111,12 @@ struct HomeView: View {
       MatchMainViewFactory.createMatchMainView(
         getUserInfoUseCase: viewModel.getUserInfoUseCase,
         getPuzzleCountUseCase: viewModel.getPuzzleCountUseCase,
-        acceptMatchUseCase: viewModel.acceptMatchUseCase,
         getMatchesInfoUseCase: viewModel.getMatchesInfoUseCase,
         getUserRejectUseCase: viewModel.getUserRejectUseCase,
         patchMatchesCheckPieceUseCase: viewModel.patchMatchesCheckPieceUseCase,
         createNewMatchUseCase: viewModel.createNewMatchUseCase,
-        checkCanFreeMatchUseCase: viewModel.checkCanFreeMatchUseCase
+        checkCanFreeMatchUseCase: viewModel.checkCanFreeMatchUseCase,
+        postMatchContactsUseCase: viewModel.postMatchContactsUseCase,
       )
     case .settings:
       SettingsViewFactory.createSettingsView(
