@@ -48,7 +48,6 @@ final class MatchesRepository: MatchesRepositoryInterface {
     let responseDTO: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
     return responseDTO.toDomain()
   }
-  
 
   func getMatchInfo() async throws -> MatchInfosModel {
     let endpoint = MatchesEndpoint.matchesInfos
@@ -77,6 +76,18 @@ final class MatchesRepository: MatchesRepositoryInterface {
   func getMatchContacts(matchId: Int) async throws -> MatchContactsModel {
     let endpoint = MatchesEndpoint.contacts(matchId: matchId)
     let responseDTO: MatchContactsResponseDTO = try await networkService.request(endpoint: endpoint)
+    return responseDTO.toDomain()
+  }
+  
+  func postMatchImage(matchId: Int) async throws -> VoidModel {
+    let endpoint = MatchesEndpoint.buyImage(matchId: matchId)
+    let responseDTO: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
+    return responseDTO.toDomain()
+  }
+  
+  func postMatchContacts(matchId: Int) async throws -> VoidModel {
+    let endpoint = MatchesEndpoint.buyContacts(matchId: matchId)
+    let responseDTO: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
     return responseDTO.toDomain()
   }
   

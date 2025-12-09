@@ -20,6 +20,8 @@ public enum MatchesEndpoint: TargetType {
   case block(matchId: Int)
   case contacts(matchId: Int)
   case image(matchId: Int)
+  case buyContacts(matchId: Int)
+  case buyImage(matchId: Int)
   case checkMatchPiece(matchId: Int)
   case createNewMatch
   case canFreeMatchToday
@@ -35,6 +37,8 @@ public enum MatchesEndpoint: TargetType {
     case .block: .post
     case .contacts: .get
     case .image: .get
+    case .buyContacts: .post
+    case .buyImage: .post
     case .checkMatchPiece: .patch
     case .createNewMatch: .post
     case .canFreeMatchToday: .get
@@ -52,6 +56,8 @@ public enum MatchesEndpoint: TargetType {
     case let .block(matchId): "api/matches/\(matchId)/blocks"
     case let .contacts(matchId): "api/matches/\(matchId)/contacts"
     case let .image(matchId): "api/matches/\(matchId)/images"
+    case let .buyContacts(matchId): "api/matches/\(matchId)/contacts"
+    case let .buyImage(matchId): "api/matches/\(matchId)/images"
     case let .checkMatchPiece(matchId): "api/matches/\(matchId)/pieces/check"
     case .createNewMatch: "api/matches/instants/new"
     case .canFreeMatchToday: "api/matches/instants/free/today"
@@ -99,6 +105,18 @@ public enum MatchesEndpoint: TargetType {
     case .image:
       [NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")]
     
+    case .buyContacts:
+      [
+        NetworkHeader.contentType: NetworkHeader.applicationJson,
+        NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
+      ]
+      
+    case .buyImage:
+      [
+        NetworkHeader.contentType: NetworkHeader.applicationJson,
+        NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
+      ]
+    
     case .checkMatchPiece:
       [NetworkHeader.authorization: NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")]
     
@@ -124,6 +142,8 @@ public enum MatchesEndpoint: TargetType {
     case .block: .plain
     case .contacts: .plain
     case .image: .plain
+    case .buyContacts: .plain
+    case .buyImage: .plain
     case .checkMatchPiece: .plain
     case .createNewMatch: .plain
     case .canFreeMatchToday: .plain
