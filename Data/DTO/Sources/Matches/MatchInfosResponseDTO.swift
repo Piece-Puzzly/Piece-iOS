@@ -22,8 +22,8 @@ public struct MatchInfosResponseDTO: Decodable {
   public let matchedValueCount: Int
   public let matchedValueList: [String]
   public let isBlocked: Bool
-  public let imageViewed: Bool
-  public let contactViewed: Bool
+  public let isImageViewed: Bool
+  public let isContactViewed: Bool
 }
 
 public extension MatchInfosResponseDTO {
@@ -42,8 +42,8 @@ public extension MatchInfosResponseDTO {
       matchedValueCount: matchedValueCount,
       matchedValueList: matchedValueList,
       isBlocked: isBlocked,
-      imageViewed: imageViewed,
-      contactViewed: contactViewed
+      isImageViewed: isImageViewed,
+      isContactViewed: isContactViewed
     )
   }
 }

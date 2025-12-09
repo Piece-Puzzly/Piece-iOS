@@ -21,8 +21,8 @@ public struct MatchInfosModel {
   public let matchedValueCount: Int
   public let matchedValueList: [String]
   public let isBlocked: Bool
-  public let imageViewed: Bool
-  public let contactViewed: Bool
+  public let isImageViewed: Bool
+  public let isContactViewed: Bool
   
   public init(
     matchId: Int,
@@ -38,8 +38,8 @@ public struct MatchInfosModel {
     matchedValueCount: Int,
     matchedValueList: [String],
     isBlocked: Bool,
-    imageViewed: Bool,
-    contactViewed: Bool,
+    isImageViewed: Bool,
+    isContactViewed: Bool,
   ) {
     self.matchId = matchId
     self.matchedUserId = matchedUserId
@@ -54,8 +54,8 @@ public struct MatchInfosModel {
     self.matchedValueCount = matchedValueCount
     self.matchedValueList = matchedValueList
     self.isBlocked = isBlocked
-    self.imageViewed = imageViewed
-    self.contactViewed = contactViewed
+    self.isImageViewed = isImageViewed
+    self.isContactViewed = isContactViewed
   }
 }
 
@@ -75,8 +75,8 @@ public extension MatchInfosModel {
       matchedValueCount: 3,
       matchedValueList: ["운동", "여행", "독서"],
       isBlocked: false,
-      imageViewed: false,
-      contactViewed: false
+      isImageViewed: false,
+      isContactViewed: false
     ),
     MatchInfosModel(
       matchId: 2,
@@ -92,8 +92,8 @@ public extension MatchInfosModel {
       matchedValueCount: 2,
       matchedValueList: ["미술", "음악"],
       isBlocked: false,
-      imageViewed: false,
-      contactViewed: false
+      isImageViewed: false,
+      isContactViewed: false
     ),
     MatchInfosModel(
       matchId: 3,
@@ -109,8 +109,8 @@ public extension MatchInfosModel {
       matchedValueCount: 4,
       matchedValueList: ["등산", "캠핑", "요가", "환경보호"],
       isBlocked: false,
-      imageViewed: false,
-      contactViewed: false
+      isImageViewed: false,
+      isContactViewed: false
     ),
     MatchInfosModel(
       matchId: 4,
@@ -126,8 +126,8 @@ public extension MatchInfosModel {
       matchedValueCount: 2,
       matchedValueList: ["요리", "맛집"],
       isBlocked: false,
-      imageViewed: false,
-      contactViewed: false
+      isImageViewed: false,
+      isContactViewed: false
     ),
     MatchInfosModel(
       matchId: 5,
@@ -143,8 +143,8 @@ public extension MatchInfosModel {
       matchedValueCount: 5,
       matchedValueList: ["영화", "독서", "글쓰기", "커피", "산책"],
       isBlocked: false,
-      imageViewed: false,
-      contactViewed: false
+      isImageViewed: false,
+      isContactViewed: false
     )
   ]
 }
