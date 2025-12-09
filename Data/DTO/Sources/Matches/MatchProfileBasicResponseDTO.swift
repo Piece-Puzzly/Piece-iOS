@@ -21,7 +21,7 @@ public struct MatchProfileBasicResponseDTO: Decodable {
   public let location: String
   public let job: String
   public let smokingStatus: String
-  public let imageViewed: Bool
+  public let isImageViewed: Bool
 }
 
 public extension MatchProfileBasicResponseDTO {
@@ -39,7 +39,7 @@ public extension MatchProfileBasicResponseDTO {
       location: location,
       job: job,
       smokingStatus: smokingStatus,
-      imageViewed: imageViewed
+      isImageViewed: isImageViewed
     )
   }
 }

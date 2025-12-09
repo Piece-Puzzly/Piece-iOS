@@ -15,7 +15,7 @@ public struct MatchValueTalkModel: Identifiable {
     valueTalks: [MatchValueTalkItemModel],
     matchType: MatchType,
     createdAt: Date,
-    imageViewed: Bool,
+    isImageViewed: Bool,
   ) {
     self.id = id
     self.description = description
@@ -23,7 +23,7 @@ public struct MatchValueTalkModel: Identifiable {
     self.valueTalks = valueTalks
     self.matchType = matchType
     self.createdAt = createdAt
-    self.imageViewed = imageViewed
+    self.isImageViewed = isImageViewed
   }
   
   public let id: Int
@@ -32,5 +32,5 @@ public struct MatchValueTalkModel: Identifiable {
   public let valueTalks: [MatchValueTalkItemModel]
   public let matchType: MatchType
   public let createdAt: Date // "2025-12-06T15:51:10.110203"
-  public let imageViewed: Bool
+  public let isImageViewed: Bool
 }

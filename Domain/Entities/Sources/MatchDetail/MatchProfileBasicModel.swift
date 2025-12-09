@@ -21,7 +21,7 @@ public struct MatchProfileBasicModel: Identifiable {
     location: String,
     job: String,
     smokingStatus: String,
-    imageViewed: Bool
+    isImageViewed: Bool
   ) {
     self.id = id
     self.matchType = matchType
@@ -35,7 +35,7 @@ public struct MatchProfileBasicModel: Identifiable {
     self.location = location
     self.job = job
     self.smokingStatus = smokingStatus
-    self.imageViewed = imageViewed
+    self.isImageViewed = isImageViewed
   }
 
   public let id: Int // MARK: matchId
@@ -50,5 +50,5 @@ public struct MatchProfileBasicModel: Identifiable {
   public let location: String
   public let job: String
   public let smokingStatus: String
-  public let imageViewed: Bool
+  public let isImageViewed: Bool
 }

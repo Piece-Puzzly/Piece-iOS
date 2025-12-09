@@ -15,7 +15,7 @@ public struct MatchValueTalksResponseDTO: Decodable {
   public let valueTalks: [MatchValueTalkResponseDTO]
   public let matchType: MatchType
   public let createdAt: Date // "2025-12-06T15:51:10.110203"
-  public let imageViewed: Bool
+  public let isImageViewed: Bool
 }
 
 public extension MatchValueTalksResponseDTO {
@@ -27,7 +27,7 @@ public extension MatchValueTalksResponseDTO {
       valueTalks: valueTalks.map { $0.toDomain() },
       matchType: matchType,
       createdAt: createdAt,
-      imageViewed: imageViewed,
+      isImageViewed: isImageViewed,
     )
   }
 }
