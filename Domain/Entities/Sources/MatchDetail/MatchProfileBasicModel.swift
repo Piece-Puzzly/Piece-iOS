@@ -12,6 +12,8 @@ public struct MatchProfileBasicModel: Identifiable {
     id: Int, // MARK: matchId
     matchType: MatchType,
     createdAt: Date,
+    matchedUserId: Int,
+    matchStatus: MatchStatus,
     description: String,
     nickname: String,
     age: Int,
@@ -26,6 +28,8 @@ public struct MatchProfileBasicModel: Identifiable {
     self.id = id
     self.matchType = matchType
     self.createdAt = createdAt
+    self.matchedUserId = matchedUserId
+    self.matchStatus = matchStatus
     self.description = description
     self.nickname = nickname
     self.age = age
@@ -41,6 +45,8 @@ public struct MatchProfileBasicModel: Identifiable {
   public let id: Int // MARK: matchId
   public let matchType: MatchType
   public let createdAt: Date
+  public let matchedUserId: Int
+  public let matchStatus: MatchStatus
   public let description: String
   public let nickname: String
   public let age: Int

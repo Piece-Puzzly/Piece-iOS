@@ -12,6 +12,8 @@ public struct MatchProfileBasicResponseDTO: Decodable {
   public let matchId: Int
   public let matchType: MatchType
   public let createdAt: Date
+  public let matchedUserId: Int
+  public let matchStatus: MatchStatus
   public let description: String
   public let nickname: String
   public let age: Int
@@ -30,6 +32,8 @@ public extension MatchProfileBasicResponseDTO {
       id: matchId,
       matchType: matchType,
       createdAt: createdAt,
+      matchedUserId: matchedUserId,
+      matchStatus: matchStatus,
       description: description,
       nickname: nickname,
       age: age,
