@@ -10,6 +10,7 @@ import LocalStorage
 import Observation
 import UseCases
 import PCAmplitude
+import Entities
 
 @MainActor
 @Observable
@@ -47,19 +48,6 @@ final class ValueTalkViewModel {
     self.acceptMatchUseCase = acceptMatchUseCase
     self.refuseMatchUseCase = refuseMatchUseCase
     
-    var isAcceptButtonEnabled = false
-    if let matchStatus = PCUserDefaultsService.shared.getMatchStatus() {
-      switch matchStatus {
-      case .BEFORE_OPEN: isAcceptButtonEnabled = true
-      case .WAITING: isAcceptButtonEnabled = true
-      case .REFUSED, .BLOCKED: isAcceptButtonEnabled = false
-      case .RESPONDED: isAcceptButtonEnabled = false
-      case .GREEN_LIGHT: isAcceptButtonEnabled = true
-      case .MATCHED: isAcceptButtonEnabled = false
-      }
-    }
-    self.isAcceptButtonEnabled = isAcceptButtonEnabled
-    
     Task {
       await fetchMatchValueTalk()
       await fetchMatchPhoto()
@@ -67,6 +55,7 @@ final class ValueTalkViewModel {
   }
   
   let navigationTitle: String = Constant.navigationTitle
+  var matchStatus: MatchStatus? = nil
   var isPhotoViewPresented: Bool = false
   var isBottomSheetPresented: Bool = false
   var isMatchAcceptAlertPresented: Bool = false
@@ -78,7 +67,20 @@ final class ValueTalkViewModel {
   private(set) var isLoading = true
   private(set) var error: Error?
   private(set) var photoUri: String = ""
-  private(set) var isAcceptButtonEnabled: Bool
+  
+  var isAcceptButtonEnabled: Bool {
+    switch matchStatus {
+    case .BEFORE_OPEN, .WAITING, .GREEN_LIGHT:
+      return true
+    
+    case .RESPONDED, .MATCHED:
+      return false
+    
+    default:
+      return false
+    }
+  }
+  
   private(set) var completedMatchAction: MatchActionType? = nil
   private(set) var matchId: Int
   private let getMatchValueTalkUseCase: GetMatchValueTalkUseCase
@@ -146,7 +148,7 @@ final class ValueTalkViewModel {
           )
         }
       )
-      
+      matchStatus = entity.matchStatus
       error = nil
     } catch {
       self.error = error

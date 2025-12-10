@@ -200,7 +200,7 @@ struct ValueTalkView: View {
   // MARK: - 매칭 거절하기 버튼
   
   private var shouldShowRefuseButton: Bool {
-    guard let matchStatus = PCUserDefaultsService.shared.getMatchStatus() else { return false }
+    guard let matchStatus = viewModel.matchStatus else { return false }
     switch matchStatus {
     case .BEFORE_OPEN, .WAITING, .GREEN_LIGHT: return true
     default: return false
