@@ -203,6 +203,10 @@ public struct UseCaseFactory {
     GetMatchPhotoUseCaseImpl(repository: repository)
   }
   
+  public static func createPostMatchPhotoUseCase(repository: MatchesRepositoryInterface) -> PostMatchPhotoUseCase {
+    PostMatchPhotoUseCaseImpl(repository: repository)
+  }
+  
   public static func createGetMatchContactsUseCase(repository: MatchesRepositoryInterface) -> GetMatchContactsUseCase {
     GetMatchContactsUseCaseImpl(repository: repository)
   }

@@ -39,12 +39,14 @@ final class ValueTalkViewModel {
     matchId: Int,
     getMatchValueTalkUseCase: GetMatchValueTalkUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     refuseMatchUseCase: RefuseMatchUseCase
   ) {
     self.matchId = matchId
     self.getMatchValueTalkUseCase = getMatchValueTalkUseCase
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
+    self.postMatchPhotoUseCase = postMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
     self.refuseMatchUseCase = refuseMatchUseCase
     
@@ -85,6 +87,7 @@ final class ValueTalkViewModel {
   private(set) var matchId: Int
   private let getMatchValueTalkUseCase: GetMatchValueTalkUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
+  private let postMatchPhotoUseCase: PostMatchPhotoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
   private let refuseMatchUseCase: RefuseMatchUseCase
   

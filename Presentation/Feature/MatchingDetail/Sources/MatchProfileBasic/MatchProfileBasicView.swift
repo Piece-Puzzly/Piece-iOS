@@ -24,6 +24,7 @@ struct MatchProfileBasicView: View {
     matchId: Int,
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase
   ) {
     _viewModel = .init(
@@ -31,6 +32,7 @@ struct MatchProfileBasicView: View {
         matchId: matchId,
         getMatchProfileBasicUseCase: getMatchProfileBasicUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
+        postMatchPhotoUseCase: postMatchPhotoUseCase,
         acceptMatchUseCase: acceptMatchUseCase
       )
     )

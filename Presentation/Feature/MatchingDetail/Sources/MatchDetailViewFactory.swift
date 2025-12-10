@@ -15,12 +15,14 @@ public struct MatchDetailViewFactory {
     matchId: Int,
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase
   ) -> some View {
     MatchProfileBasicView(
       matchId: matchId,
       getMatchProfileBasicUseCase: getMatchProfileBasicUseCase,
       getMatchPhotoUseCase: getMatchPhotoUseCase,
+      postMatchPhotoUseCase: postMatchPhotoUseCase,
       acceptMatchUseCase: acceptMatchUseCase
     )
     .trackScreen(trackable: DefaultProgress.matchDetailBasicProfile)
@@ -32,6 +34,7 @@ public struct MatchDetailViewFactory {
     matchId: Int,
     getMatchValueTalkUseCase: GetMatchValueTalkUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     refuseMatchUseCase: RefuseMatchUseCase
   ) -> some View {
@@ -39,6 +42,7 @@ public struct MatchDetailViewFactory {
       matchId: matchId,
       getMatchValueTalkUseCase: getMatchValueTalkUseCase,
       getMatchPhotoUseCase: getMatchPhotoUseCase,
+      postMatchPhotoUseCase: postMatchPhotoUseCase,
       acceptMatchUseCase: acceptMatchUseCase,
       refuseMatchUseCase: refuseMatchUseCase
     )
@@ -50,12 +54,14 @@ public struct MatchDetailViewFactory {
     matchId: Int,
     getMatchValuePickUseCase: GetMatchValuePickUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase
   ) -> some View {
     ValuePickView(
       matchId: matchId,
       getMatchValuePickUseCase: getMatchValuePickUseCase,
       getMatchPhotoUseCase: getMatchPhotoUseCase,
+      postMatchPhotoUseCase: postMatchPhotoUseCase,
       acceptMatchUseCase: acceptMatchUseCase
     )
     .trackScreen(trackable: DefaultProgress.matchDetailValuePick)

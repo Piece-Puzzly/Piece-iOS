@@ -43,6 +43,7 @@ struct ValueTalkView: View {
     matchId: Int,
     getMatchValueTalkUseCase: GetMatchValueTalkUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     refuseMatchUseCase: RefuseMatchUseCase
   ) {
@@ -51,6 +52,7 @@ struct ValueTalkView: View {
         matchId: matchId,
         getMatchValueTalkUseCase: getMatchValueTalkUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
+        postMatchPhotoUseCase: postMatchPhotoUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
         refuseMatchUseCase: refuseMatchUseCase
       )

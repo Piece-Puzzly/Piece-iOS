@@ -36,17 +36,20 @@ final class MatchProfileBasicViewModel {
   private(set) var matchId: Int
   private let getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
+  private let postMatchPhotoUseCase: PostMatchPhotoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
   
   init(
     matchId: Int,
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase
   ) {
     self.matchId = matchId
     self.getMatchProfileBasicUseCase = getMatchProfileBasicUseCase
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
+    self.postMatchPhotoUseCase = postMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
     
     Task {

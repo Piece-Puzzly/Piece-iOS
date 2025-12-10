@@ -32,11 +32,13 @@ final class ValuePickViewModel {
     matchId: Int,
     getMatchValuePickUseCase: GetMatchValuePickUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase
   ) {
     self.matchId = matchId
     self.getMatchValuePickUseCase = getMatchValuePickUseCase
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
+    self.postMatchPhotoUseCae = postMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
 
     Task {
@@ -65,6 +67,7 @@ final class ValuePickViewModel {
   private var valuePicks: [MatchValuePickItemModel] = []
   private let getMatchValuePickUseCase: GetMatchValuePickUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
+  private let postMatchPhotoUseCae: PostMatchPhotoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
   
   func handleAction(_ action: Action) {

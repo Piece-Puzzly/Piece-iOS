@@ -158,11 +158,13 @@ public struct Coordinator {
       let matchesRepository = repositoryFactory.createMatchesRepository()
       let getMatchProfileBasicUseCase = UseCaseFactory.createGetMatchProfileBasicUseCase(repository: matchesRepository)
       let getMatchPhotoUseCase = UseCaseFactory.createGetMatchPhotoUseCase(repository: matchesRepository)
+      let postMatchPhotoUseCase = UseCaseFactory.createPostMatchPhotoUseCase(repository: matchesRepository)
       let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
       MatchDetailViewFactory.createMatchProfileBasicView(
         matchId: matchId,
         getMatchProfileBasicUseCase: getMatchProfileBasicUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
+        postMatchPhotoUseCase: postMatchPhotoUseCase,
         acceptMatchUseCase: acceptMatchUseCase
       )
       
@@ -170,12 +172,14 @@ public struct Coordinator {
       let matchesRepository = repositoryFactory.createMatchesRepository()
       let getMatchValueTalkUseCase = UseCaseFactory.createGetMatchValueTalkUseCase(repository: matchesRepository)
       let getMatchPhotoUseCase = UseCaseFactory.createGetMatchPhotoUseCase(repository: matchesRepository)
+      let postMatchPhotoUseCase = UseCaseFactory.createPostMatchPhotoUseCase(repository: matchesRepository)
       let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
       let refuseMatchUseCase = UseCaseFactory.createRefuseMatchUseCase(repository: matchesRepository)
       MatchDetailViewFactory.createMatchValueTalkView(
         matchId: matchId,
         getMatchValueTalkUseCase: getMatchValueTalkUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
+        postMatchPhotoUseCase: postMatchPhotoUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
         refuseMatchUseCase: refuseMatchUseCase
       )
@@ -185,10 +189,12 @@ public struct Coordinator {
       let getMatchValuePickUseCase = UseCaseFactory.createGetMatchValuePickUseCase(repository: matchesRepository)
       let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
       let getMatchPhotoUseCase = UseCaseFactory.createGetMatchPhotoUseCase(repository: matchesRepository)
+      let postMatchPhotoUseCase = UseCaseFactory.createPostMatchPhotoUseCase(repository: matchesRepository)
       MatchDetailViewFactory.createMatchValuePickView(
         matchId: matchId,
         getMatchValuePickUseCase: getMatchValuePickUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
+        postMatchPhotoUseCase: postMatchPhotoUseCase,
         acceptMatchUseCase: acceptMatchUseCase
       )
       
