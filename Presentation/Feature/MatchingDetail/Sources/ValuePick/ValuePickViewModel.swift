@@ -52,6 +52,9 @@ final class ValuePickViewModel {
   
   let tabs = ValuePickTab.allCases
   let navigationTitle: String = Constant.navigationTitle
+  var matchStatus: MatchStatus? { valuePickModel?.matchStatus }
+  var matchType: MatchType? { valuePickModel?.matchType }
+  var isImageViewed: Bool? { valuePickModel?.isImageViewed }
   var isPhotoViewPresented: Bool = false
   var isBottomSheetPresented: Bool = false
   var presentedAlert: MatchingDetailAlertType? = nil

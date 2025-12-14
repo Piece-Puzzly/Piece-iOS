@@ -14,6 +14,7 @@ import PCAmplitude
 
 struct MatchDetailPhotoView: View {
   private let nickname: String
+  private let matchStatus: MatchStatus
   private let uri: String
   @Environment(Router.self) private var router: Router
   @Environment(\.dismiss) private var dismiss
@@ -23,15 +24,16 @@ struct MatchDetailPhotoView: View {
   
   init(
     nickname: String,
+    matchStatus: MatchStatus,
     uri: String,
     onAcceptMatch: (() -> Void)? = nil
   ) {
     self.nickname = nickname
+    self.matchStatus = matchStatus
     self.uri = uri
     self.onAcceptMatch = onAcceptMatch
     
     var isAcceptButtonEnabled = false
-    if let matchStatus = PCUserDefaultsService.shared.getMatchStatus() {
       switch matchStatus {
       case .BEFORE_OPEN: isAcceptButtonEnabled = true
       case .WAITING: isAcceptButtonEnabled = true
@@ -40,7 +42,6 @@ struct MatchDetailPhotoView: View {
       case .GREEN_LIGHT: isAcceptButtonEnabled = true
       case .MATCHED: isAcceptButtonEnabled = false
       }
-    }
     self.isAcceptButtonEnabled = isAcceptButtonEnabled
   }
   
@@ -106,6 +107,6 @@ struct MatchDetailPhotoView: View {
 
 #Preview {
   let uri = "https://www.thesprucepets.com/thmb/AyzHgPQM_X8OKhXEd8XTVIa-UT0=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-145577979-d97e955b5d8043fd96747447451f78b7.jpg"
-  MatchDetailPhotoView(nickname: "티모대위", uri: uri)
+  MatchDetailPhotoView(nickname: "티모대위", matchStatus: .BEFORE_OPEN, uri: uri)
     .environment(Router())
 }

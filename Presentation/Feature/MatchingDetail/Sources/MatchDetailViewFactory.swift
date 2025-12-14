@@ -8,6 +8,7 @@
 import SwiftUI
 import UseCases
 import PCAmplitude
+import Entities
 
 public struct MatchDetailViewFactory {
   @ViewBuilder
@@ -70,8 +71,9 @@ public struct MatchDetailViewFactory {
   @ViewBuilder
   public static func createMatchDetailPhotoView(
     nickname: String,
+    matchStatus: MatchStatus,
     uri: String
   ) -> some View {
-    MatchDetailPhotoView(nickname: nickname, uri: uri)
+    MatchDetailPhotoView(nickname: nickname, matchStatus: matchStatus, uri: uri)
   }
 }

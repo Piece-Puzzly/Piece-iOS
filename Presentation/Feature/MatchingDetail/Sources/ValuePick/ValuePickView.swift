@@ -84,8 +84,11 @@ struct ValuePickView: View {
     .fullScreenCover(isPresented: $viewModel.isPhotoViewPresented) {
       MatchDetailPhotoView(
         nickname: viewModel.valuePickModel?.nickname ?? "",
+        matchStatus: viewModel.valuePickModel?.matchStatus ?? .RESPONDED,
         uri: viewModel.photoUri,
-        onAcceptMatch: { viewModel.handleAction(.didAcceptMatch) }
+        onAcceptMatch: {
+          // TODO: 사진 뷰에서 수락 처리
+        }
       )
     }
     .onChange(of: viewModel.isMatchAccepted) { _, isMatchAccepted in

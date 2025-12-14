@@ -6,7 +6,6 @@
 //
 
 import DesignSystem
-import Entities
 import Router
 import SwiftUI
 import UseCases
@@ -66,7 +65,7 @@ struct MatchProfileBasicView: View {
         title
         Spacer()
         BasicInfoNameView(
-          shortIntroduction: basicInfoModel.shortIntroduction,
+          shortIntroduction: basicInfoModel.description,
           nickname: basicInfoModel.nickname,
           moreButtonAction: { viewModel.handleAction(.didTapMoreButton) }
         )
@@ -88,9 +87,15 @@ struct MatchProfileBasicView: View {
     .fullScreenCover(isPresented: $viewModel.isPhotoViewPresented) {
       MatchDetailPhotoView(
         nickname: viewModel.matchingBasicInfoModel?.nickname ?? "",
+        matchStatus: viewModel.matchingBasicInfoModel?.matchStatus ?? .RESPONDED,
         uri: viewModel.photoUri,
-        onAcceptMatch: { viewModel.handleAction(.didAcceptMatch) }
+        onAcceptMatch: {
+          // TODO: 사진 뷰에서 수락 처리
+        }
       )
+    }
+    .pcAlert(item: $viewModel.presentedAlert) { alertType in
+      MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)
     }
     .onChange(of: viewModel.isMatchAccepted) { _, isMatchAccepted in
       if isMatchAccepted {
@@ -211,7 +216,7 @@ struct MatchProfileBasicView: View {
   }
   
   private func regionAnswer(basicInfoModel: BasicInfoModel) -> some View  {
-    Text(basicInfoModel.region)
+    Text(basicInfoModel.location)
       .pretendard(.heading_S_SB)
       .foregroundStyle(Color.grayscaleBlack)
   }

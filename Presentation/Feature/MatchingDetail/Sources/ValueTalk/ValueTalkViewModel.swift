@@ -58,7 +58,9 @@ final class ValueTalkViewModel {
   }
   
   let navigationTitle: String = Constant.navigationTitle
-  var matchStatus: MatchStatus? = nil
+  var matchStatus: MatchStatus? { valueTalkModel?.matchStatus }
+  var matchType: MatchType? { valueTalkModel?.matchType }
+  var isImageViewed: Bool? { valueTalkModel?.isImageViewed }
   var isPhotoViewPresented: Bool = false
   var isBottomSheetPresented: Bool = false
   var presentedAlert: MatchingDetailAlertType? = nil
@@ -130,20 +132,7 @@ final class ValueTalkViewModel {
   private func fetchMatchValueTalk() async {
     do {
       let entity = try await getMatchValueTalkUseCase.execute(matchId: matchId)
-      valueTalkModel = ValueTalkModel(
-        id: entity.id,
-        description: entity.description,
-        nickname: entity.nickname,
-        valueTalks: entity.valueTalks.map {
-          ValueTalk(
-            id: UUID(),
-            topic: $0.category,
-            summary: $0.summary,
-            answer: $0.answer
-          )
-        }
-      )
-      matchStatus = entity.matchStatus
+      valueTalkModel = ValueTalkModel(model: entity)
       error = nil
     } catch {
       self.error = error

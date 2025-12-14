@@ -8,6 +8,7 @@
 import Observation
 import UseCases
 import PCAmplitude
+import Entities
 
 @MainActor
 @Observable
@@ -26,6 +27,9 @@ final class MatchProfileBasicViewModel {
   }
 
   let navigationTitle = Constant.navigationTitle
+  var matchStatus: MatchStatus? { matchingBasicInfoModel?.matchStatus }
+  var matchType: MatchType? { matchingBasicInfoModel?.matchType }
+  var isImageViewed: Bool? { matchingBasicInfoModel?.isImageViewed }
   let title = Constant.title
   var isPhotoViewPresented: Bool = false
   var isBottomSheetPresented: Bool = false
@@ -88,18 +92,7 @@ final class MatchProfileBasicViewModel {
   private func fetchMatchingBasicInfo() async {
     do {
       let entity = try await getMatchProfileBasicUseCase.execute(matchId: matchId)
-      matchingBasicInfoModel = BasicInfoModel(
-        id: entity.id,
-        nickname: entity.nickname,
-        shortIntroduction: entity.description,
-        age: entity.age,
-        birthYear: entity.birthYear,
-        height: entity.height,
-        weight: entity.weight,
-        region: entity.location,
-        job: entity.job,
-        smokingStatus: entity.smokingStatus
-      )
+      matchingBasicInfoModel = BasicInfoModel(model: entity)
       error = nil
     } catch {
       self.error = error

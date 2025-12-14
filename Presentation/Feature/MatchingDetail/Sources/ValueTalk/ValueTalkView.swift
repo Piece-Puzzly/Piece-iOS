@@ -9,7 +9,6 @@ import DesignSystem
 import Router
 import SwiftUI
 import UseCases
-import LocalStorage
 
 struct ValueTalkView: View {
   private enum Constant {
@@ -122,41 +121,15 @@ struct ValueTalkView: View {
     .fullScreenCover(isPresented: $viewModel.isPhotoViewPresented) {
       MatchDetailPhotoView(
         nickname: viewModel.valueTalkModel?.nickname ?? "",
+        matchStatus: viewModel.valueTalkModel?.matchStatus ?? .RESPONDED,
         uri: viewModel.photoUri,
-        onAcceptMatch: { viewModel.handleAction(.didAcceptMatch) }
+        onAcceptMatch: {
+          // TODO: 사진 뷰에서 수락 처리
+        }
       )
     }
-    .pcAlert(isPresented: $viewModel.isMatchAcceptAlertPresented) {
-      AlertView(
-        title: {
-          Text("\(viewModel.valueTalkModel?.nickname ?? "")").foregroundStyle(Color.primaryDefault) +
-          Text("님과의\n인연을 이어갈까요?").foregroundStyle(Color.grayscaleBlack)
-        },
-        message: "서로 수락하면 연락처가 공개돼요.",
-        firstButtonText: "뒤로",
-        secondButtonText: Constant.accepetButtonText
-      ) {
-        viewModel.isMatchAcceptAlertPresented = false
-      } secondButtonAction: {
-        viewModel.handleAction(.didAcceptMatch)
-      }
-    }
-    .pcAlert(isPresented: $viewModel.isMatchDeclineAlertPresented) {
-      AlertView(
-        title: {
-          Text("\(viewModel.valueTalkModel?.nickname ?? "")님과의\n").foregroundStyle(Color.grayscaleBlack) +
-          Text("인연을 ").foregroundStyle(Color.grayscaleBlack) +
-          Text("거절").foregroundStyle(Color.systemError) +
-          Text("할까요?").foregroundStyle(Color.grayscaleBlack)
-        },
-        message: "매칭을 거절하면 이후에 되돌릴 수 없으니\n신중히 선택해 주세요.",
-        firstButtonText: "뒤로",
-        secondButtonText: Constant.refuseButtonText
-      ) {
-        viewModel.isMatchDeclineAlertPresented = false
-      } secondButtonAction: {
-        viewModel.handleAction(.didRefuseMatch)
-      }
+    .pcAlert(item: $viewModel.presentedAlert) { alertType in
+      MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)
     }
     .onChange(of: viewModel.completedMatchAction) { _, actionType in
       guard let actionType else { return }
