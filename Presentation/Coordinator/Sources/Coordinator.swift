@@ -198,12 +198,11 @@ public struct Coordinator {
         acceptMatchUseCase: acceptMatchUseCase
       )
       
-    case let .blockUser(matchId, nickname):
+    case let .blockUser(info):
       let matchesRepository = repositoryFactory.createMatchesRepository()
       let blockUserUseCase = UseCaseFactory.createBlockUserUseCase(repository: matchesRepository)
       BlockUserViewFactory.createBlockUserView(
-        matchId: matchId,
-        nickname: nickname,
+        info: info,
         blockUserUseCase: blockUserUseCase
       )
       
@@ -437,10 +436,13 @@ public struct Coordinator {
         getUserInfoUseCase: getUserInfoUseCase
       )
       
-    case let .reportUser(nickname):
+    case let .reportUser(info):
       let reportsRepository = repositoryFactory.createReportsRepository()
       let reportUserUseCase = UseCaseFactory.createReportUserUseCase(repository: reportsRepository)
-      ReportUserViewFactory.createReportUserView(nickname: nickname, reportUserUseCase: reportUserUseCase)
+      ReportUserViewFactory.createReportUserView(
+        info: info,
+        reportUserUseCase: reportUserUseCase
+      )
       
       // MARK: - 프로필 미리보기
     case .previewProfileBasic:

@@ -60,6 +60,6 @@ public enum Route: Hashable {
   case notificationList
   
   // MARK: - 기타
-  case reportUser(nickname: String)
-  case blockUser(matchId: Int, nickname: String)
+  case reportUser(info: ReportUserInfo)
+  case blockUser(info: BlockUserInfo)
 }

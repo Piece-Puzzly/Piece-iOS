@@ -9,6 +9,9 @@ import Observation
 import Entities
 import Foundation
 
+extension BasicInfoModel: MatchedUserBlockable { }
+extension BasicInfoModel: MatchedUserReportable { }
+
 struct BasicInfoModel {
   let id: Int
   let matchType: MatchType

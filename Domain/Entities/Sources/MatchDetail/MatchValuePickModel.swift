@@ -7,6 +7,9 @@
 
 import Foundation
 
+extension MatchValuePickModel: MatchedUserBlockable { }
+extension MatchValuePickModel: MatchedUserReportable { }
+
 public struct MatchValuePickModel: Identifiable {
   public init(
     id: Int,

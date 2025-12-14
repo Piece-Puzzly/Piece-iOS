@@ -8,6 +8,9 @@
 import Foundation
 import Entities
 
+extension ValueTalkModel: MatchedUserBlockable { }
+extension ValueTalkModel: MatchedUserReportable { }
+
 struct ValueTalkModel {
   let id: Int
   let matchType: MatchType

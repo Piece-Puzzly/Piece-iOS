@@ -8,13 +8,17 @@
 import SwiftUI
 import UseCases
 import PCAmplitude
+import Entities
 
 public struct ReportUserViewFactory {
   public static func createReportUserView(
-    nickname: String,
+    info: ReportUserInfo,
     reportUserUseCase: ReportUserUseCase
   ) -> some View {
-    ReportUserView(nickname: nickname, reportUserUseCase: reportUserUseCase)
-      .trackScreen(trackable: DefaultProgress.reportIntro)
+    ReportUserView(
+      info: info,
+      reportUserUseCase: reportUserUseCase
+    )
+    .trackScreen(trackable: DefaultProgress.reportIntro)
   }
 }

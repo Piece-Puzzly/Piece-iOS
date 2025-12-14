@@ -8,6 +8,7 @@
 import Observation
 import UseCases
 import PCAmplitude
+import Entities
 
 @Observable
 final class BlockUserViewModel {
@@ -18,9 +19,12 @@ final class BlockUserViewModel {
     case didTapBlockUserCompleteButton
   }
   
-  init(matchId: Int, nickname: String, blockUserUseCase: BlockUserUseCase) {
-    self.matchId = matchId
-    self.nickname = nickname
+  init(
+    info: BlockUserInfo,
+    blockUserUseCase: BlockUserUseCase
+  ) {
+    self.matchId = info.matchId
+    self.nickname = info.nickname
     self.blockUserUseCase = blockUserUseCase
   }
   
@@ -54,7 +58,7 @@ final class BlockUserViewModel {
     Task {
       do {
         isBlockUserAlertPresented = false
-        let result = try await blockUserUseCase.execute(matchId: matchId)
+        _ = try await blockUserUseCase.execute(matchId: matchId)
         isBlockUserCompleteAlertPresented = true
       } catch {
         print(error)

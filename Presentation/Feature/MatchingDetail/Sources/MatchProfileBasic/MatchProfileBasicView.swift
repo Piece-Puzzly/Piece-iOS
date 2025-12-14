@@ -9,6 +9,7 @@ import DesignSystem
 import Router
 import SwiftUI
 import UseCases
+import Entities
 
 struct MatchProfileBasicView: View {
   private enum Constant {
@@ -186,7 +187,7 @@ struct MatchProfileBasicView: View {
           .pretendard(.body_S_M)
           .foregroundStyle(Color.grayscaleBlack)
       }
-      Text("\(basicInfoModel.birthYear)년생")
+      Text("\(basicInfoModel.birthYear.suffix(2))년생")
         .lineLimit(1)
         .pretendard(.body_S_M)
         .foregroundStyle(Color.grayscaleDark2)
@@ -279,16 +280,11 @@ struct MatchProfileBasicView: View {
     VStack(spacing: 0) {
       bottomSheetContentRow(text: "차단하기") {
         viewModel.isBottomSheetPresented = false
-        router.push(
-          to: .blockUser(
-            matchId: model.id,
-            nickname: model.nickname
-          )
-        )
+        router.push(to: .blockUser(info: .init(model)))
       }
       bottomSheetContentRow(text: "신고하기") {
         viewModel.isBottomSheetPresented = false
-        router.push(to: .reportUser(nickname: model.nickname))
+        router.push(to: .reportUser(info: .init(model)))
       }
     }
   }

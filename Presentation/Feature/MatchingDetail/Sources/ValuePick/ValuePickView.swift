@@ -91,6 +91,9 @@ struct ValuePickView: View {
         }
       )
     }
+    .pcAlert(item: $viewModel.presentedAlert) { alertType in
+      MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)
+    }
     .onChange(of: viewModel.isMatchAccepted) { _, isMatchAccepted in
       if isMatchAccepted {
         router.popToRoot()
@@ -217,11 +220,11 @@ struct ValuePickView: View {
     VStack(spacing: 0) {
       bottomSheetContentRow(text: "차단하기") {
         viewModel.isBottomSheetPresented = false
-        router.push(to: .blockUser(matchId: model.id, nickname: model.nickname))
+        router.push(to: .blockUser(info: .init(model)))
       }
       bottomSheetContentRow(text: "신고하기") {
         viewModel.isBottomSheetPresented = false
-        router.push(to: .reportUser(nickname: model.nickname))
+        router.push(to: .reportUser(info: .init(model)))
       }
     }
   }
