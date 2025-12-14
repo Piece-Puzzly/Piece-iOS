@@ -16,6 +16,7 @@ final class MatchProfileBasicViewModel {
   enum Action {
     case didTapMoreButton
     case didTapPhotoButton
+    case didTapAcceptButton
 
     case dismissAlert
     case didConfirmAlert(MatchingDetailAlertType)
@@ -73,6 +74,9 @@ final class MatchProfileBasicViewModel {
     case .didTapPhotoButton:
       handleDidTapPhotoButton()
 
+    case .didTapAcceptButton:
+      handleDidTapAcceptButton()
+      
     case .dismissAlert:
       presentedAlert = nil
 
@@ -127,6 +131,20 @@ extension MatchProfileBasicViewModel {
     PCAmplitude.trackScreenView(DefaultProgress.reportBlockSelectBottomsheet.rawValue)
   }
 
+  func handleDidTapAcceptButton() {
+    guard let matchType else { return }
+    
+    switch matchType {
+    case .BASIC:
+      presentedAlert = .freeAccept(matchId: matchId)
+      
+    case .TRIAL, .PREMIUM, .AUTO:
+      presentedAlert = .paidAccept(matchId: matchId)
+    }
+    
+    PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
+  }
+  
   func handleDidTapPhotoButton() {
     guard let matchType else { return }
     switch matchType {

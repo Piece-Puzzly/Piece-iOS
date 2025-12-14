@@ -67,13 +67,4 @@ public struct MatchDetailViewFactory {
     )
     .trackScreen(trackable: DefaultProgress.matchDetailValuePick)
   }
-  
-  @ViewBuilder
-  public static func createMatchDetailPhotoView(
-    nickname: String,
-    matchStatus: MatchStatus,
-    uri: String
-  ) -> some View {
-    MatchDetailPhotoView(nickname: nickname, matchStatus: matchStatus, uri: uri)
-  }
 }

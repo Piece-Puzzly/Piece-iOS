@@ -85,15 +85,16 @@ struct MatchProfileBasicView: View {
         .resizable()
         .ignoresSafeArea()
     )
-    .fullScreenCover(isPresented: $viewModel.isPhotoViewPresented) {
-      MatchDetailPhotoView(
-        nickname: viewModel.matchingBasicInfoModel?.nickname ?? "",
-        matchStatus: viewModel.matchingBasicInfoModel?.matchStatus ?? .RESPONDED,
-        uri: viewModel.photoUri,
-        onAcceptMatch: {
-          // TODO: 사진 뷰에서 수락 처리
-        }
-      )
+    .overlay {
+      if viewModel.isPhotoViewPresented {
+        MatchDetailPhotoView(
+          nickname: viewModel.matchingBasicInfoModel?.nickname ?? "",
+          matchStatus: viewModel.matchingBasicInfoModel?.matchStatus ?? .RESPONDED,
+          uri: viewModel.photoUri,
+          onDismiss: { viewModel.isPhotoViewPresented = false },
+          onAcceptButtonTap: { viewModel.handleAction(.didTapAcceptButton) },
+        )
+      }
     }
     .pcAlert(item: $viewModel.presentedAlert) { alertType in
       MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)

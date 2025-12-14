@@ -119,15 +119,16 @@ struct ValueTalkView: View {
     }
     .toolbar(.hidden)
     .animation(.easeOut(duration: 0.3), value: viewModel.isNameViewVisible)
-    .fullScreenCover(isPresented: $viewModel.isPhotoViewPresented) {
-      MatchDetailPhotoView(
-        nickname: viewModel.valueTalkModel?.nickname ?? "",
-        matchStatus: viewModel.valueTalkModel?.matchStatus ?? .RESPONDED,
-        uri: viewModel.photoUri,
-        onAcceptMatch: {
-          // TODO: 사진 뷰에서 수락 처리
-        }
-      )
+    .overlay {
+      if viewModel.isPhotoViewPresented {
+        MatchDetailPhotoView(
+          nickname: viewModel.valueTalkModel?.nickname ?? "",
+          matchStatus: viewModel.valueTalkModel?.matchStatus ?? .RESPONDED,
+          uri: viewModel.photoUri,
+          onDismiss: { viewModel.isPhotoViewPresented = false },
+          onAcceptButtonTap: { viewModel.handleAction(.didTapAcceptButton) },
+        )
+      }
     }
     .pcAlert(item: $viewModel.presentedAlert) { alertType in
       MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)

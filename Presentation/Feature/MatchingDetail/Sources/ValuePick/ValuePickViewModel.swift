@@ -25,6 +25,7 @@ final class ValuePickViewModel {
     case didTapMoreButton
     case didSelectTab(ValuePickTab)
     case didTapPhotoButton
+    case didTapAcceptButton
 
     case dismissAlert
     case didConfirmAlert(MatchingDetailAlertType)
@@ -99,6 +100,9 @@ final class ValuePickViewModel {
     case .didTapPhotoButton:
       handleDidTapPhotoButton()
 
+    case .didTapAcceptButton:
+      handleDidTapAcceptButton()
+      
     case .dismissAlert:
       presentedAlert = nil
 
@@ -157,6 +161,20 @@ extension ValuePickViewModel {
   func handleDidTapMoreButton() {
     isBottomSheetPresented = true
     PCAmplitude.trackScreenView(DefaultProgress.reportBlockSelectBottomsheet.rawValue)
+  }
+  
+  func handleDidTapAcceptButton() {
+    guard let matchType else { return }
+    
+    switch matchType {
+    case .BASIC:
+      presentedAlert = .freeAccept(matchId: matchId)
+      
+    case .TRIAL, .PREMIUM, .AUTO:
+      presentedAlert = .paidAccept(matchId: matchId)
+    }
+    
+    PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
   }
   
   func handleDidTapPhotoButton() {

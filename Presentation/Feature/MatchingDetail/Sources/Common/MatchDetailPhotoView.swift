@@ -17,21 +17,22 @@ struct MatchDetailPhotoView: View {
   private let matchStatus: MatchStatus
   private let uri: String
   @Environment(Router.self) private var router: Router
-  @Environment(\.dismiss) private var dismiss
-  @State private var isAlertPresented: Bool = false
   @State private var isAcceptButtonEnabled: Bool
-  private let onAcceptMatch: (() -> Void)?
+  private let onDismiss: () -> Void
+  private let onAcceptButtonTap: () -> Void
   
   init(
     nickname: String,
     matchStatus: MatchStatus,
     uri: String,
-    onAcceptMatch: (() -> Void)? = nil
+    onDismiss: @escaping () -> Void,
+    onAcceptButtonTap: @escaping () -> Void
   ) {
     self.nickname = nickname
     self.matchStatus = matchStatus
     self.uri = uri
-    self.onAcceptMatch = onAcceptMatch
+    self.onDismiss = onDismiss
+    self.onAcceptButtonTap = onAcceptButtonTap
     
     var isAcceptButtonEnabled = false
       switch matchStatus {
@@ -59,7 +60,10 @@ struct MatchDetailPhotoView: View {
       NavigationBar(
         title: "",
         titleColor: .grayscaleWhite,
-        rightButton: Button { dismiss() } label: {DesignSystemAsset.Icons.close32.swiftUIImage }
+        rightButton:
+          Button(action: onDismiss) {
+            DesignSystemAsset.Icons.close32.swiftUIImage
+          }
       )
       
       Spacer()
@@ -81,32 +85,9 @@ struct MatchDetailPhotoView: View {
         rounding: true
       ) {
         if isAcceptButtonEnabled {
-          isAlertPresented.toggle()
-          PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
+          onAcceptButtonTap()
         }
       }
     }
-    .pcAlert(isPresented: $isAlertPresented) {
-      AlertView(
-        title: {
-          Text("\(nickname)").foregroundStyle(Color.primaryDefault) +
-          Text("님과의\n인연을 이어갈까요?").foregroundStyle(Color.grayscaleBlack)
-        },
-        message: "서로 수락하면, 연락처가 공개돼요.",
-        firstButtonText: "뒤로",
-        secondButtonText: "인연 수락하기"
-      ) {
-        isAlertPresented = false
-      } secondButtonAction: {
-        dismiss()
-        onAcceptMatch?()
-      }
-    }
   }
-}
-
-#Preview {
-  let uri = "https://www.thesprucepets.com/thmb/AyzHgPQM_X8OKhXEd8XTVIa-UT0=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-145577979-d97e955b5d8043fd96747447451f78b7.jpg"
-  MatchDetailPhotoView(nickname: "티모대위", matchStatus: .BEFORE_OPEN, uri: uri)
-    .environment(Router())
 }
