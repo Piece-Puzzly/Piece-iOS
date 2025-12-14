@@ -40,13 +40,12 @@ final class ValuePickViewModel {
     self.matchId = matchId
     self.getMatchValuePickUseCase = getMatchValuePickUseCase
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
-    self.postMatchPhotoUseCae = postMatchPhotoUseCase
+    self.postMatchPhotoUseCase = postMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
     self.presentedAlert = nil
     
     Task {
       await fetchMatchValuePick()
-      await fetchMatchPhoto()
     }
   }
   
@@ -74,7 +73,7 @@ final class ValuePickViewModel {
   private var valuePicks: [MatchValuePickItemModel] = []
   private let getMatchValuePickUseCase: GetMatchValuePickUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
-  private let postMatchPhotoUseCae: PostMatchPhotoUseCase
+  private let postMatchPhotoUseCase: PostMatchPhotoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
   
   func handleAction(_ action: Action) {
@@ -84,9 +83,8 @@ final class ValuePickViewModel {
       isNameViewVisible = offset > Constant.nameVisibilityOffset
       
     case .didTapMoreButton:
-      isBottomSheetPresented = true
-      PCAmplitude.trackScreenView(DefaultProgress.reportBlockSelectBottomsheet.rawValue)
-      
+      handleDidTapMoreButton()
+
     case let .didSelectTab(tab):
       self.selectedTab = tab
       switch tab {
@@ -99,13 +97,8 @@ final class ValuePickViewModel {
       }
       
     case .didTapPhotoButton:
-      isPhotoViewPresented = true
-      
-      PCAmplitude.trackButtonClick(
-        screenName: .matchDetailValuePick,
-        buttonName: .photoView
-      )
-      
+      handleDidTapPhotoButton()
+
     case .dismissAlert:
       presentedAlert = nil
 
@@ -132,6 +125,15 @@ final class ValuePickViewModel {
     isLoading = false
   }
   
+  private func buyMatchPhoto() async {
+    do {
+      _ = try await postMatchPhotoUseCase.execute(matchId: matchId)
+    } catch {
+      self.error = error
+      presentedAlert = .insufficientPuzzle
+    }
+  }
+  
   private func fetchMatchPhoto() async {
     do {
       let uri = try await getMatchPhotoUseCase.execute(matchId: matchId)
@@ -152,6 +154,39 @@ final class ValuePickViewModel {
 }
 
 extension ValuePickViewModel {
+  func handleDidTapMoreButton() {
+    isBottomSheetPresented = true
+    PCAmplitude.trackScreenView(DefaultProgress.reportBlockSelectBottomsheet.rawValue)
+  }
+  
+  func handleDidTapPhotoButton() {
+    guard let matchType else { return }
+    switch matchType {
+    case .BASIC:
+      Task {
+        await fetchMatchPhoto()
+        await fetchMatchValuePick()
+        isPhotoViewPresented = true
+      }
+    
+    case .TRIAL, .PREMIUM, .AUTO:
+      guard let isImageViewed else { return }
+      if isImageViewed {
+        Task {
+          await fetchMatchPhoto()
+          isPhotoViewPresented = true
+        }
+      } else {
+        presentedAlert = .paidPhoto(matchId: matchId)
+      }
+    }
+    
+    PCAmplitude.trackButtonClick(
+      screenName: .matchDetailValueTalk,
+      buttonName: .photoView
+    )
+  }
+  
   private func handleAlertConfirm(_ alertType: MatchingDetailAlertType) {
     switch alertType {
     case .freeAccept, .paidAccept: // 수락은 따로 검증 없음 -> 토스트는 필요할 것 같은데

@@ -53,7 +53,6 @@ final class ValueTalkViewModel {
     
     Task {
       await fetchMatchValueTalk()
-      await fetchMatchPhoto()
     }
   }
   
@@ -100,25 +99,16 @@ final class ValueTalkViewModel {
       isNameViewVisible = offset > Constant.nameVisibilityOffset
       
     case .didTapMoreButton:
-      isBottomSheetPresented = true
-      PCAmplitude.trackScreenView(DefaultProgress.reportBlockSelectBottomsheet.rawValue)
-      
+      handleDidTapMoreButton()
+
     case .didTapPhotoButton:
-      isPhotoViewPresented = true
-      
-      PCAmplitude.trackButtonClick(
-        screenName: .matchDetailValueTalk,
-        buttonName: .photoView
-      )
-      
+      handleDidTapPhotoButton()
+
     case .didTapAcceptButton:
-      isMatchAcceptAlertPresented = true
-      PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
-      
+      handleDidTapAcceptButton()
+
     case .didTapRefuseButton:
-      isMatchDeclineAlertPresented = true
-      PCAmplitude.trackScreenView(DefaultProgress.matchDetailRejectPopup.rawValue)
-      
+      handleDidTapRefuseButton()
 
     case .dismissAlert:
       presentedAlert = nil
@@ -138,6 +128,15 @@ final class ValueTalkViewModel {
       self.error = error
     }
     isLoading = false
+  }
+  
+  private func buyMatchPhoto() async {
+    do {
+      _ = try await postMatchPhotoUseCase.execute(matchId: matchId)
+    } catch {
+      self.error = error
+      presentedAlert = .insufficientPuzzle
+    }
   }
   
   private func fetchMatchPhoto() async {
@@ -168,6 +167,58 @@ final class ValueTalkViewModel {
 }
 
 private extension ValueTalkViewModel {
+  func handleDidTapMoreButton() {
+    isBottomSheetPresented = true
+    PCAmplitude.trackScreenView(DefaultProgress.reportBlockSelectBottomsheet.rawValue)
+  }
+  
+  func handleDidTapAcceptButton() {
+    guard let matchType else { return }
+    
+    switch matchType {
+    case .BASIC:
+      presentedAlert = .freeAccept(matchId: matchId)
+      
+    case .TRIAL, .PREMIUM, .AUTO:
+      presentedAlert = .paidAccept(matchId: matchId)
+    }
+    
+    PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
+  }
+  
+  func handleDidTapRefuseButton() {
+    presentedAlert = .refuse(matchId: matchId)
+    PCAmplitude.trackScreenView(DefaultProgress.matchDetailRejectPopup.rawValue)
+  }
+  
+  func handleDidTapPhotoButton() {
+    guard let matchType else { return }
+    switch matchType {
+    case .BASIC:
+      Task {
+        await fetchMatchPhoto()
+        await fetchMatchValueTalk()
+        isPhotoViewPresented = true
+      }
+    
+    case .TRIAL, .PREMIUM, .AUTO:
+      guard let isImageViewed else { return }
+      if isImageViewed {
+        Task {
+          await fetchMatchPhoto()
+          isPhotoViewPresented = true
+        }
+      } else {
+        presentedAlert = .paidPhoto(matchId: matchId)
+      }
+    }
+    
+    PCAmplitude.trackButtonClick(
+      screenName: .matchDetailValueTalk,
+      buttonName: .photoView
+    )
+  }
+  
   func handleAlertConfirm(_ alertType: MatchingDetailAlertType) {
     switch alertType {
     case .refuse:

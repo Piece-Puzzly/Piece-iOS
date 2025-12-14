@@ -62,24 +62,17 @@ final class MatchProfileBasicViewModel {
     
     Task {
       await fetchMatchingBasicInfo()
-      await fetchMatchPhoto()
     }
   }
   
   func handleAction(_ action: Action) {
     switch action {
     case .didTapMoreButton:
-      isBottomSheetPresented = true
-      PCAmplitude.trackScreenView(DefaultProgress.reportBlockSelectBottomsheet.rawValue)
-      
+      handleDidTapMoreButton()
+
     case .didTapPhotoButton:
-      isPhotoViewPresented = true
-      
-      PCAmplitude.trackButtonClick(
-        screenName: .matchDetailBasicInfo,
-        buttonName: .photoView
-      )
-      
+      handleDidTapPhotoButton()
+
     case .dismissAlert:
       presentedAlert = nil
 
@@ -98,6 +91,15 @@ final class MatchProfileBasicViewModel {
       self.error = error
     }
     isLoading = false
+  }
+  
+  private func buyMatchPhoto() async {
+    do {
+      _ = try await postMatchPhotoUseCase.execute(matchId: matchId)
+    } catch {
+      self.error = error
+      presentedAlert = .insufficientPuzzle
+    }
   }
   
   private func fetchMatchPhoto() async {
@@ -120,6 +122,39 @@ final class MatchProfileBasicViewModel {
 }
 
 extension MatchProfileBasicViewModel {
+  func handleDidTapMoreButton() {
+    isBottomSheetPresented = true
+    PCAmplitude.trackScreenView(DefaultProgress.reportBlockSelectBottomsheet.rawValue)
+  }
+
+  func handleDidTapPhotoButton() {
+    guard let matchType else { return }
+    switch matchType {
+    case .BASIC:
+      Task {
+        await fetchMatchPhoto()
+        await fetchMatchingBasicInfo()
+        isPhotoViewPresented = true
+      }
+    
+    case .TRIAL, .PREMIUM, .AUTO:
+      guard let isImageViewed else { return }
+      if isImageViewed {
+        Task {
+          await fetchMatchPhoto()
+          isPhotoViewPresented = true
+        }
+      } else {
+        presentedAlert = .paidPhoto(matchId: matchId)
+      }
+    }
+    
+    PCAmplitude.trackButtonClick(
+      screenName: .matchDetailValueTalk,
+      buttonName: .photoView
+    )
+  }
+  
   private func handleAlertConfirm(_ alertType: MatchingDetailAlertType) {
     switch alertType {
     case .freeAccept, .paidAccept: // 수락은 따로 검증 없음 -> 토스트는 필요할 것 같은데
