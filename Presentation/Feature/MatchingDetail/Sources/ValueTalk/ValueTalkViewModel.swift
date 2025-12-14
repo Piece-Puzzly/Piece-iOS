@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import LocalStorage
 import Observation
 import UseCases
 import PCAmplitude
@@ -26,8 +25,9 @@ final class ValueTalkViewModel {
     case didTapPhotoButton
     case didTapAcceptButton
     case didTapRefuseButton
-    case didAcceptMatch
-    case didRefuseMatch
+
+    case dismissAlert
+    case didConfirmAlert(MatchingDetailAlertType)
   }
   
   enum MatchActionType {
@@ -49,6 +49,7 @@ final class ValueTalkViewModel {
     self.postMatchPhotoUseCase = postMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
     self.refuseMatchUseCase = refuseMatchUseCase
+    self.presentedAlert = nil
     
     Task {
       await fetchMatchValueTalk()
@@ -60,8 +61,7 @@ final class ValueTalkViewModel {
   var matchStatus: MatchStatus? = nil
   var isPhotoViewPresented: Bool = false
   var isBottomSheetPresented: Bool = false
-  var isMatchAcceptAlertPresented: Bool = false
-  var isMatchDeclineAlertPresented: Bool = false
+  var presentedAlert: MatchingDetailAlertType? = nil
 
   private(set) var valueTalkModel: ValueTalkModel?
   private(set) var contentOffset: CGFloat = 0
@@ -117,21 +117,13 @@ final class ValueTalkViewModel {
       isMatchDeclineAlertPresented = true
       PCAmplitude.trackScreenView(DefaultProgress.matchDetailRejectPopup.rawValue)
       
-    case .didAcceptMatch:
-      completedMatchAction = nil
-      Task {
-        await acceptMatch()
-        isMatchAcceptAlertPresented = false
-        completedMatchAction = .accept
-      }
 
-    case .didRefuseMatch:
-      completedMatchAction = nil
-      Task {
-        await refuseMatch()
-        isMatchDeclineAlertPresented = false
-        completedMatchAction = .refuse
-      }
+    case .dismissAlert:
+      presentedAlert = nil
+
+    case .didConfirmAlert(let alertType):
+      presentedAlert = nil
+      handleAlertConfirm(alertType)
     }
   }
   
@@ -173,6 +165,7 @@ final class ValueTalkViewModel {
       _ = try await acceptMatchUseCase.execute(matchId: matchId)
     } catch {
       self.error = error
+      presentedAlert = .insufficientPuzzle
     }
   }
   
@@ -181,6 +174,42 @@ final class ValueTalkViewModel {
       _ = try await refuseMatchUseCase.execute(matchId: matchId)
     } catch {
       self.error = error
+    }
+  }
+}
+
+private extension ValueTalkViewModel {
+  func handleAlertConfirm(_ alertType: MatchingDetailAlertType) {
+    switch alertType {
+    case .refuse:
+      completedMatchAction = nil
+      Task {
+        await refuseMatch()
+        completedMatchAction = .refuse
+      }
+
+    case .freeAccept, .paidAccept: // 수락은 따로 검증 없음 -> 토스트는 필요할 것 같은데
+      completedMatchAction = nil
+      Task {
+        await acceptMatch()
+        completedMatchAction = .accept
+      }
+
+    case .paidPhoto:
+      Task {
+        await buyMatchPhoto()
+        await fetchMatchPhoto()
+        await fetchMatchValueTalk()
+        isPhotoViewPresented = true
+      }
+
+    case .timeExpired:
+      // TODO: 뒤로가기 처리
+      break
+    
+    case .insufficientPuzzle:
+      // TODO: 스토어 이동
+      break
     }
   }
 }

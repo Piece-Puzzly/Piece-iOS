@@ -15,7 +15,9 @@ final class MatchProfileBasicViewModel {
   enum Action {
     case didTapMoreButton
     case didTapPhotoButton
-    case didAcceptMatch
+
+    case dismissAlert
+    case didConfirmAlert(MatchingDetailAlertType)
   }
   
   private enum Constant {
@@ -27,7 +29,8 @@ final class MatchProfileBasicViewModel {
   let title = Constant.title
   var isPhotoViewPresented: Bool = false
   var isBottomSheetPresented: Bool = false
-  
+  var presentedAlert: MatchingDetailAlertType? = nil
+
   private(set) var isLoading = true
   private(set) var error: Error?
   private(set) var matchingBasicInfoModel: BasicInfoModel?
@@ -51,6 +54,7 @@ final class MatchProfileBasicViewModel {
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
     self.postMatchPhotoUseCase = postMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
+    self.presentedAlert = nil
     
     Task {
       await fetchMatchingBasicInfo()
@@ -72,11 +76,12 @@ final class MatchProfileBasicViewModel {
         buttonName: .photoView
       )
       
-    case .didAcceptMatch:
-      Task {
-        await acceptMatch()
-        isMatchAccepted = true
-      }
+    case .dismissAlert:
+      presentedAlert = nil
+
+    case .didConfirmAlert(let alertType):
+      presentedAlert = nil
+      handleAlertConfirm(alertType)
     }
   }
   
@@ -116,6 +121,34 @@ final class MatchProfileBasicViewModel {
       _ = try await acceptMatchUseCase.execute(matchId: matchId)
     } catch {
       self.error = error
+      presentedAlert = .insufficientPuzzle
+    }
+  }
+}
+
+extension MatchProfileBasicViewModel {
+  private func handleAlertConfirm(_ alertType: MatchingDetailAlertType) {
+    switch alertType {
+    case .freeAccept, .paidAccept: // 수락은 따로 검증 없음 -> 토스트는 필요할 것 같은데
+      Task {
+        await acceptMatch()
+        isMatchAccepted = true
+      }
+
+    case .paidPhoto:
+      Task {
+        await buyMatchPhoto()
+        await fetchMatchPhoto()
+        await fetchMatchingBasicInfo()
+        isPhotoViewPresented = true
+      }
+
+    case .timeExpired:
+      // TODO: 뒤로가기 처리
+      break
+      
+    default:
+      break
     }
   }
 }
