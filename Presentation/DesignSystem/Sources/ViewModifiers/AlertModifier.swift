@@ -14,11 +14,8 @@ public struct AlertModifier<Title: View, Message: View>: ViewModifier {
   
   public func body(content: Content) -> some View {
     content
-      .fullScreenCover(isPresented: $isPresented) {
-        alert
-      }
-      .transaction { transaction in
-        transaction.disablesAnimations = true
+      .overlay {
+        if isPresented { alert }
       }
   }
 }

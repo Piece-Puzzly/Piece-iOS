@@ -110,9 +110,6 @@ struct MatchProfileBasicView: View {
         )
       }
     }
-    .transaction { transaction in
-        transaction.disablesAnimations = true
-    }
   }
   
   private var title: some View {

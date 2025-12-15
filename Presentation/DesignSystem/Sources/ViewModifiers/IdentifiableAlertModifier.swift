@@ -18,13 +18,10 @@ public struct IdentifiableAlertModifier<Item: Identifiable, Alert: View>: ViewMo
     )
     
     content
-      .fullScreenCover(isPresented: isPresented) {
-        if let item = item {
+      .overlay {
+        if let item {
           alert(item)
         }
-      }
-      .transaction { transaction in
-        transaction.disablesAnimations = true
       }
   }
 }
