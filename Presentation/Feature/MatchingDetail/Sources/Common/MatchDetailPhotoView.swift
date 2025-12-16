@@ -16,10 +16,12 @@ struct MatchDetailPhotoView: View {
   private let nickname: String
   private let matchStatus: MatchStatus
   private let uri: String
-  @Environment(Router.self) private var router: Router
-  @State private var isAcceptButtonEnabled: Bool
   private let onDismiss: () -> Void
   private let onAcceptButtonTap: () -> Void
+  
+  @State private var isAcceptButtonEnabled: Bool
+  @Environment(Router.self) private var router: Router
+  @Environment(PCToastManager.self) private var toastManager: PCToastManager
   
   init(
     nickname: String,
@@ -52,6 +54,17 @@ struct MatchDetailPhotoView: View {
         Dimmer()
           .ignoresSafeArea()
       )
+      .overlay(alignment: .top) {
+        if toastManager.shouldShowToast(for: .matchDetailPhoto) {
+          PCToast(
+            isVisible: Bindable(toastManager).isVisible,
+            icon: toastManager.icon,
+            text: toastManager.text,
+            backgroundColor: toastManager.backgroundColor
+          )
+          .padding(.top, 56)
+        }
+      }
       .trackScreen(trackable: DefaultProgress.matchDetailPhoto)
   }
   

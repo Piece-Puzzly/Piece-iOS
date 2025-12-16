@@ -22,6 +22,11 @@ final class MatchProfileBasicViewModel {
     case didConfirmAlert(MatchingDetailAlertType)
   }
   
+  enum MatchActionType {
+      case accept
+      case viewPhoto
+  }
+  
   private enum Constant {
     static let navigationTitle = ""
     static let title = "오늘의 인연"
@@ -40,7 +45,7 @@ final class MatchProfileBasicViewModel {
   private(set) var error: Error?
   private(set) var matchingBasicInfoModel: BasicInfoModel?
   private(set) var photoUri: String = ""
-  private(set) var isMatchAccepted: Bool = false
+  private(set) var completedMatchAction: MatchActionType? = nil
   private(set) var matchId: Int
   private let getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
@@ -175,18 +180,21 @@ extension MatchProfileBasicViewModel {
   
   private func handleAlertConfirm(_ alertType: MatchingDetailAlertType) {
     switch alertType {
-    case .freeAccept, .paidAccept: // 수락은 따로 검증 없음 -> 토스트는 필요할 것 같은데
+    case .freeAccept, .paidAccept:
       Task {
+        completedMatchAction = nil
         await acceptMatch()
-        isMatchAccepted = true
+        completedMatchAction = .accept
       }
 
     case .paidPhoto:
       Task {
+        completedMatchAction = nil
         await buyMatchPhoto()
         await fetchMatchPhoto()
         await fetchMatchingBasicInfo()
         isPhotoViewPresented = true
+        completedMatchAction = .viewPhoto
       }
 
     case .timeExpired:

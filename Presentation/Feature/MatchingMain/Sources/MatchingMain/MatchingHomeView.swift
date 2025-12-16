@@ -10,6 +10,7 @@ import SwiftUI
 import DesignSystem
 import UseCases
 import PCAmplitude
+import Entities
 
 struct MatchingHomeView: View {
   @State private(set) var matchingHomeViewModel: MatchingHomeViewModel
@@ -62,6 +63,38 @@ struct MatchingHomeView: View {
     }
     .pcAlert(item: $matchingHomeViewModel.presentedAlert) { alertType in
       MatchingHomeAlertView(matchingHomeViewModel: matchingHomeViewModel, alertType: alertType)
+    }
+    .overlay(alignment: .top) {
+      if toastManager.shouldShowToast(for: .matchingHome) {
+        PCToast(
+          isVisible: Bindable(toastManager).isVisible,
+          icon: toastManager.icon,
+          text: toastManager.text,
+          backgroundColor: toastManager.backgroundColor
+        )
+        .padding(.top, 56)
+      }
+    }
+    .onChange(of: matchingHomeViewModel.showToastAction) { _, showToastAction in
+      guard let showToastAction else { return }
+      
+      switch showToastAction {
+      case .createNewMatch:
+        toastManager.showToast(
+          target: .matchProfileBasic,
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "퍼즐을 \(DomainConstants.PuzzleCost.createNewMatch)개 사용했어요",
+          backgroundColor: .primaryDefault
+        )
+        
+      case .checkContact:
+        toastManager.showToast(
+          target: .matchResult,
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "퍼즐을 \(DomainConstants.PuzzleCost.checkContact)개 사용했어요",
+          backgroundColor: .primaryDefault
+        )
+      }
     }
     .onChange(of: matchingHomeViewModel.destination) { _, destination in
       guard let destination else { return }

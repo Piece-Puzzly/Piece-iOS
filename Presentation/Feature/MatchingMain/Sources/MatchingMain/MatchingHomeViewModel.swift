@@ -31,6 +31,11 @@ final class MatchingHomeViewModel {
     case dismissAlert // 알럿 취소
   }
   
+  enum ToastAction {
+    case createNewMatch
+    case checkContact
+  }
+  
   private let getUserInfoUseCase: GetUserInfoUseCase
   private let getMatchesInfoUseCase: GetMatchesInfoUseCase
   private let patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
@@ -49,6 +54,7 @@ final class MatchingHomeViewModel {
   private(set) var showSpinner: Bool = false
   private(set) var isTrial: Bool = false
   private(set) var destination: Route? = nil
+  private(set) var showToastAction: ToastAction? = nil
   
   var presentedAlert: MatchingAlertType? = nil
   
@@ -330,8 +336,10 @@ private extension MatchingHomeViewModel {
     
     guard isContactViewed || isBasic else {
       do {
+        showToastAction = nil
         _ = try await postMatchContactsUseCase.execute(matchId: matchId)
         destination = .matchResult(matchId: matchId)
+        showToastAction = .checkContact
       } catch {
         print("Post Match Contacts Error: \(error.localizedDescription)")
       }
@@ -351,9 +359,11 @@ private extension MatchingHomeViewModel {
 
     if puzzleCount >= DomainConstants.PuzzleCost.createNewMatch {
       do {
+        showToastAction = nil
         let result = try await createNewMatchUseCase.execute()
         let matchId = result.matchId
         destination = .matchProfileBasic(matchId: matchId)
+        showToastAction = .createNewMatch
       } catch {
         print("Create New Match Error: \(error.localizedDescription)")
         // TODO: Handle error

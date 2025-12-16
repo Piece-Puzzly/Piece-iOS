@@ -14,6 +14,7 @@ import UseCases
 struct MatchResultView: View {
   @State var viewModel: MatchResultViewModel
   @Environment(Router.self) private var router: Router
+  @Environment(PCToastManager.self) private var toastManager: PCToastManager
   
   init(
     matchId: Int,
@@ -58,6 +59,17 @@ struct MatchResultView: View {
         .ignoresSafeArea()
     )
     .onAppear { viewModel.handleAction(.onAppear) }
+    .overlay(alignment: .top) {
+      if toastManager.shouldShowToast(for: .matchResult) {
+        PCToast(
+          isVisible: Bindable(toastManager).isVisible,
+          icon: toastManager.icon,
+          text: toastManager.text,
+          backgroundColor: toastManager.backgroundColor
+        )
+        .padding(.top, 56)
+      }
+    }
     .toolbar(.hidden, for: .navigationBar)
   }
   

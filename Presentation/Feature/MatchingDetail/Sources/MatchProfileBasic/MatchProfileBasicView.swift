@@ -99,13 +99,36 @@ struct MatchProfileBasicView: View {
     .pcAlert(item: $viewModel.presentedAlert) { alertType in
       MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)
     }
-    .onChange(of: viewModel.isMatchAccepted) { _, isMatchAccepted in
-      if isMatchAccepted {
+    .overlay(alignment: .top) {
+      if toastManager.shouldShowToast(for: .matchProfileBasic) {
+        PCToast(
+          isVisible: Bindable(toastManager).isVisible,
+          icon: toastManager.icon,
+          text: toastManager.text,
+          backgroundColor: toastManager.backgroundColor
+        )
+        .padding(.top, 56)
+      }
+    }
+    .onChange(of: viewModel.completedMatchAction) { _, actionType in
+      guard let actionType else { return }
+      
+      switch actionType {
+      case .accept:
         router.popToRoot()
         
         toastManager.showToast(
+          target: .matchingHome,
           icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
           text: "인연을 수락했습니다",
+          backgroundColor: .primaryDefault
+        )
+        
+      case .viewPhoto:
+        toastManager.showToast(
+          target: .matchDetailPhoto,
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "퍼즐을 \(DomainConstants.PuzzleCost.viewPhoto)개 사용했어요",
           backgroundColor: .primaryDefault
         )
       }

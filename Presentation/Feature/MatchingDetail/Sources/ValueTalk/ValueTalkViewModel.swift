@@ -33,6 +33,7 @@ final class ValueTalkViewModel {
   enum MatchActionType {
       case accept
       case refuse
+      case viewPhoto
   }
   
   init(
@@ -228,19 +229,21 @@ private extension ValueTalkViewModel {
         completedMatchAction = .refuse
       }
 
-    case .freeAccept, .paidAccept: // 수락은 따로 검증 없음 -> 토스트는 필요할 것 같은데
-      completedMatchAction = nil
+    case .freeAccept, .paidAccept:
       Task {
+        completedMatchAction = nil
         await acceptMatch()
         completedMatchAction = .accept
       }
 
     case .paidPhoto:
       Task {
+        completedMatchAction = nil
         await buyMatchPhoto()
         await fetchMatchPhoto()
         await fetchMatchValueTalk()
         isPhotoViewPresented = true
+        completedMatchAction = .viewPhoto
       }
 
     case .timeExpired:

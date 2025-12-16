@@ -92,19 +92,31 @@ struct ValuePickView: View {
         )
       }
     }
-    .pcAlert(item: $viewModel.presentedAlert) { alertType in
-      MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)
-    }
-    .onChange(of: viewModel.isMatchAccepted) { _, isMatchAccepted in
-      if isMatchAccepted {
+    .onChange(of: viewModel.completedMatchAction) { _, actionType in
+      guard let actionType else { return }
+
+      switch actionType {
+      case .accept:
         router.popToRoot()
         
         toastManager.showToast(
+          target: .matchingHome,
           icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
           text: "인연을 수락했습니다",
           backgroundColor: .primaryDefault
         )
+        
+      case .viewPhoto:
+        toastManager.showToast(
+          target: .matchDetailPhoto,
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "퍼즐을 \(DomainConstants.PuzzleCost.viewPhoto)개 사용했어요",
+          backgroundColor: .primaryDefault
+        )
       }
+    }
+    .pcAlert(item: $viewModel.presentedAlert) { alertType in
+      MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)
     }
     .sheet(isPresented: $viewModel.isBottomSheetPresented) { // TODO: - 바텀시트 커스텀 컴포넌트화
       if let model = viewModel.valuePickModel {

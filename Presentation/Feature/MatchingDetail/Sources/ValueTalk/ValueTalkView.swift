@@ -135,20 +135,32 @@ struct ValueTalkView: View {
     }
     .onChange(of: viewModel.completedMatchAction) { _, actionType in
       guard let actionType else { return }
-
-      router.popToRoot()
       
       switch actionType {
       case .accept:
+        router.popToRoot()
+        
         toastManager.showToast(
+          target: .matchingHome,
           icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
           text: "인연을 수락했습니다",
           backgroundColor: .primaryDefault
         )
       case .refuse:
+        router.popToRoot()
+        
         toastManager.showToast(
+          target: .matchingHome,
           icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
           text: "인연을 거절했습니다",
+          backgroundColor: .primaryDefault
+        )
+        
+      case .viewPhoto:
+        toastManager.showToast(
+          target: .matchDetailPhoto,
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "퍼즐을 \(DomainConstants.PuzzleCost.viewPhoto)개 사용했어요",
           backgroundColor: .primaryDefault
         )
       }
