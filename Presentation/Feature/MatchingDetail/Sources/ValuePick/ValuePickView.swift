@@ -46,6 +46,22 @@ struct ValuePickView: View {
         },
         backgroundColor: .grayscaleWhite
       )
+      .overlay(alignment: .leading) {
+        if let timer = viewModel.timerManager, timer.shouldShowTimer {
+          HStack(spacing: 4) {
+            DesignSystemAsset.Icons.variant2.swiftUIImage
+              .renderingMode(.template)
+              .foregroundStyle(.systemError)
+            
+            Text(timer.remainingTime)
+              .pretendard(.body_S_M)
+              .foregroundStyle(.systemError)
+            
+            Spacer()
+          }
+          .padding(.horizontal, 20)
+        }
+      }
       .overlay(alignment: .bottom) {
         Divider(weight: .normal, isVertical: false)
       }
@@ -113,6 +129,9 @@ struct ValuePickView: View {
           text: "퍼즐을 \(DomainConstants.PuzzleCost.viewPhoto)개 사용했어요",
           backgroundColor: .primaryDefault
         )
+        
+      case .timeExpired:
+        router.popToRoot()
       }
     }
     .pcAlert(item: $viewModel.presentedAlert) { alertType in

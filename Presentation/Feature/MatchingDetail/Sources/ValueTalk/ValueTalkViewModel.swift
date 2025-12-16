@@ -31,9 +31,10 @@ final class ValueTalkViewModel {
   }
   
   enum MatchActionType {
-      case accept
-      case refuse
-      case viewPhoto
+    case accept
+    case refuse
+    case viewPhoto
+    case timeExpired
   }
   
   init(
@@ -87,6 +88,8 @@ final class ValueTalkViewModel {
   
   private(set) var completedMatchAction: MatchActionType? = nil
   private(set) var matchId: Int
+  private(set) var timerManager: MatchingDetailTimerManager?
+  
   private let getMatchValueTalkUseCase: GetMatchValueTalkUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
   private let postMatchPhotoUseCase: PostMatchPhotoUseCase
@@ -124,6 +127,7 @@ final class ValueTalkViewModel {
     do {
       let entity = try await getMatchValueTalkUseCase.execute(matchId: matchId)
       valueTalkModel = ValueTalkModel(model: entity)
+      setupTimerManager(for: entity.createdAt)
       error = nil
     } catch {
       self.error = error
@@ -247,12 +251,27 @@ private extension ValueTalkViewModel {
       }
 
     case .timeExpired:
-      // TODO: 뒤로가기 처리
-      break
+      completedMatchAction = nil
+      completedMatchAction = .timeExpired
     
     case .insufficientPuzzle:
       // TODO: 스토어 이동
       break
     }
+  }
+}
+
+private extension ValueTalkViewModel {
+  func setupTimerManager(for createdAt: Date) {
+    timerManager = MatchingDetailTimerManager(matchedDate: createdAt)
+    
+    // 00:00이 되었을 때 실행할 로직
+    timerManager?.onTimerExpired = { [weak self] in
+      self?.showTimeExpiredAlert()
+    }
+  }
+  
+  func showTimeExpiredAlert() {
+    presentedAlert = .timeExpired(matchId: matchId)
   }
 }

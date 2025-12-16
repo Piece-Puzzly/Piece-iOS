@@ -61,6 +61,22 @@ struct MatchProfileBasicView: View {
           DesignSystemAsset.Icons.close32.swiftUIImage
         }
       )
+      .overlay(alignment: .leading) {
+        if let timer = viewModel.timerManager, timer.shouldShowTimer {
+          HStack(spacing: 4) {
+            DesignSystemAsset.Icons.variant2.swiftUIImage
+              .renderingMode(.template)
+              .foregroundStyle(.systemError)
+            
+            Text(timer.remainingTime)
+              .pretendard(.body_S_M)
+              .foregroundStyle(.systemError)
+            
+            Spacer()
+          }
+          .padding(.horizontal, Constant.horizontalPadding)
+        }
+      }
       
       VStack(alignment: .leading) {
         title
@@ -131,6 +147,9 @@ struct MatchProfileBasicView: View {
           text: "퍼즐을 \(DomainConstants.PuzzleCost.viewPhoto)개 사용했어요",
           backgroundColor: .primaryDefault
         )
+        
+      case .timeExpired:
+        router.popToRoot()
       }
     }
   }

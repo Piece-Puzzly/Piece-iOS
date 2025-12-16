@@ -32,8 +32,9 @@ final class ValuePickViewModel {
   }
   
   enum MatchActionType {
-      case accept
-      case viewPhoto
+    case accept
+    case viewPhoto
+    case timeExpired
   }
   
   init(
@@ -76,6 +77,8 @@ final class ValuePickViewModel {
   private(set) var photoUri: String = ""
   private(set) var completedMatchAction: MatchActionType? = nil
   private(set) var matchId: Int
+  private(set) var timerManager: MatchingDetailTimerManager?
+  
   private var valuePicks: [MatchValuePickItemModel] = []
   private let getMatchValuePickUseCase: GetMatchValuePickUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
@@ -125,7 +128,7 @@ final class ValuePickViewModel {
       displayedValuePicks = entity.valuePicks
       sameWithMeCount = entity.valuePicks.filter { $0.isSameWithMe }.count
       differentFromMeCount = entity.valuePicks.filter { !$0.isSameWithMe }.count
-      
+      setupTimerManager(for: entity.createdAt)
       error = nil
     } catch {
       self.error = error
@@ -230,11 +233,26 @@ extension ValuePickViewModel {
       }
 
     case .timeExpired:
-      // TODO: 뒤로가기 처리
-      break
+      completedMatchAction = nil
+      completedMatchAction = .timeExpired
 
     default:
       break
     }
+  }
+}
+
+private extension ValuePickViewModel {
+  func setupTimerManager(for createdAt: Date) {
+    timerManager = MatchingDetailTimerManager(matchedDate: createdAt)
+    
+    // 00:00이 되었을 때 실행할 로직
+    timerManager?.onTimerExpired = { [weak self] in
+      self?.showTimeExpiredAlert()
+    }
+  }
+  
+  func showTimeExpiredAlert() {
+    presentedAlert = .timeExpired(matchId: matchId)
   }
 }

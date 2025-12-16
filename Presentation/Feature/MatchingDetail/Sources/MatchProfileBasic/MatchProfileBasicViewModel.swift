@@ -5,6 +5,7 @@
 // Created by summercat on 2025/01/02.
 //
 
+import Foundation
 import Observation
 import UseCases
 import PCAmplitude
@@ -23,8 +24,9 @@ final class MatchProfileBasicViewModel {
   }
   
   enum MatchActionType {
-      case accept
-      case viewPhoto
+    case accept
+    case viewPhoto
+    case timeExpired
   }
   
   private enum Constant {
@@ -47,6 +49,8 @@ final class MatchProfileBasicViewModel {
   private(set) var photoUri: String = ""
   private(set) var completedMatchAction: MatchActionType? = nil
   private(set) var matchId: Int
+  private(set) var timerManager: MatchingDetailTimerManager?
+  
   private let getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
   private let postMatchPhotoUseCase: PostMatchPhotoUseCase
@@ -95,6 +99,7 @@ final class MatchProfileBasicViewModel {
     do {
       let entity = try await getMatchProfileBasicUseCase.execute(matchId: matchId)
       matchingBasicInfoModel = BasicInfoModel(model: entity)
+      setupTimerManager(for: entity.createdAt)
       error = nil
     } catch {
       self.error = error
@@ -198,11 +203,26 @@ extension MatchProfileBasicViewModel {
       }
 
     case .timeExpired:
-      // TODO: 뒤로가기 처리
-      break
+      completedMatchAction = nil
+      completedMatchAction = .timeExpired
       
     default:
       break
     }
+  }
+}
+
+private extension MatchProfileBasicViewModel {
+  func setupTimerManager(for createdAt: Date) {
+    timerManager = MatchingDetailTimerManager(matchedDate: createdAt)
+    
+    // 00:00이 되었을 때 실행할 로직
+    timerManager?.onTimerExpired = { [weak self] in
+      self?.showTimeExpiredAlert()
+    }
+  }
+  
+  func showTimeExpiredAlert() {
+    presentedAlert = .timeExpired(matchId: matchId)
   }
 }
