@@ -144,10 +144,11 @@ private extension MatchingDetailAlertView {
   // 제한시간 종료
   func timeExpiredAlert() -> some View {
     AlertView(
-      title: { Text("시간이 종료되었어요") },
-      message: "이 매칭은 더 이상 진행할 수 없어요.",
-      secondButtonText: "확인",
-      secondButtonAction: onDismiss,
+      icon: DesignSystemAsset.Icons.notice40.swiftUIImage,
+      title: { Text("인연의 제한 시간이 종료되었어요") },
+      message: "만료된 프로필은 삭제되며, 홈으로 이동합니다.",
+      secondButtonText: "홈으로",
+      secondButtonAction: onConfirm,
     )
   }
   
