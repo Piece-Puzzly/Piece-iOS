@@ -213,6 +213,8 @@ private extension MatchingHomeViewModel {
 
 private extension MatchingHomeViewModel {
   func getUserRole() async {
+    viewState = .loading
+    
     do {
       let userInfo = try await getUserInfoUseCase.execute()
       let userRole = userInfo.role

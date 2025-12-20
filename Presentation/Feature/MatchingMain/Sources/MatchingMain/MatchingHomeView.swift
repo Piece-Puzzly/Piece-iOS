@@ -18,6 +18,7 @@ struct MatchingHomeView: View {
   
   @Environment(Router.self) private var router: Router
   @Environment(PCToastManager.self) private var toastManager: PCToastManager
+  @Environment(\.scenePhase) private var scenePhase
   
   init(
     getUserInfoUseCase: GetUserInfoUseCase,
@@ -100,6 +101,14 @@ struct MatchingHomeView: View {
       guard let destination else { return }
       router.push(to: destination)
     }
+    .onReceive(NotificationCenter.default.publisher(for: .refreshHomeData)) { _ in
+      matchingHomeViewModel.handleAction(.onAppear)
+    }
+    .onChange(of: scenePhase) { _, newPhase in
+      if newPhase == .active {
+        matchingHomeViewModel.handleAction(.onAppear)
+      }
+    }
     .spinning(of: matchingHomeViewModel.showSpinner)
   }
 }
@@ -159,6 +168,7 @@ fileprivate struct MatchingListContentView: View {
   var body: some View {
     switch matchingHomeViewModel.viewState {
     case .loading:
+      // TODO: 스켈레톤 ㄱㄱ
       Text("LOADING STATE")
     
     case .profileStatusRejected:
