@@ -168,10 +168,18 @@ private extension MatchingHomeViewModel {
     }
   }
   
-  func handleDidTapCreateNewMatchButton() async {
+  func fetchCanFreeMatch() async {
     do {
       let result = try await checkCanFreeMatchUseCase.execute()
       isTrial = result.canFreeMatch
+    } catch {
+      print("Check Can Free Match Error: \(error.localizedDescription)")
+    }
+  }
+  
+  func handleDidTapCreateNewMatchButton() async {
+    do {
+      await fetchCanFreeMatch()
 
       if isTrial {
         let result = try await createNewMatchUseCase.execute()
@@ -226,10 +234,11 @@ private extension MatchingHomeViewModel {
       case .PENDING:
         viewState = .userRolePending
         
-      case .USER: // (매칭&퍼즐개수)조회는 "USER" 상태에 병렬호출로 성능 개선
+      case .USER: // (매칭&퍼즐개수&무료매칭여부)조회는 "USER" 상태에 병렬호출로 성능 개선
         await withTaskGroup(of: Void.self) { group in
           group.addTask { await self.loadMatches() }
           group.addTask { await self.loadPuzzleCount() }
+          group.addTask { await self.fetchCanFreeMatch() }
         }
         
         viewState = .userRoleUser
