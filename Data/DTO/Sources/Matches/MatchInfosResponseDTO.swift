@@ -28,11 +28,19 @@ public struct MatchInfosResponseDTO: Decodable {
 
 public extension MatchInfosResponseDTO {
   func toDomain() -> MatchInfosModel {
+    // matchType이 BASIC이면 createdAt에 5분 추가
+    let adjustedCreatedAt: Date
+    if matchType == .BASIC {
+      adjustedCreatedAt = Calendar.current.date(byAdding: .minute, value: 5, to: createdAt) ?? createdAt
+    } else {
+      adjustedCreatedAt = createdAt
+    }
+
     return MatchInfosModel(
       matchId: matchId,
       matchedUserId: matchedUserId,
       matchType: matchType,
-      createdAt: createdAt,
+      createdAt: adjustedCreatedAt,
       matchStatus: matchStatus,
       description: description,
       nickname: nickname,

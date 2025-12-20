@@ -22,10 +22,18 @@ public struct MatchValueTalksResponseDTO: Decodable {
 
 public extension MatchValueTalksResponseDTO {
   func toDomain() -> MatchValueTalkModel {
-    MatchValueTalkModel(
+    // matchType이 BASIC이면 createdAt에 5분 추가
+    let adjustedCreatedAt: Date
+    if matchType == .BASIC {
+      adjustedCreatedAt = Calendar.current.date(byAdding: .minute, value: 5, to: createdAt) ?? createdAt
+    } else {
+      adjustedCreatedAt = createdAt
+    }
+    
+    return MatchValueTalkModel(
       id: matchId,
       matchType: matchType,
-      createdAt: createdAt,
+      createdAt: adjustedCreatedAt,
       matchedUserId: matchedUserId,
       matchStatus: matchStatus,
       description: description,
