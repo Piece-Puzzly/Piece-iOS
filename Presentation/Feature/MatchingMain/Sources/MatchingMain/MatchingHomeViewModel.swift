@@ -283,13 +283,14 @@ private extension MatchingHomeViewModel {
       .filter { $0.matchStatus != .REFUSED }
       .filter { $0.matchStatus != .BLOCKED }
       .filter { !$0.isBlocked }
+      .filter { !isMatchExpired($0) }
     
     // 1. 타의적 매칭이 아닌 첫 번째 카드
     if let firstNonAuto = filteredInfos.first(where: { $0.matchType != .AUTO }) {
       return firstNonAuto.matchId
     }
     // 2. 타의적 매칭만 있는 경우 첫 번째 카드
-    return matchInfosList.first?.matchId
+    return filteredInfos.first?.matchId
   }
   
   // TODO: (필수) 새 카드 생성 및 API 호출 시 호출
@@ -298,6 +299,7 @@ private extension MatchingHomeViewModel {
       .filter { $0.matchStatus != .REFUSED }
       .filter { $0.matchStatus != .BLOCKED }
       .filter { !$0.isBlocked }
+      .filter { !isMatchExpired($0) }
     let currentIds = Set(filteredInfos.map { $0.matchId })
     
     timerManagers = timerManagers.filter { currentIds.contains($0.key) }
@@ -316,8 +318,26 @@ private extension MatchingHomeViewModel {
       return existing
     }
     let newTimer = MatchingTimerManager(matchedDate: matchInfo.createdAt)
+    newTimer.onTimerExpired = { [weak self] in
+      Task { @MainActor [weak self] in
+        self?.handleTimerExpired()
+      }
+    }
     timerManagers[matchInfo.matchId] = newTimer
     return newTimer
+  }
+
+  private func isMatchExpired(_ matchInfo: MatchInfosModel) -> Bool {
+    guard let expirationDate = Calendar.current.date(byAdding: .hour, value: 24, to: matchInfo.createdAt) else {
+      return false
+    }
+    return Date() >= expirationDate
+  }
+
+  // 타이머 만료 시 매칭 카드 갱신
+  private func handleTimerExpired() {
+    selectedMatchId = determineInitialSelection()
+    updateMatchingCards()
   }
 }
 

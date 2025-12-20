@@ -16,6 +16,7 @@ final class MatchingTimerManager {
   private var expirationDate: Date?
 
   var remainingTime: String = "24:00:00"
+  var onTimerExpired: (() -> Void)?
 
   init(matchedDate: Date) {
     self.matchedDate = matchedDate
@@ -56,6 +57,7 @@ final class MatchingTimerManager {
     if timeInterval <= 0 {
       remainingTime = "00:00:00"
       timer?.invalidate()
+      onTimerExpired?()
       return
     }
     
