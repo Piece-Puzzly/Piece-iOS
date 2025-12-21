@@ -21,6 +21,7 @@ final class MatchProfileBasicViewModel {
 
     case dismissAlert
     case didConfirmAlert(MatchingDetailAlertType)
+    case clearToast
   }
   
   enum MatchActionType {
@@ -47,7 +48,7 @@ final class MatchProfileBasicViewModel {
   private(set) var error: Error?
   private(set) var matchingBasicInfoModel: BasicInfoModel?
   private(set) var photoUri: String = ""
-  private(set) var completedMatchAction: MatchActionType? = nil
+  private(set) var showToastAction: MatchActionType? = nil
   private(set) var matchId: Int
   private(set) var timerManager: MatchingDetailTimerManager?
   
@@ -92,6 +93,9 @@ final class MatchProfileBasicViewModel {
     case .didConfirmAlert(let alertType):
       presentedAlert = nil
       handleAlertConfirm(alertType)
+    
+    case .clearToast:
+      showToastAction = nil
     }
   }
   
@@ -102,6 +106,7 @@ final class MatchProfileBasicViewModel {
       setupTimerManager(for: entity.createdAt)
       error = nil
     } catch {
+      // TODO: 에러 핸들링
       self.error = error
     }
     isLoading = false
@@ -113,6 +118,7 @@ final class MatchProfileBasicViewModel {
     } catch {
       self.error = error
       presentedAlert = .insufficientPuzzle
+      // TODO: 에러 핸들링
     }
   }
   
@@ -121,6 +127,7 @@ final class MatchProfileBasicViewModel {
       let uri = try await getMatchPhotoUseCase.execute(matchId: matchId)
       photoUri = uri
     } catch {
+      // TODO: 에러 핸들링
       self.error = error
     }
   }
@@ -130,6 +137,7 @@ final class MatchProfileBasicViewModel {
       _ = try await acceptMatchUseCase.execute(matchId: matchId)
     } catch {
       self.error = error
+      // TODO: 에러 핸들링
       presentedAlert = .insufficientPuzzle
     }
   }
@@ -187,24 +195,21 @@ extension MatchProfileBasicViewModel {
     switch alertType {
     case .freeAccept, .paidAccept:
       Task {
-        completedMatchAction = nil
         await acceptMatch()
-        completedMatchAction = .accept
+        showToastAction = .accept
       }
 
     case .paidPhoto:
       Task {
-        completedMatchAction = nil
         await buyMatchPhoto()
         await fetchMatchPhoto()
         await fetchMatchingBasicInfo()
         isPhotoViewPresented = true
-        completedMatchAction = .viewPhoto
+        showToastAction = .viewPhoto
       }
 
     case .timeExpired:
-      completedMatchAction = nil
-      completedMatchAction = .timeExpired
+      showToastAction = .timeExpired
       
     default:
       break

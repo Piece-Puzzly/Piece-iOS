@@ -65,6 +65,9 @@ struct MatchDetailPhotoView: View {
           .padding(.top, 56)
         }
       }
+      .onDisappear {
+        toastManager.hideToast(for: .matchDetailPhoto)
+      }
       .trackScreen(trackable: DefaultProgress.matchDetailPhoto)
   }
   

@@ -149,7 +149,7 @@ struct ValueTalkView: View {
     .pcAlert(item: $viewModel.presentedAlert) { alertType in
       MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)
     }
-    .onChange(of: viewModel.completedMatchAction) { _, actionType in
+    .onChange(of: viewModel.showToastAction) { _, actionType in
       guard let actionType else { return }
       
       switch actionType {
@@ -183,6 +183,8 @@ struct ValueTalkView: View {
       case .timeExpired:
         router.popToRoot()
       }
+      
+      viewModel.handleAction(.clearToast)
     }
   }
   

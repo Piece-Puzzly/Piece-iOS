@@ -59,6 +59,9 @@ struct MatchResultView: View {
         .ignoresSafeArea()
     )
     .onAppear { viewModel.handleAction(.onAppear) }
+    .onDisappear {
+      toastManager.hideToast(for: .matchResult)
+    }
     .overlay(alignment: .top) {
       if toastManager.shouldShowToast(for: .matchResult) {
         PCToast(

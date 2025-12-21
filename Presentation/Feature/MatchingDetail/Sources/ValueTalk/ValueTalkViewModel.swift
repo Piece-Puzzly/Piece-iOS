@@ -28,6 +28,7 @@ final class ValueTalkViewModel {
 
     case dismissAlert
     case didConfirmAlert(MatchingDetailAlertType)
+    case clearToast
   }
   
   enum MatchActionType {
@@ -86,7 +87,7 @@ final class ValueTalkViewModel {
     }
   }
   
-  private(set) var completedMatchAction: MatchActionType? = nil
+  private(set) var showToastAction: MatchActionType? = nil
   private(set) var matchId: Int
   private(set) var timerManager: MatchingDetailTimerManager?
   
@@ -120,6 +121,9 @@ final class ValueTalkViewModel {
     case .didConfirmAlert(let alertType):
       presentedAlert = nil
       handleAlertConfirm(alertType)
+      
+    case .clearToast:
+      showToastAction = nil
     }
   }
   
@@ -131,6 +135,7 @@ final class ValueTalkViewModel {
       error = nil
     } catch {
       self.error = error
+      // TODO: 에러 핸들링
     }
     isLoading = false
   }
@@ -141,6 +146,7 @@ final class ValueTalkViewModel {
     } catch {
       self.error = error
       presentedAlert = .insufficientPuzzle
+      // TODO: 에러 핸들링
     }
   }
   
@@ -150,6 +156,7 @@ final class ValueTalkViewModel {
       photoUri = uri
     } catch {
       self.error = error
+      // TODO: 에러 핸들링
     }
   }
   
@@ -159,6 +166,7 @@ final class ValueTalkViewModel {
     } catch {
       self.error = error
       presentedAlert = .insufficientPuzzle
+      // TODO: 에러 핸들링
     }
   }
   
@@ -167,6 +175,7 @@ final class ValueTalkViewModel {
       _ = try await refuseMatchUseCase.execute(matchId: matchId)
     } catch {
       self.error = error
+      // TODO: 에러 핸들링
     }
   }
 }
@@ -227,32 +236,32 @@ private extension ValueTalkViewModel {
   func handleAlertConfirm(_ alertType: MatchingDetailAlertType) {
     switch alertType {
     case .refuse:
-      completedMatchAction = nil
+      showToastAction = nil
       Task {
         await refuseMatch()
-        completedMatchAction = .refuse
+        showToastAction = .refuse
       }
 
     case .freeAccept, .paidAccept:
       Task {
-        completedMatchAction = nil
+        showToastAction = nil
         await acceptMatch()
-        completedMatchAction = .accept
+        showToastAction = .accept
       }
 
     case .paidPhoto:
       Task {
-        completedMatchAction = nil
+        showToastAction = nil
         await buyMatchPhoto()
         await fetchMatchPhoto()
         await fetchMatchValueTalk()
         isPhotoViewPresented = true
-        completedMatchAction = .viewPhoto
+        showToastAction = .viewPhoto
       }
 
     case .timeExpired:
-      completedMatchAction = nil
-      completedMatchAction = .timeExpired
+      showToastAction = nil
+      showToastAction = .timeExpired
     
     case .insufficientPuzzle:
       // TODO: 스토어 이동

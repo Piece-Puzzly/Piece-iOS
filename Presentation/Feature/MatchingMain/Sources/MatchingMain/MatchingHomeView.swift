@@ -62,6 +62,9 @@ struct MatchingHomeView: View {
     .onAppear {
       matchingHomeViewModel.handleAction(.onAppear)
     }
+    .onDisappear {
+      toastManager.hideToast(for: .matchingHome)
+    }
     .pcAlert(item: $matchingHomeViewModel.presentedAlert) { alertType in
       MatchingHomeAlertView(matchingHomeViewModel: matchingHomeViewModel, alertType: alertType)
     }
@@ -96,6 +99,8 @@ struct MatchingHomeView: View {
           backgroundColor: .primaryDefault
         )
       }
+      
+      matchingHomeViewModel.handleAction(.clearToast)
     }
     .onChange(of: matchingHomeViewModel.destination) { _, destination in
       guard let destination else { return }

@@ -46,6 +46,9 @@ struct MatchProfileBasicView: View {
           bottomSheetContent(model: basicInfoModel)
             .presentationDetents([.height(160)])
         }
+        .onDisappear {
+          toastManager.hideToast(for: .matchProfileBasic)
+        }
     } else {
       EmptyView()
     }
@@ -126,7 +129,7 @@ struct MatchProfileBasicView: View {
         .padding(.top, 56)
       }
     }
-    .onChange(of: viewModel.completedMatchAction) { _, actionType in
+    .onChange(of: viewModel.showToastAction) { _, actionType in
       guard let actionType else { return }
       
       switch actionType {
@@ -151,6 +154,8 @@ struct MatchProfileBasicView: View {
       case .timeExpired:
         router.popToRoot()
       }
+      
+      viewModel.handleAction(.clearToast)
     }
   }
   

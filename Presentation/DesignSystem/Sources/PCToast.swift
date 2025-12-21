@@ -137,9 +137,19 @@ public final class PCToastManager {
     } 
   }
   
-  public func hideToast() {
-    self.isVisible = false
-    self.target = nil
+  public func hideToast(for target: ToastTarget? = nil) {
+    guard let target = target else {
+      // target이 nil이면 모든 토스트 clear
+      self.isVisible = false
+      self.target = nil
+      return
+    }
+
+    // 특정 target만 clear
+    if self.target == target {
+      self.isVisible = false
+      self.target = nil
+    }
   }
   
   public func shouldShowToast(for target: ToastTarget) -> Bool {

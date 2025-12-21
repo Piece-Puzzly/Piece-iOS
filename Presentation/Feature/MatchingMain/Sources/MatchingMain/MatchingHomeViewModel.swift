@@ -29,6 +29,7 @@ final class MatchingHomeViewModel {
     case didTapCreateNewMatchButton
     case didTapAlertConfirm(MatchingAlertType)
     case dismissAlert // 알럿 취소
+    case clearToast
   }
   
   enum ToastAction {
@@ -99,6 +100,9 @@ final class MatchingHomeViewModel {
       
     case .dismissAlert:
       dismissAlert()
+      
+    case .clearToast:
+      showToastAction = nil
     }
   }
 }
@@ -366,7 +370,6 @@ private extension MatchingHomeViewModel {
     
     guard isContactViewed || isBasic else {
       do {
-        showToastAction = nil
         _ = try await postMatchContactsUseCase.execute(matchId: matchId)
         destination = .matchResult(matchId: matchId)
         showToastAction = .checkContact
@@ -389,7 +392,6 @@ private extension MatchingHomeViewModel {
 
     if puzzleCount >= DomainConstants.PuzzleCost.createNewMatch {
       do {
-        showToastAction = nil
         let result = try await createNewMatchUseCase.execute()
         let matchId = result.matchId
         destination = .matchProfileBasic(matchId: matchId)

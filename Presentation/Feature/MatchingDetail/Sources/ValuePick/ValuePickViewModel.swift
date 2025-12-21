@@ -29,6 +29,7 @@ final class ValuePickViewModel {
 
     case dismissAlert
     case didConfirmAlert(MatchingDetailAlertType)
+    case clearToast
   }
   
   enum MatchActionType {
@@ -75,7 +76,7 @@ final class ValuePickViewModel {
   private(set) var sameWithMeCount: Int = 0
   private(set) var differentFromMeCount: Int = 0
   private(set) var photoUri: String = ""
-  private(set) var completedMatchAction: MatchActionType? = nil
+  private(set) var showToastAction: MatchActionType? = nil
   private(set) var matchId: Int
   private(set) var timerManager: MatchingDetailTimerManager?
   
@@ -117,6 +118,9 @@ final class ValuePickViewModel {
     case .didConfirmAlert(let alertType):
       presentedAlert = nil
       handleAlertConfirm(alertType)
+      
+    case .clearToast:
+      showToastAction = nil
     }
   }
   
@@ -142,6 +146,7 @@ final class ValuePickViewModel {
       _ = try await postMatchPhotoUseCase.execute(matchId: matchId)
     } catch {
       self.error = error
+      // TODO: 에러 핸들링
       presentedAlert = .insufficientPuzzle
     }
   }
@@ -152,6 +157,7 @@ final class ValuePickViewModel {
       photoUri = uri
     } catch {
       self.error = error
+      // TODO: 에러 핸들링
     }
   }
   
@@ -160,6 +166,7 @@ final class ValuePickViewModel {
       _ = try await acceptMatchUseCase.execute(matchId: matchId)
     } catch {
       self.error = error
+      // TODO: 에러 핸들링
       presentedAlert = .insufficientPuzzle
     }
   }
@@ -217,24 +224,24 @@ extension ValuePickViewModel {
     switch alertType {
     case .freeAccept, .paidAccept:
       Task {
-        completedMatchAction = nil
+        showToastAction = nil
         await acceptMatch()
-        completedMatchAction = .accept
+        showToastAction = .accept
       }
 
     case .paidPhoto:
       Task {
-        completedMatchAction = nil
+        showToastAction = nil
         await buyMatchPhoto()
         await fetchMatchPhoto()
         await fetchMatchValuePick()
         isPhotoViewPresented = true
-        completedMatchAction = .viewPhoto
+        showToastAction = .viewPhoto
       }
 
     case .timeExpired:
-      completedMatchAction = nil
-      completedMatchAction = .timeExpired
+      showToastAction = nil
+      showToastAction = .timeExpired
 
     default:
       break

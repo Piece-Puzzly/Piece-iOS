@@ -108,7 +108,7 @@ struct ValuePickView: View {
         )
       }
     }
-    .onChange(of: viewModel.completedMatchAction) { _, actionType in
+    .onChange(of: viewModel.showToastAction) { _, actionType in
       guard let actionType else { return }
 
       switch actionType {
@@ -133,6 +133,8 @@ struct ValuePickView: View {
       case .timeExpired:
         router.popToRoot()
       }
+      
+      viewModel.handleAction(.clearToast)
     }
     .pcAlert(item: $viewModel.presentedAlert) { alertType in
       MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)
