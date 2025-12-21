@@ -29,15 +29,21 @@ final class MatchingHomeViewModel {
     case didTapCreateNewMatchButton
     case didTapAlertConfirm(MatchingAlertType)
     case dismissAlert // 알럿 취소
+    case clearToast
+  }
+  
+  enum ToastAction {
+    case createNewMatch
+    case checkContact
   }
   
   private let getUserInfoUseCase: GetUserInfoUseCase
-  private let acceptMatchUseCase: AcceptMatchUseCase
   private let getMatchesInfoUseCase: GetMatchesInfoUseCase
   private let patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
   private let getPuzzleCountUseCase: GetPuzzleCountUseCase
   private let createNewMatchUseCase: CreateNewMatchUseCase
   private let checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase
+  private let postMatchContactsUseCase: PostMatchContactsUseCase
 
   private var matchInfosList: [MatchInfosModel] = []                  // Card의 Entity 원본
   private var timerManagers: [Int: MatchingTimerManager] = [:]
@@ -48,25 +54,27 @@ final class MatchingHomeViewModel {
   private(set) var puzzleCount: Int = 0
   private(set) var showSpinner: Bool = false
   private(set) var isTrial: Bool = false
+  private(set) var destination: Route? = nil
+  private(set) var showToastAction: ToastAction? = nil
   
   var presentedAlert: MatchingAlertType? = nil
   
   init(
     getUserInfoUseCase: GetUserInfoUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase,
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
     getPuzzleCountUseCase: GetPuzzleCountUseCase,
     createNewMatchUseCase: CreateNewMatchUseCase,
-    checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase
+    checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
+    postMatchContactsUseCase: PostMatchContactsUseCase,
   ) {
     self.getUserInfoUseCase = getUserInfoUseCase
-    self.acceptMatchUseCase = acceptMatchUseCase
     self.getMatchesInfoUseCase = getMatchesInfoUseCase
     self.patchMatchesCheckPieceUseCase = patchMatchesCheckPieceUseCase
     self.getPuzzleCountUseCase = getPuzzleCountUseCase
     self.createNewMatchUseCase = createNewMatchUseCase
     self.checkCanFreeMatchUseCase = checkCanFreeMatchUseCase
+    self.postMatchContactsUseCase = postMatchContactsUseCase
   }
   
   func handleAction(_ action: Action) {
@@ -92,6 +100,9 @@ final class MatchingHomeViewModel {
       
     case .dismissAlert:
       dismissAlert()
+      
+    case .clearToast:
+      showToastAction = nil
     }
   }
 }
@@ -99,8 +110,13 @@ final class MatchingHomeViewModel {
 // MARK: - Private Methods
 private extension MatchingHomeViewModel {
   func handleOnAppear() {
-    Task {
-      await getUserRole()
+    destination = nil
+    selectedMatchId = nil
+    presentedAlert = nil
+    showToastAction = nil
+
+    withSpinner {
+      await self.getUserRole()
     }
   }
   
@@ -122,44 +138,58 @@ private extension MatchingHomeViewModel {
     
     switch targetMatchingCard.matchStatus {
     case .BEFORE_OPEN:
-      Task {
-        _ = try await patchMatchesCheckPieceUseCase.execute(matchId: matchId)
-        // TODO: 매칭 상세 이동
+      withSpinner { [weak self] in
+        _ = try? await self?.patchMatchesCheckPieceUseCase.execute(matchId: matchId)
+        PCAmplitude.trackButtonClick(
+          screenName: .matchMainHome,
+          buttonName: .checkRelationShip
+        )
+        self?.destination = .matchProfileBasic(matchId: matchId)
       }
       
     case .WAITING, .RESPONDED, .GREEN_LIGHT:
-      // - 2.2.   `MATCHED`상태가 아닌 정상적인 경우 (✅)
-      // - 2.2.1. 유/무료 카드 (basic, trialPremium, auto) 상관 없이 "매칭 상세"로 진입 (✅)
-      // - 2.2.2. matchId를 View의 router에게 줘서 화면전환 구현 (✅)
-      // TODO: 매칭 상세 이동
-      break
+      destination = .matchProfileBasic(matchId: matchId)
 
-      // - 2.1.1.       `MATCHED`상태의 경우 (✅)
     case .MATCHED:
       switch targetMatchingCard.matchType {
       case .BASIC:
-        // - 2.1.2.1.   (기본 매칭, basic) 무료로 바로 MatchResultView 이동 (✅)
-        // - 2.1.2.2.   matchId를 View의 router에게 줘서 화면전환 구현 (✅)
-        // TODO: 연락처 확인 화면 이동
-        break
+        withSpinner { [weak self] in
+          await self?.navigateToContact(matchId)
+        }
+       
       case .TRIAL, .PREMIUM, .AUTO:
-        presentedAlert = .contactConfirm(matchId: matchId) // "연락처 확인 알럿"으로 진입 (✅)
+        if targetMatchingCard.matchInfosModel.isContactViewed {
+          withSpinner { [weak self] in
+            await self?.navigateToContact(matchId)
+          }
+        }
+        else {
+          presentedAlert = .contactConfirm(matchId: matchId)
+        }
       }
 
-    case .REFUSED: // 거절한 상대는 안나옴
+    case .REFUSED, .BLOCKED: // 거절한 상대는 안나옴
       break
+    }
+  }
+  
+  func fetchCanFreeMatch() async {
+    do {
+      let result = try await checkCanFreeMatchUseCase.execute()
+      isTrial = result.canFreeMatch
+    } catch {
+      print("Check Can Free Match Error: \(error.localizedDescription)")
     }
   }
   
   func handleDidTapCreateNewMatchButton() async {
     do {
-      let result = try await checkCanFreeMatchUseCase.execute()
-      isTrial = result.canFreeMatch
+      await fetchCanFreeMatch()
 
       if isTrial {
         let result = try await createNewMatchUseCase.execute()
         let matchId = result.matchId
-        // TODO: 매칭상세(with: matchId) 이동
+        destination = .matchProfileBasic(matchId: matchId)
       } else {
         presentedAlert = .createNewMatch // premium이면 "새로운 인연 만나기 알럿"으로 진입
       }
@@ -209,10 +239,11 @@ private extension MatchingHomeViewModel {
       case .PENDING:
         viewState = .userRolePending
         
-      case .USER: // (매칭&퍼즐개수)조회는 "USER" 상태에 병렬호출로 성능 개선
+      case .USER: // (매칭&퍼즐개수&무료매칭여부)조회는 "USER" 상태에 병렬호출로 성능 개선
         await withTaskGroup(of: Void.self) { group in
           group.addTask { await self.loadMatches() }
           group.addTask { await self.loadPuzzleCount() }
+          group.addTask { await self.fetchCanFreeMatch() }
         }
         
         viewState = .userRoleUser
@@ -253,17 +284,27 @@ private extension MatchingHomeViewModel {
   }
   
   func determineInitialSelection() -> Int? {
+    let filteredInfos = matchInfosList
+      .filter { $0.matchStatus != .REFUSED }
+      .filter { $0.matchStatus != .BLOCKED }
+      .filter { !$0.isBlocked }
+      .filter { !isMatchExpired($0) }
+    
     // 1. 타의적 매칭이 아닌 첫 번째 카드
-    if let firstNonAuto = matchInfosList.first(where: { $0.matchType != .AUTO }) {
+    if let firstNonAuto = filteredInfos.first(where: { $0.matchType != .AUTO }) {
       return firstNonAuto.matchId
     }
     // 2. 타의적 매칭만 있는 경우 첫 번째 카드
-    return matchInfosList.first?.matchId
+    return filteredInfos.first?.matchId
   }
   
   // TODO: (필수) 새 카드 생성 및 API 호출 시 호출
   func updateMatchingCards() {
-    let filteredInfos = matchInfosList.filter { $0.matchStatus != .REFUSED }
+    let filteredInfos = matchInfosList
+      .filter { $0.matchStatus != .REFUSED }
+      .filter { $0.matchStatus != .BLOCKED }
+      .filter { !$0.isBlocked }
+      .filter { !isMatchExpired($0) }
     let currentIds = Set(filteredInfos.map { $0.matchId })
     
     timerManagers = timerManagers.filter { currentIds.contains($0.key) }
@@ -282,8 +323,26 @@ private extension MatchingHomeViewModel {
       return existing
     }
     let newTimer = MatchingTimerManager(matchedDate: matchInfo.createdAt)
+    newTimer.onTimerExpired = { [weak self] in
+      Task { @MainActor [weak self] in
+        self?.handleTimerExpired()
+      }
+    }
     timerManagers[matchInfo.matchId] = newTimer
     return newTimer
+  }
+
+  private func isMatchExpired(_ matchInfo: MatchInfosModel) -> Bool {
+    guard let expirationDate = Calendar.current.date(byAdding: .hour, value: 24, to: matchInfo.createdAt) else {
+      return false
+    }
+    return Date() >= expirationDate
+  }
+
+  // 타이머 만료 시 매칭 카드 갱신
+  private func handleTimerExpired() {
+    selectedMatchId = determineInitialSelection()
+    updateMatchingCards()
   }
 }
 
@@ -296,11 +355,32 @@ private extension MatchingHomeViewModel {
   func handleDidTapContactConfirmAlertConfirm(_ matchId: Int) async {
     await loadPuzzleCount() // [방어로직] 퍼즐 개수 동기화 (✅)
     if puzzleCount >= DomainConstants.PuzzleCost.checkContact { // - 2.1.2.2.1.1 사용자 퍼즐 개수가 충분한 경우 -> MatchResultView 이동 (✅)
-      // TODO: 연락처확인 퍼즐 소모(구매) API
-      // TODO: MatchResultView(with: matchId) 이동
+      withSpinner { [weak self] in
+        await self?.navigateToContact(matchId)
+      }
     } else { // - 2.1.2.2.2.2 사용자 퍼즐 개수가 모자란 경우 -> 스토어 이동 (✅)
       presentedAlert = .insufficientPuzzle // 퍼즐 부족 알럿 표시
     }
+  }
+  
+  func navigateToContact(_ matchId: Int) async {
+    guard let match = matchInfosList.first(where: { $0.matchId == matchId }) else { return }
+    let isContactViewed = match.isContactViewed
+    let isBasic = match.matchType == .BASIC
+    
+    guard isContactViewed || isBasic else {
+      do {
+        _ = try await postMatchContactsUseCase.execute(matchId: matchId)
+        destination = .matchResult(matchId: matchId)
+        showToastAction = .checkContact
+      } catch {
+        print("Post Match Contacts Error: \(error.localizedDescription)")
+      }
+      
+      return
+    }
+    
+    destination = .matchResult(matchId: matchId)
   }
   
   func handleDidTapInsufficientPuzzleAlertConfirm() async {
@@ -314,7 +394,8 @@ private extension MatchingHomeViewModel {
       do {
         let result = try await createNewMatchUseCase.execute()
         let matchId = result.matchId
-        // TODO: 매칭상세(with: matchId) 이동
+        destination = .matchProfileBasic(matchId: matchId)
+        showToastAction = .createNewMatch
       } catch {
         print("Create New Match Error: \(error.localizedDescription)")
         // TODO: Handle error
@@ -335,6 +416,11 @@ private extension MatchingHomeViewModel {
     Task {
       setSpinnerVisible(true)
       defer { setSpinnerVisible(false) }  // 에러 발생해도 false 처리
+
+      // 최소 0.1초 딜레이를 먼저 기다림
+      try? await Task.sleep(nanoseconds: 100_000_000) // 0.1초
+
+      // 그 후 action 실행
       await action()
     }
   }

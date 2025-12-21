@@ -22,17 +22,25 @@ public struct MatchInfosResponseDTO: Decodable {
   public let matchedValueCount: Int
   public let matchedValueList: [String]
   public let isBlocked: Bool
-  public let imageViewed: Bool
-  public let contactViewed: Bool
+  public let isImageViewed: Bool
+  public let isContactViewed: Bool
 }
 
 public extension MatchInfosResponseDTO {
   func toDomain() -> MatchInfosModel {
+    // matchType이 BASIC이면 createdAt에 5분 추가
+    let adjustedCreatedAt: Date
+    if matchType == .BASIC {
+      adjustedCreatedAt = Calendar.current.date(byAdding: .minute, value: 5, to: createdAt) ?? createdAt
+    } else {
+      adjustedCreatedAt = createdAt
+    }
+
     return MatchInfosModel(
       matchId: matchId,
       matchedUserId: matchedUserId,
       matchType: matchType,
-      createdAt: createdAt,
+      createdAt: adjustedCreatedAt,
       matchStatus: matchStatus,
       description: description,
       nickname: nickname,
@@ -42,8 +50,8 @@ public extension MatchInfosResponseDTO {
       matchedValueCount: matchedValueCount,
       matchedValueList: matchedValueList,
       isBlocked: isBlocked,
-      imageViewed: imageViewed,
-      contactViewed: contactViewed
+      isImageViewed: isImageViewed,
+      isContactViewed: isContactViewed
     )
   }
 }

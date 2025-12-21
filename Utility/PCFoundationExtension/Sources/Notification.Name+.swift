@@ -12,4 +12,5 @@ public extension Notification.Name {
   static let deepLink = Notification.Name("DeepLink")
   static let switchHomeTab = Notification.Name("SwitchHomeTab")
   static let fcmToken = Notification.Name("FCMToken")
+  static let refreshHomeData = Notification.Name("RefreshHomeData")
 }

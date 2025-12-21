@@ -18,7 +18,7 @@ extension MatchingCardClosedView {
   
   var config: StatusConfig {
     switch model.matchStatus {
-    case .BEFORE_OPEN, .WAITING, .REFUSED, .RESPONDED, .GREEN_LIGHT:
+    case .BEFORE_OPEN, .WAITING, .REFUSED, .RESPONDED, .GREEN_LIGHT, .BLOCKED:
       return StatusConfig(
         hilightedTextColor: .grayscaleBlack,
         textColor: .grayscaleDark2,

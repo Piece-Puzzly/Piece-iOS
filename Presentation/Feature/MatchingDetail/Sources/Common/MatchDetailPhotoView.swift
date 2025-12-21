@@ -14,33 +14,37 @@ import PCAmplitude
 
 struct MatchDetailPhotoView: View {
   private let nickname: String
+  private let matchStatus: MatchStatus
   private let uri: String
-  @Environment(Router.self) private var router: Router
-  @Environment(\.dismiss) private var dismiss
-  @State private var isAlertPresented: Bool = false
+  private let onDismiss: () -> Void
+  private let onAcceptButtonTap: () -> Void
+  
   @State private var isAcceptButtonEnabled: Bool
-  private let onAcceptMatch: (() -> Void)?
+  @Environment(Router.self) private var router: Router
+  @Environment(PCToastManager.self) private var toastManager: PCToastManager
   
   init(
     nickname: String,
+    matchStatus: MatchStatus,
     uri: String,
-    onAcceptMatch: (() -> Void)? = nil
+    onDismiss: @escaping () -> Void,
+    onAcceptButtonTap: @escaping () -> Void
   ) {
     self.nickname = nickname
+    self.matchStatus = matchStatus
     self.uri = uri
-    self.onAcceptMatch = onAcceptMatch
+    self.onDismiss = onDismiss
+    self.onAcceptButtonTap = onAcceptButtonTap
     
     var isAcceptButtonEnabled = false
-    if let matchStatus = PCUserDefaultsService.shared.getMatchStatus() {
       switch matchStatus {
       case .BEFORE_OPEN: isAcceptButtonEnabled = true
       case .WAITING: isAcceptButtonEnabled = true
-      case .REFUSED: isAcceptButtonEnabled = false
+      case .REFUSED, .BLOCKED: isAcceptButtonEnabled = false
       case .RESPONDED: isAcceptButtonEnabled = false
       case .GREEN_LIGHT: isAcceptButtonEnabled = true
       case .MATCHED: isAcceptButtonEnabled = false
       }
-    }
     self.isAcceptButtonEnabled = isAcceptButtonEnabled
   }
   
@@ -50,6 +54,20 @@ struct MatchDetailPhotoView: View {
         Dimmer()
           .ignoresSafeArea()
       )
+      .overlay(alignment: .top) {
+        if toastManager.shouldShowToast(for: .matchDetailPhoto) {
+          PCToast(
+            isVisible: Bindable(toastManager).isVisible,
+            icon: toastManager.icon,
+            text: toastManager.text,
+            backgroundColor: toastManager.backgroundColor
+          )
+          .padding(.top, 56)
+        }
+      }
+      .onDisappear {
+        toastManager.hideToast(for: .matchDetailPhoto)
+      }
       .trackScreen(trackable: DefaultProgress.matchDetailPhoto)
   }
   
@@ -58,7 +76,10 @@ struct MatchDetailPhotoView: View {
       NavigationBar(
         title: "",
         titleColor: .grayscaleWhite,
-        rightButton: Button { dismiss() } label: {DesignSystemAsset.Icons.close32.swiftUIImage }
+        rightButton:
+          Button(action: onDismiss) {
+            DesignSystemAsset.Icons.close32.swiftUIImage
+          }
       )
       
       Spacer()
@@ -80,32 +101,9 @@ struct MatchDetailPhotoView: View {
         rounding: true
       ) {
         if isAcceptButtonEnabled {
-          isAlertPresented.toggle()
-          PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
+          onAcceptButtonTap()
         }
       }
     }
-    .pcAlert(isPresented: $isAlertPresented) {
-      AlertView(
-        title: {
-          Text("\(nickname)").foregroundStyle(Color.primaryDefault) +
-          Text("님과의\n인연을 이어갈까요?").foregroundStyle(Color.grayscaleBlack)
-        },
-        message: "서로 수락하면, 연락처가 공개돼요.",
-        firstButtonText: "뒤로",
-        secondButtonText: "인연 수락하기"
-      ) {
-        isAlertPresented = false
-      } secondButtonAction: {
-        dismiss()
-        onAcceptMatch?()
-      }
-    }
   }
-}
-
-#Preview {
-  let uri = "https://www.thesprucepets.com/thmb/AyzHgPQM_X8OKhXEd8XTVIa-UT0=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-145577979-d97e955b5d8043fd96747447451f78b7.jpg"
-  MatchDetailPhotoView(nickname: "티모대위", uri: uri)
-    .environment(Router())
 }

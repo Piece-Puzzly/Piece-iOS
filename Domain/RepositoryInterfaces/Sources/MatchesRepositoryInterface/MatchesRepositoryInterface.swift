@@ -9,14 +9,16 @@ import Entities
 
 public protocol MatchesRepositoryInterface {
   func getMatchInfos() async throws -> [MatchInfosModel]
-  func getMatchesProfileBasic() async throws -> MatchProfileBasicModel
-  func getMatchValueTalks() async throws -> MatchValueTalkModel
-  func getMatchValuePicks() async throws -> MatchValuePickModel
-  func acceptMatch() async throws -> VoidModel
-  func refuseMatch() async throws -> VoidModel
+  func getMatchesProfileBasic(matchId: Int) async throws -> MatchProfileBasicModel
+  func getMatchValueTalks(matchId: Int) async throws -> MatchValueTalkModel
+  func getMatchValuePicks(matchId: Int) async throws -> MatchValuePickModel
+  func acceptMatch(matchId: Int) async throws -> VoidModel
+  func refuseMatch(matchId: Int) async throws -> VoidModel
   func blockUser(matchId: Int) async throws -> VoidModel
-  func getMatchImage() async throws -> MatchImageModel
-  func getMatchContacts() async throws -> MatchContactsModel
+  func getMatchImage(matchId: Int) async throws -> MatchImageModel
+  func getMatchContacts(matchId: Int) async throws -> MatchContactsModel
+  func postMatchImage(matchId: Int) async throws -> VoidModel
+  func postMatchContacts(matchId: Int) async throws -> VoidModel
   func getUserRejectReason() async throws -> UserRejectReasonModel
   func patchCheckMatchPiece(matchId: Int) async throws -> VoidModel
   func postCreateNewMatch() async throws -> CreateNewMatchModel

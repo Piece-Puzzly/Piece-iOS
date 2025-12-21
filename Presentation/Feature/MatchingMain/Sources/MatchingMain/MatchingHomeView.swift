@@ -10,6 +10,7 @@ import SwiftUI
 import DesignSystem
 import UseCases
 import PCAmplitude
+import Entities
 
 struct MatchingHomeView: View {
   @State private(set) var matchingHomeViewModel: MatchingHomeViewModel
@@ -17,26 +18,27 @@ struct MatchingHomeView: View {
   
   @Environment(Router.self) private var router: Router
   @Environment(PCToastManager.self) private var toastManager: PCToastManager
+  @Environment(\.scenePhase) private var scenePhase
   
   init(
     getUserInfoUseCase: GetUserInfoUseCase,
     getPuzzleCountUseCase: GetPuzzleCountUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase,
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
     getUserRejectUseCase: GetUserRejectUseCase,
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
     createNewMatchUseCase: CreateNewMatchUseCase,
-    checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase
+    checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
+    postMatchContactsUseCase: PostMatchContactsUseCase,
   ) {
     _matchingHomeViewModel = .init(
       wrappedValue: .init(
         getUserInfoUseCase: getUserInfoUseCase,
-        acceptMatchUseCase: acceptMatchUseCase,
         getMatchesInfoUseCase: getMatchesInfoUseCase,
         patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase,
         getPuzzleCountUseCase: getPuzzleCountUseCase,
         createNewMatchUseCase: createNewMatchUseCase,
-        checkCanFreeMatchUseCase: checkCanFreeMatchUseCase
+        checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
+        postMatchContactsUseCase: postMatchContactsUseCase,
       )
     )
     
@@ -60,8 +62,57 @@ struct MatchingHomeView: View {
     .onAppear {
       matchingHomeViewModel.handleAction(.onAppear)
     }
+    .onDisappear {
+      toastManager.hideToast(for: .matchingHome)
+    }
     .pcAlert(item: $matchingHomeViewModel.presentedAlert) { alertType in
       MatchingHomeAlertView(matchingHomeViewModel: matchingHomeViewModel, alertType: alertType)
+    }
+    .overlay(alignment: .top) {
+      if toastManager.shouldShowToast(for: .matchingHome) {
+        PCToast(
+          isVisible: Bindable(toastManager).isVisible,
+          icon: toastManager.icon,
+          text: toastManager.text,
+          backgroundColor: toastManager.backgroundColor
+        )
+        .padding(.top, 56)
+      }
+    }
+    .onChange(of: matchingHomeViewModel.showToastAction) { _, showToastAction in
+      guard let showToastAction else { return }
+      
+      switch showToastAction {
+      case .createNewMatch:
+        toastManager.showToast(
+          target: .matchProfileBasic,
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "퍼즐을 \(DomainConstants.PuzzleCost.createNewMatch)개 사용했어요",
+          backgroundColor: .primaryDefault
+        )
+        
+      case .checkContact:
+        toastManager.showToast(
+          target: .matchResult,
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "퍼즐을 \(DomainConstants.PuzzleCost.checkContact)개 사용했어요",
+          backgroundColor: .primaryDefault
+        )
+      }
+      
+      matchingHomeViewModel.handleAction(.clearToast)
+    }
+    .onChange(of: matchingHomeViewModel.destination) { _, destination in
+      guard let destination else { return }
+      router.push(to: destination)
+    }
+    .onReceive(NotificationCenter.default.publisher(for: .refreshHomeData)) { _ in
+      matchingHomeViewModel.handleAction(.onAppear)
+    }
+    .onChange(of: scenePhase) { _, newPhase in
+      if newPhase == .active {
+        matchingHomeViewModel.handleAction(.onAppear)
+      }
     }
     .spinning(of: matchingHomeViewModel.showSpinner)
   }
@@ -122,6 +173,7 @@ fileprivate struct MatchingListContentView: View {
   var body: some View {
     switch matchingHomeViewModel.viewState {
     case .loading:
+      // TODO: 스켈레톤 ㄱㄱ
       Text("LOADING STATE")
     
     case .profileStatusRejected:

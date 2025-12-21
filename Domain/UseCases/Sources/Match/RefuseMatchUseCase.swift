@@ -9,7 +9,7 @@ import Entities
 import RepositoryInterfaces
 
 public protocol RefuseMatchUseCase {
-  func execute() async throws -> VoidModel
+  func execute(matchId: Int) async throws -> VoidModel
 }
 
 final class RefuseMatchUseCaseImpl: RefuseMatchUseCase {
@@ -19,7 +19,7 @@ final class RefuseMatchUseCaseImpl: RefuseMatchUseCase {
     self.repository = repository
   }
   
-  func execute() async throws -> VoidModel {
-    try await repository.refuseMatch()
+  func execute(matchId: Int) async throws -> VoidModel {
+    try await repository.refuseMatch(matchId: matchId)
   }
 }

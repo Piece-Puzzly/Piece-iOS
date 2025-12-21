@@ -1,18 +1,18 @@
 //
-//  AcceptMatchUseCase.swift
+//  PostMatchContactsUseCase.swift
 //  UseCases
 //
-//  Created by summercat on 2/12/25.
+//  Created by 홍승완 on 12/9/25.
 //
 
 import Entities
 import RepositoryInterfaces
 
-public protocol AcceptMatchUseCase {
+public protocol PostMatchContactsUseCase {
   func execute(matchId: Int) async throws -> VoidModel
 }
 
-final class AcceptMatchUseCaseImpl: AcceptMatchUseCase {
+final class PostMatchContactsUseCaseImpl: PostMatchContactsUseCase {
   private let repository: MatchesRepositoryInterface
   
   init(repository: MatchesRepositoryInterface) {
@@ -20,6 +20,6 @@ final class AcceptMatchUseCaseImpl: AcceptMatchUseCase {
   }
   
   func execute(matchId: Int) async throws -> VoidModel {
-    try await repository.acceptMatch(matchId: matchId)
+    try await repository.postMatchContacts(matchId: matchId)
   }
 }

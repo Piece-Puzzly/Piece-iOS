@@ -9,6 +9,7 @@ import LocalStorage
 import Observation
 import UseCases
 import PCAmplitude
+import Entities
 
 @Observable
 final class ReportUserViewModel {
@@ -19,6 +20,7 @@ final class ReportUserViewModel {
     case didTapNextButton
   }
   
+  let matchedUserId: Int
   let nickname: String
   let reportReasons = ReportReason.allCases
   let placeholder = "자유롭게 작성해 주세요"
@@ -32,8 +34,12 @@ final class ReportUserViewModel {
   
   private let reportUserUseCase: ReportUserUseCase
   
-  init(nickname: String, reportUserUseCase: ReportUserUseCase) {
-    self.nickname = nickname
+  init(
+    info: ReportUserInfo,
+    reportUserUseCase: ReportUserUseCase
+  ) {
+    self.matchedUserId = info.matchedUserId
+    self.nickname = info.nickname
     self.reportUserUseCase = reportUserUseCase
   }
   
@@ -63,10 +69,8 @@ final class ReportUserViewModel {
   private func reportUser() async {
     do {
       let reason = selectedReportReason == .other ? reportReason : selectedReportReason?.rawValue ?? ""
-      if let id = PCUserDefaultsService.shared.getMatchedUserId() {
-        _ = try await reportUserUseCase.execute(id: id, reason: reason)
-        showBlockResultAlert = true
-      }
+      _ = try await reportUserUseCase.execute(id: matchedUserId, reason: reason)
+      showBlockResultAlert = true
     } catch {
       print(error)
     }

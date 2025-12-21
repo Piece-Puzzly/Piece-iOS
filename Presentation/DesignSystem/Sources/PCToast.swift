@@ -51,10 +51,18 @@ public struct PCToast: View {
     )
     .opacity(animatedVisibility ? 1 : 0)
     .animation(.easeInOut, value: animatedVisibility)
+    .onAppear {
+      if isVisible {
+        updateContentThenFadeIn()
+        scheduleAutoHide()
+      }
+    }
     .onChange(of: isVisible) { _, newValue in
       if newValue {
         updateContentThenFadeIn()
         scheduleAutoHide()
+      } else {
+        animatedVisibility = false
       }
     }
   }
@@ -67,10 +75,11 @@ extension PCToast {
     // 1단계: 텍스트와 아이콘 즉시 변경 (애니메이션 없음)
     displayText = text ?? "TOAST MESSAGE IS EMPTY"
     displayIcon = icon
+    animatedVisibility = false  // 먼저 리셋
     
     // 2단계: 다음 프레임에서 opacity 애니메이션
-    Task {
-      animatedVisibility = true
+    Task { @MainActor in
+      animatedVisibility = true  // 다음 렌더 사이클에서 true
     }
   }
   
@@ -84,10 +93,18 @@ extension PCToast {
   }
 }
 
+public enum ToastTarget {
+  case matchingHome
+  case matchProfileBasic
+  case matchDetailPhoto
+  case matchResult
+}
+
 @MainActor
 @Observable
 public final class PCToastManager {
   public var isVisible: Bool = false
+  public var target: ToastTarget? = nil
   public private(set) var icon: Image? = nil
   public private(set) var text: String? = nil
   public private(set) var textColor: Color = .grayscaleWhite
@@ -96,20 +113,47 @@ public final class PCToastManager {
   public init() {}
   
   public func showToast(
+    target: ToastTarget? = nil,
+    delay: Double = 0.3,
     icon: Image? = nil,
     text: String?,
     textColor: Color = .grayscaleWhite,
     backgroundColor: Color = .grayscaleDark2
   ) {
-    self.icon = icon
-    self.text = text
-    self.textColor = textColor
-    self.backgroundColor = backgroundColor
-    self.isVisible = true
+    Task {
+      try? await Task.sleep(for: .seconds(delay))
+      
+      // 1. 먼저 isVisible을 false로 리셋 (이전 토스트 정리)
+      self.isVisible = false
+      
+      // 2. 다음 프레임에서 새로운 토스트 표시
+      Task { @MainActor in
+        self.target = target
+        self.icon = icon
+        self.text = text
+        self.backgroundColor = backgroundColor
+        self.isVisible = true  // onChange 확실히 트리거!
+      }
+    } 
   }
   
-  public func hideToast() {
-    self.isVisible = false
+  public func hideToast(for target: ToastTarget? = nil) {
+    guard let target = target else {
+      // target이 nil이면 모든 토스트 clear
+      self.isVisible = false
+      self.target = nil
+      return
+    }
+
+    // 특정 target만 clear
+    if self.target == target {
+      self.isVisible = false
+      self.target = nil
+    }
+  }
+  
+  public func shouldShowToast(for target: ToastTarget) -> Bool {
+    self.target == target || self.target == nil
   }
 }
 

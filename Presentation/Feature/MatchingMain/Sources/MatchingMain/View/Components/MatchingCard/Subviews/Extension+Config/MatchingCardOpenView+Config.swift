@@ -33,7 +33,7 @@ extension MatchingCardOpenView {
       )
       
     /// (인연 거절) 상태 -> 보이면 안됨 그냥 더미 상태 값
-    case .REFUSED:
+    case .REFUSED, .BLOCKED:
       return StatusConfig(
         hilightedTextColor: .grayscaleBlack,
         textColor: .grayscaleDark2,
