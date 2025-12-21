@@ -109,9 +109,10 @@ private extension MatchingHomeViewModel {
     destination = nil
     selectedMatchId = nil
     presentedAlert = nil
-    
-    Task {
-      await getUserRole()
+    showToastAction = nil
+
+    withSpinner {
+      await self.getUserRole()
     }
   }
   
@@ -213,8 +214,6 @@ private extension MatchingHomeViewModel {
 
 private extension MatchingHomeViewModel {
   func getUserRole() async {
-    viewState = .loading
-    
     do {
       let userInfo = try await getUserInfoUseCase.execute()
       let userRole = userInfo.role
@@ -415,6 +414,11 @@ private extension MatchingHomeViewModel {
     Task {
       setSpinnerVisible(true)
       defer { setSpinnerVisible(false) }  // 에러 발생해도 false 처리
+
+      // 최소 0.1초 딜레이를 먼저 기다림
+      try? await Task.sleep(nanoseconds: 100_000_000) // 0.1초
+
+      // 그 후 action 실행
       await action()
     }
   }
