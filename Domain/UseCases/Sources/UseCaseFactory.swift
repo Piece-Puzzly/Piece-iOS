@@ -43,6 +43,10 @@ public struct UseCaseFactory {
   public static func createGetUserInfoUseCase(repository: UserRepositoryInterface) -> GetUserInfoUseCase {
     GetUserRoleUseCaseImpl(repository: repository)
   }
+
+  public static func createGetPuzzleCountUseCase(repository: UserRepositoryInterface) -> GetPuzzleCountUseCase {
+    GetPuzzleCountUseCaseImpl(repository: repository)
+  }
   
   // MARK: - 로그인
   
@@ -169,7 +173,19 @@ public struct UseCaseFactory {
   public static func createRefuseMatchUseCase(repository: MatchesRepositoryInterface) -> RefuseMatchUseCase {
     RefuseMatchUseCaseImpl(repository: repository)
   }
+
+  public static func createCreateNewMatchUseCase(repository: MatchesRepositoryInterface) -> CreateNewMatchUseCase {
+    CreateNewMatchUseCaseImpl(repository: repository)
+  }
+
+  public static func createCheckCanFreeMatchUseCase(repository: MatchesRepositoryInterface) -> CheckCanFreeMatchUseCase {
+    CheckCanFreeMatchUseCaseImpl(repository: repository)
+  }
   
+  public static func createpostMatchContactsUseCase(repository: MatchesRepositoryInterface) -> PostMatchContactsUseCase {
+    PostMatchContactsUseCaseImpl(repository: repository)
+  }
+
   // MARK: - 매칭 상세
   public static func createGetMatchProfileBasicUseCase(repository: MatchesRepositoryInterface) -> GetMatchProfileBasicUseCase {
     GetMatchProfileBasicUseCaseImpl(repository: repository)
@@ -185,6 +201,10 @@ public struct UseCaseFactory {
   
   public static func createGetMatchPhotoUseCase(repository: MatchesRepositoryInterface) -> GetMatchPhotoUseCase {
     GetMatchPhotoUseCaseImpl(repository: repository)
+  }
+  
+  public static func createPostMatchPhotoUseCase(repository: MatchesRepositoryInterface) -> PostMatchPhotoUseCase {
+    PostMatchPhotoUseCaseImpl(repository: repository)
   }
   
   public static func createGetMatchContactsUseCase(repository: MatchesRepositoryInterface) -> GetMatchContactsUseCase {

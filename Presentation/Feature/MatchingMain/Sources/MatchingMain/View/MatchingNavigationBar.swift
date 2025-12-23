@@ -39,11 +39,10 @@ struct MatchingNavigationBar: View {
         }
       )
 
-    // TODO: - 퍼즐 개수 Response 필요
     case .userRoleUser:
       HomeNavigationBar(
         foregroundColor: .grayscaleWhite,
-        leftButton: { PCPuzzleCount(count: 0, style: .dark) },
+        leftButton: { PCPuzzleCount(count: viewModel.puzzleCount, style: .dark) },
         leftButtonTap: {
           router.push(to: .storeMain)
         },

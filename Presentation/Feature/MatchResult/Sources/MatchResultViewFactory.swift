@@ -11,13 +11,11 @@ import PCAmplitude
 
 public struct MatchResultViewFactory {
   public static func createMatchResultView(
-    nickname: String,
-    getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    matchId: Int,
     getMatchContactsUseCase: GetMatchContactsUseCase
   ) -> some View {
     MatchResultView(
-      nickname: nickname,
-      getMatchPhotoUseCase: getMatchPhotoUseCase,
+      matchId: matchId,
       getMatchContactsUseCase: getMatchContactsUseCase
     )
     .trackScreen(trackable: DefaultProgress.contactShareResult)

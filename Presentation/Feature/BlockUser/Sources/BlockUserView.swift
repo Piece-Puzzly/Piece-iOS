@@ -9,16 +9,19 @@ import DesignSystem
 import Router
 import SwiftUI
 import UseCases
+import Entities
 
 struct BlockUserView: View {
   @State private var viewModel: BlockUserViewModel
   @Environment(Router.self) private var router
   
-  init(matchId: Int, nickname: String, blockUserUseCase: BlockUserUseCase) {
+  init(
+    info: BlockUserInfo,
+    blockUserUseCase: BlockUserUseCase
+  ) {
     _viewModel = .init(
       wrappedValue: .init(
-        matchId: matchId,
-        nickname: nickname,
+        info: info,
         blockUserUseCase: blockUserUseCase
       )
     )

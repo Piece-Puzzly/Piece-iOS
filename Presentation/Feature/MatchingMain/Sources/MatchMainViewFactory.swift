@@ -31,17 +31,23 @@ public struct MatchMainViewFactory {
   
   public static func createMatchMainView(
     getUserInfoUseCase: GetUserInfoUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
     getUserRejectUseCase: GetUserRejectUseCase,
-    patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
+    patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
+    createNewMatchUseCase: CreateNewMatchUseCase,
+    checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
+    postMatchContactsUseCase: PostMatchContactsUseCase,
   ) -> some View {
     MatchingHomeView(
       getUserInfoUseCase: getUserInfoUseCase,
-      acceptMatchUseCase: acceptMatchUseCase,
+      getPuzzleCountUseCase: getPuzzleCountUseCase,
       getMatchesInfoUseCase: getMatchesInfoUseCase,
       getUserRejectUseCase: getUserRejectUseCase,
-      patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase
+      patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase,
+      createNewMatchUseCase: createNewMatchUseCase,
+      checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
+      postMatchContactsUseCase: postMatchContactsUseCase,
     )
   }
 }

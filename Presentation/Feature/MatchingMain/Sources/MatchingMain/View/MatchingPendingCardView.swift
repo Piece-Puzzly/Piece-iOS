@@ -12,20 +12,12 @@ import DesignSystem
 struct MatchingPendingCardView: View {
   @Environment(Router.self) private var router: Router
   
-  private let viewModel: MatchingHomeViewModel
-  
-  init(viewModel: MatchingHomeViewModel) {
-    self.viewModel = viewModel
-  }
-  
   var body: some View {
     VStack(spacing: 0) {
-      VStack(alignment: .center, spacing: 8) {
+      VStack(spacing: 8) {
         Group {
-          Text("진중한 만남")
-            .foregroundStyle(Color.primaryDefault) +
-          Text("을 이어가기 위해\n프로필을 살펴보고 있어요.")
-            .foregroundStyle(Color.grayscaleBlack)
+          Text("진중한 만남").foregroundStyle(Color.primaryDefault) +
+          Text("을 이어가기 위해\n프로필을 살펴보고 있어요.").foregroundStyle(Color.grayscaleBlack)
         }
         .pretendard(.heading_M_SB)
         
@@ -36,9 +28,7 @@ struct MatchingPendingCardView: View {
       .multilineTextAlignment(.center)
       
       Spacer()
-      
       DesignSystemAsset.Images.imgScreening.swiftUIImage
-      
       Spacer()
       
       RoundedButton(
@@ -47,15 +37,14 @@ struct MatchingPendingCardView: View {
         width: .maxWidth,
         action: { router.push(to: .previewProfileBasic) }
       )
-      .padding(.bottom, 20)
-      
     }
     .padding(.horizontal, 20)
     .padding(.top, 50)
+    .padding(.bottom, 20)
     .background(
       Rectangle()
         .fill(Color.grayscaleWhite)
-        .cornerRadius(16)
+        .cornerRadius(12)
     )
   }
 }

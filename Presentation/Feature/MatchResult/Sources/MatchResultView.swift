@@ -14,15 +14,14 @@ import UseCases
 struct MatchResultView: View {
   @State var viewModel: MatchResultViewModel
   @Environment(Router.self) private var router: Router
+  @Environment(PCToastManager.self) private var toastManager: PCToastManager
   
   init(
-    nickname: String,
-    getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    matchId: Int,
     getMatchContactsUseCase: GetMatchContactsUseCase
   ) {
     _viewModel = .init(wrappedValue: .init(
-      nickname: nickname,
-      getMatchPhotoUseCase: getMatchPhotoUseCase,
+      matchId: matchId,
       getMatchContactsUseCase: getMatchContactsUseCase
     ))
   }
@@ -60,6 +59,20 @@ struct MatchResultView: View {
         .ignoresSafeArea()
     )
     .onAppear { viewModel.handleAction(.onAppear) }
+    .onDisappear {
+      toastManager.hideToast(for: .matchResult)
+    }
+    .overlay(alignment: .top) {
+      if toastManager.shouldShowToast(for: .matchResult) {
+        PCToast(
+          isVisible: Bindable(toastManager).isVisible,
+          icon: toastManager.icon,
+          text: toastManager.text,
+          backgroundColor: toastManager.backgroundColor
+        )
+        .padding(.top, 56)
+      }
+    }
     .toolbar(.hidden, for: .navigationBar)
   }
   
@@ -153,26 +166,28 @@ struct MatchResultView: View {
   let dummyMatchContactsUseCase = DummyGetMatchContactsUseCase()
   
   return MatchResultView(
-    nickname: "수줍은 수달",
-    getMatchPhotoUseCase: dummyMatchPhotoUseCase,
+    matchId: 1,
     getMatchContactsUseCase: dummyMatchContactsUseCase
   )
   .environment(Router())
 }
 
 private final class DummyGetMatchPhotoUseCase: GetMatchPhotoUseCase {
-  func execute() async throws -> String {
+  func execute(matchId: Int) async throws -> String {
     "https://fastly-s3.allmusic.com/artist/mn0003475903/400/eznhFWvkuIfytZytXtr9bR_TZlp6n_cq-Emr2zx15tU=.jpg"
   }
 }
 
 private final class DummyGetMatchContactsUseCase: GetMatchContactsUseCase {
-  func execute() async throws -> MatchContactsModel {
+  func execute(matchId: Int) async throws -> MatchContactsModel {
     MatchContactsModel(
+      nickname: "nickNameDummy",
+      imageUrl: "https://fastly-s3.allmusic.com/artist/mn0003475903/400/eznhFWvkuIfytZytXtr9bR_TZlp6n_cq-Emr2zx15tU=.jpg",
       contacts: [
         ContactModel(type: .kakao, value: "kakao id"),
         ContactModel(type: .instagram, value: "instagram id"),
-      ]
+      ],
+      
     )
   }
 }

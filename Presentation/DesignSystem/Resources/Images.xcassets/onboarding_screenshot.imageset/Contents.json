@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "onboarding_screenshot.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

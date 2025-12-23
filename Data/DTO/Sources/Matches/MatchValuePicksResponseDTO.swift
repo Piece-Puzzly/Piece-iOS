@@ -10,18 +10,36 @@ import Foundation
 
 public struct MatchValuePicksResponseDTO: Decodable {
   public let matchId: Int
+  public let matchType: MatchType
+  public let createdAt: Date // "2025-12-06T15:51:10.110203"
+  public let matchedUserId: Int
+  public let matchStatus: MatchStatus
   public let description: String
   public let nickname: String
   public let valuePicks: [MatchValuePickResponseDTO]
+  public let isImageViewed: Bool
 }
 
 public extension MatchValuePicksResponseDTO {
   func toDomain() -> MatchValuePickModel {
-    MatchValuePickModel(
+    // matchType이 BASIC이면 createdAt에 5분 추가
+    let adjustedCreatedAt: Date
+    if matchType == .BASIC {
+      adjustedCreatedAt = Calendar.current.date(byAdding: .minute, value: 5, to: createdAt) ?? createdAt
+    } else {
+      adjustedCreatedAt = createdAt
+    }
+      
+    return MatchValuePickModel(
       id: matchId,
+      matchType: matchType,
+      createdAt: adjustedCreatedAt,
+      matchedUserId: matchedUserId,
+      matchStatus: matchStatus,
       description: description,
       nickname: nickname,
-      valuePicks: valuePicks.map { $0.toDomain() }
+      valuePicks: valuePicks.map { $0.toDomain() },
+      isImageViewed: isImageViewed
     )
   }
 }

@@ -22,10 +22,14 @@ struct HomeView: View {
     selectedTab: HomeViewTab,
     getProfileUseCase: GetProfileBasicUseCase,
     getUserInfoUseCase: GetUserInfoUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
     getUserRejectUseCase: GetUserRejectUseCase,
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
+    createNewMatchUseCase: CreateNewMatchUseCase,
+    checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
+    postMatchContactsUseCase: PostMatchContactsUseCase,
     getSettingsInfoUseCase: GetSettingsInfoUseCase,
     fetchTermsUseCase: FetchTermsUseCase,
     checkNotificationPermissionUseCase: CheckNotificationPermissionUseCase,
@@ -45,10 +49,14 @@ struct HomeView: View {
         selectedTab: selectedTab,
         getProfileUseCase: getProfileUseCase,
         getUserInfoUseCase: getUserInfoUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
         getMatchesInfoUseCase: getMatchesInfoUseCase,
         getUserRejectUseCase: getUserRejectUseCase,
         patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase,
+        createNewMatchUseCase: createNewMatchUseCase,
+        checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
+        postMatchContactsUseCase: postMatchContactsUseCase,
         getSettingsInfoUseCase: getSettingsInfoUseCase,
         fetchTermsUseCase: fetchTermsUseCase,
         checkNotificationPermissionUseCase: checkNotificationPermissionUseCase,
@@ -102,10 +110,13 @@ struct HomeView: View {
     case .home:
       MatchMainViewFactory.createMatchMainView(
         getUserInfoUseCase: viewModel.getUserInfoUseCase,
-        acceptMatchUseCase: viewModel.acceptMatchUseCase,
+        getPuzzleCountUseCase: viewModel.getPuzzleCountUseCase,
         getMatchesInfoUseCase: viewModel.getMatchesInfoUseCase,
         getUserRejectUseCase: viewModel.getUserRejectUseCase,
-        patchMatchesCheckPieceUseCase: viewModel.patchMatchesCheckPieceUseCase
+        patchMatchesCheckPieceUseCase: viewModel.patchMatchesCheckPieceUseCase,
+        createNewMatchUseCase: viewModel.createNewMatchUseCase,
+        checkCanFreeMatchUseCase: viewModel.checkCanFreeMatchUseCase,
+        postMatchContactsUseCase: viewModel.postMatchContactsUseCase,
       )
     case .settings:
       SettingsViewFactory.createSettingsView(

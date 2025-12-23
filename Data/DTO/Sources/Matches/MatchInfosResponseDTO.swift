@@ -10,6 +10,8 @@ import Entities
 
 public struct MatchInfosResponseDTO: Decodable {
   public let matchId: Int
+  public let matchType: MatchType
+  public let createdAt: Date // "2025-12-03T19:18:35.496745"
   public let matchedUserId: Int
   public let matchStatus: MatchStatus
   public let description: String
@@ -19,14 +21,26 @@ public struct MatchInfosResponseDTO: Decodable {
   public let job: String
   public let matchedValueCount: Int
   public let matchedValueList: [String]
-  public let blocked: Bool
+  public let isBlocked: Bool
+  public let isImageViewed: Bool
+  public let isContactViewed: Bool
 }
 
 public extension MatchInfosResponseDTO {
   func toDomain() -> MatchInfosModel {
+    // matchType이 BASIC이면 createdAt에 5분 추가
+    let adjustedCreatedAt: Date
+    if matchType == .BASIC {
+      adjustedCreatedAt = Calendar.current.date(byAdding: .minute, value: 5, to: createdAt) ?? createdAt
+    } else {
+      adjustedCreatedAt = createdAt
+    }
+
     return MatchInfosModel(
       matchId: matchId,
       matchedUserId: matchedUserId,
+      matchType: matchType,
+      createdAt: adjustedCreatedAt,
       matchStatus: matchStatus,
       description: description,
       nickname: nickname,
@@ -35,9 +49,12 @@ public extension MatchInfosResponseDTO {
       job: job,
       matchedValueCount: matchedValueCount,
       matchedValueList: matchedValueList,
-      blocked: blocked
+      isBlocked: isBlocked,
+      isImageViewed: isImageViewed,
+      isContactViewed: isContactViewed
     )
   }
 }
 
 extension MatchStatus: Decodable { }
+extension MatchType: Decodable { }

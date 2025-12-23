@@ -84,6 +84,7 @@ struct MatchingMainView: View {
         matchingMainViewModel.handleAction(.didAcceptMatch)
         matchingMainViewModel.isMatchAcceptAlertPresented = false
         toastManager.showToast(
+          target: .matchingHome,
           icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
           text: "인연을 수락했습니다",
           backgroundColor: .primaryDefault

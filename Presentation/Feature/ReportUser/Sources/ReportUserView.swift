@@ -9,6 +9,7 @@ import DesignSystem
 import Router
 import SwiftUI
 import UseCases
+import Entities
 
 struct ReportUserView: View {
   @State private var viewModel: ReportUserViewModel
@@ -20,9 +21,15 @@ struct ReportUserView: View {
   private let keyboardWillShowNotificationPublisher = NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)
   private let keyboardWillHideNotificationPublisher = NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)
   
-  init(nickname: String, reportUserUseCase: ReportUserUseCase) {
+  init(
+    info: ReportUserInfo,
+    reportUserUseCase: ReportUserUseCase
+  ) {
     _viewModel = .init(
-      wrappedValue: .init(nickname: nickname, reportUserUseCase: reportUserUseCase)
+      wrappedValue: .init(
+        info: info,
+        reportUserUseCase: reportUserUseCase
+      )
     )
   }
 

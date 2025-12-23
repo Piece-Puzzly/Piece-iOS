@@ -18,14 +18,18 @@ struct ValuePickView: View {
   @Environment(PCToastManager.self) private var toastManager: PCToastManager
 
   init(
+    matchId: Int,
     getMatchValuePickUseCase: GetMatchValuePickUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase
   ) {
     _viewModel = .init(
       wrappedValue: .init(
+        matchId: matchId,
         getMatchValuePickUseCase: getMatchValuePickUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
+        postMatchPhotoUseCase: postMatchPhotoUseCase,
         acceptMatchUseCase: acceptMatchUseCase
       )
     )
@@ -42,6 +46,22 @@ struct ValuePickView: View {
         },
         backgroundColor: .grayscaleWhite
       )
+      .overlay(alignment: .leading) {
+        if let timer = viewModel.timerManager, timer.shouldShowTimer {
+          HStack(spacing: 4) {
+            DesignSystemAsset.Icons.variant2.swiftUIImage
+              .renderingMode(.template)
+              .foregroundStyle(.systemError)
+            
+            Text(timer.remainingTime)
+              .pretendard(.body_S_M)
+              .foregroundStyle(.systemError)
+            
+            Spacer()
+          }
+          .padding(.horizontal, 20)
+        }
+      }
       .overlay(alignment: .bottom) {
         Divider(weight: .normal, isVertical: false)
       }
@@ -77,23 +97,47 @@ struct ValuePickView: View {
       buttons
     }
     .toolbar(.hidden)
-    .fullScreenCover(isPresented: $viewModel.isPhotoViewPresented) {
-      MatchDetailPhotoView(
-        nickname: viewModel.valuePickModel?.nickname ?? "",
-        uri: viewModel.photoUri,
-        onAcceptMatch: { viewModel.handleAction(.didAcceptMatch) }
-      )
+    .overlay {
+      if viewModel.isPhotoViewPresented {
+        MatchDetailPhotoView(
+          nickname: viewModel.valuePickModel?.nickname ?? "",
+          matchStatus: viewModel.valuePickModel?.matchStatus ?? .RESPONDED,
+          uri: viewModel.photoUri,
+          onDismiss: { viewModel.isPhotoViewPresented = false },
+          onAcceptButtonTap: { viewModel.handleAction(.didTapAcceptButton) },
+        )
+      }
     }
-    .onChange(of: viewModel.isMatchAccepted) { _, isMatchAccepted in
-      if isMatchAccepted {
+    .onChange(of: viewModel.showToastAction) { _, actionType in
+      guard let actionType else { return }
+
+      switch actionType {
+      case .accept:
         router.popToRoot()
         
         toastManager.showToast(
+          target: .matchingHome,
           icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
           text: "인연을 수락했습니다",
           backgroundColor: .primaryDefault
         )
+        
+      case .viewPhoto:
+        toastManager.showToast(
+          target: .matchDetailPhoto,
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "퍼즐을 \(DomainConstants.PuzzleCost.viewPhoto)개 사용했어요",
+          backgroundColor: .primaryDefault
+        )
+        
+      case .timeExpired:
+        router.popToRoot()
       }
+      
+      viewModel.handleAction(.clearToast)
+    }
+    .pcAlert(item: $viewModel.presentedAlert) { alertType in
+      MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)
     }
     .sheet(isPresented: $viewModel.isBottomSheetPresented) { // TODO: - 바텀시트 커스텀 컴포넌트화
       if let model = viewModel.valuePickModel {
@@ -201,7 +245,7 @@ struct ValuePickView: View {
     CircleButton(
       type: .solid_primary,
       icon: DesignSystemAsset.Icons.arrowRight32.swiftUIImage,
-      action: { router.push(to: .matchValueTalk) }
+      action: { router.push(to: .matchValueTalk(matchId: viewModel.matchId)) }
     )
   }
   
@@ -210,11 +254,11 @@ struct ValuePickView: View {
     VStack(spacing: 0) {
       bottomSheetContentRow(text: "차단하기") {
         viewModel.isBottomSheetPresented = false
-        router.push(to: .blockUser(matchId: model.id, nickname: model.nickname))
+        router.push(to: .blockUser(info: .init(model)))
       }
       bottomSheetContentRow(text: "신고하기") {
         viewModel.isBottomSheetPresented = false
-        router.push(to: .reportUser(nickname: model.nickname))
+        router.push(to: .reportUser(info: .init(model)))
       }
     }
   }

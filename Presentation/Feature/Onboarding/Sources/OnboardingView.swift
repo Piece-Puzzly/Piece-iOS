@@ -15,93 +15,136 @@ struct OnboardingView: View {
   @Environment(Router.self) var router
 
   var body: some View {
-    VStack {
-      topBar
-      content
-      Spacer()
+    VStack(spacing: 0) {
+      NavigationBarView()
+        .frame(maxWidth: .infinity)
+        .padding(.bottom, 16)
+
+      OnboardingTitleView()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 20)
       
-      Pagenation(
-        totalCount: viewModel.onboardingContent.count,
-        currentIndex: viewModel.contentTabIndex
-      )
-      bottomButton
+      OnboardingContentView()
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 20)
+        .transition(.opacity)
+      
+      OnboardingButtonView()
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 20)
+        .padding(.top, 12)
+        .padding(.bottom, 10)
     }
-    .frame(maxHeight: .infinity)
-    .background(Color.grayscaleWhite)
+    .frame(maxHeight: .infinity, alignment: .leading)
+    .background(Color.grayscaleLight3)
+    .environment(viewModel)
     .toolbar(.hidden)
     .onAppear {
       viewModel.handleAction(.onAppear)
     }
-    .toolbar(.hidden)
     .trackScreen(trackable: viewModel.trackedScreen)
   }
   
-  private var topBar: some View {
-    HStack(alignment: .center) {
-      DesignSystemAsset.Images.typeface.swiftUIImage
-      Spacer()
-      PCTextButton(content: "건너뛰기")
-        .opacity(viewModel.isSkipButtonVisible ? 1 : 0)
-        .onTapGesture {
-          viewModel.handleAction(.resetProgress)
-          router.setRoute(.login)
-        }
+  fileprivate struct NavigationBarView: View {
+    @Environment(Router.self) var router
+    @Environment(OnboardingViewModel.self) var viewModel
+    
+    var body: some View {
+      NavigationBar(
+        title: "",
+        titleColor: .grayscaleWhite,
+        rightButton:
+          Button(
+            action: {
+              viewModel.handleAction(.resetProgress)
+              router.setRoute(.login)
+            },
+            label: {
+              DesignSystemAsset.Icons.close32.swiftUIImage
+            }
+          )
+      )
     }
-    .frame(maxWidth: .infinity)
-    .padding(.horizontal, 20)
-    .padding(.vertical, 16)
   }
   
-  private var content: some View {
-    TabView(selection: $viewModel.contentTabIndex) {
-      ForEach(
-        Array(viewModel.onboardingContent.enumerated()),
-        id: \.offset
-      ) { index, content in
-        tab(content: content)
-          .tag(index)
-      }
-    }
-    .tabViewStyle(.page(indexDisplayMode: .never))
-  }
-  
-  private func tab(content: OnboardingContent) -> some View {
-    VStack(alignment: .center) {
-      content.image
-        .frame(width: 300, height: 300)
-      
-      VStack(alignment: .leading, spacing: 12) {
-        Text(content.title)
+  fileprivate struct OnboardingTitleView: View {
+    @Environment(OnboardingViewModel.self) var viewModel
+
+    var body: some View {
+      VStack(alignment: .leading, spacing: 0) {
+        Text(viewModel.onboardingContent[viewModel.contentTabIndex].title)
           .pretendard(.heading_L_SB)
           .foregroundStyle(Color.grayscaleBlack)
-        
-        Text(content.description)
-          .pretendard(.body_S_M)
-          .foregroundStyle(Color.grayscaleDark3)
       }
-      .frame(width: 320, alignment: .leading)
     }
-    .frame(maxWidth: .infinity)
   }
   
-  private var bottomButton: some View {
-    RoundedButton(
-      type: .solid,
-      buttonText: viewModel.isLastTab ? "시작하기" : "다음",
-      width: .maxWidth
-    ) {
-      withAnimation {
-        if viewModel.isLastTab {
-          viewModel.handleAction(.resetProgress)
-          router.setRoute(.login)
-        } else {
-          viewModel.handleAction(.didTapNextButton)
+  fileprivate struct OnboardingContentView: View {
+    @Environment(Router.self) var router
+    @Environment(OnboardingViewModel.self) var viewModel
+
+    var body: some View {
+      VStack(alignment: .center) {
+        Spacer()
+
+        if let lottie = viewModel.onboardingContent[viewModel.contentTabIndex].lottie {
+          PCLottieView(
+            lottie,
+            loopMode: .playOnce,
+            toProgress: 0.99,
+          )
+        } else if let image = viewModel.onboardingContent[viewModel.contentTabIndex].image {
+          image
+            .resizable()
+            .scaledToFit()
         }
       }
     }
-    .padding(.horizontal, 20)
-    .padding(.top, 12)
-    .padding(.bottom, 10)
+  }
+}
+
+fileprivate struct OnboardingButtonView: View {
+  @Environment(Router.self) var router
+  @Environment(OnboardingViewModel.self) var viewModel
+  
+  var body: some View {
+    HStack(spacing: 8) {
+      if let resetButtonTitle = viewModel.onboardingContent[viewModel.contentTabIndex].resetButtonTitle {
+        RoundedButton(
+          type: .outline,
+          buttonText: resetButtonTitle,
+          width: .maxWidth,
+          action: {
+            withAnimation {
+              viewModel.handleAction(.retryOnboarding)
+            }
+          }
+        )
+        
+        RoundedButton(
+          type: .solid,
+          buttonText: viewModel.onboardingContent[viewModel.contentTabIndex].buttonTitle,
+          width: .maxWidth,
+          action: {
+            withAnimation {
+              viewModel.handleAction(.resetProgress)
+              router.setRoute(.login)
+            }
+          }
+        )
+      } else {
+        RoundedButton(
+          type: .solid,
+          buttonText: viewModel.onboardingContent[viewModel.contentTabIndex].buttonTitle,
+          width: .maxWidth,
+          action: {
+            withAnimation {
+              viewModel.handleAction(.didTapNextButton)
+            }
+          }
+        )
+      }
+    }
   }
 }
 

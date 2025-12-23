@@ -15,7 +15,8 @@ public struct AlertView<Title: View, Message: View>: View {
     firstButtonText: String? = nil,
     secondButtonText: String,
     firstButtonAction: (() -> Void)? = nil,
-    secondButtonAction: @escaping () -> Void
+    secondButtonAction: @escaping () -> Void,
+    secondButtonIcon: Image? = nil
   ) {
     self.icon = icon
     self.title = title()
@@ -24,6 +25,7 @@ public struct AlertView<Title: View, Message: View>: View {
     self.secondButtonText = secondButtonText
     self.firstButtonAction = firstButtonAction
     self.secondButtonAction = secondButtonAction
+    self.secondButtonIcon = secondButtonIcon
   }
   
   public var body: some View {
@@ -37,7 +39,8 @@ public struct AlertView<Title: View, Message: View>: View {
         firstButtonText: firstButtonText,
         secondButtonText: secondButtonText,
         firstButtonAction: firstButtonAction,
-        secondButtonAction: secondButtonAction
+        secondButtonAction: secondButtonAction,
+        secondButtonIcon: secondButtonIcon
       )
     }
     .frame(maxWidth: 312)
@@ -61,6 +64,7 @@ public struct AlertView<Title: View, Message: View>: View {
   private let secondButtonText: String
   private let firstButtonAction: (() -> Void)?
   private let secondButtonAction: () -> Void
+  private let secondButtonIcon: Image?
 }
 
 private struct AlertTopView<Title: View, Message: View>: View {
@@ -103,7 +107,7 @@ private struct AlertBottomView: View {
       RoundedButton(
         type: .solid,
         buttonText: secondButtonText,
-        icon: nil,
+        icon: secondButtonIcon,
         width: .maxWidth,
         height: 52,
         action: secondButtonAction
@@ -118,6 +122,7 @@ private struct AlertBottomView: View {
   let secondButtonText: String
   let firstButtonAction: (() -> Void)?
   let secondButtonAction: () -> Void
+  let secondButtonIcon: Image?
 }
 
 // TODO: - 추후 이거 제거하고 모든 AlertView를 <Text, Text>에 맞게 이니셜라이저 고쳐야함

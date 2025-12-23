@@ -9,7 +9,7 @@ import Entities
 import RepositoryInterfaces
 
 public protocol GetMatchValuePickUseCase {
-  func execute() async throws -> MatchValuePickModel
+  func execute(matchId: Int) async throws -> MatchValuePickModel
 }
 
 final class GetMatchValuePickUseCaseImpl: GetMatchValuePickUseCase {
@@ -19,7 +19,7 @@ final class GetMatchValuePickUseCaseImpl: GetMatchValuePickUseCase {
     self.repository = repository
   }
   
-  func execute() async throws -> MatchValuePickModel {
-    try await repository.getMatchValuePicks()
+  func execute(matchId: Int) async throws -> MatchValuePickModel {
+    try await repository.getMatchValuePicks(matchId: matchId)
   }
 }

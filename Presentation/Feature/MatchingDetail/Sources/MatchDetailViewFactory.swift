@@ -8,17 +8,22 @@
 import SwiftUI
 import UseCases
 import PCAmplitude
+import Entities
 
 public struct MatchDetailViewFactory {
   @ViewBuilder
   public static func createMatchProfileBasicView(
+    matchId: Int,
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase
   ) -> some View {
     MatchProfileBasicView(
+      matchId: matchId,
       getMatchProfileBasicUseCase: getMatchProfileBasicUseCase,
       getMatchPhotoUseCase: getMatchPhotoUseCase,
+      postMatchPhotoUseCase: postMatchPhotoUseCase,
       acceptMatchUseCase: acceptMatchUseCase
     )
     .trackScreen(trackable: DefaultProgress.matchDetailBasicProfile)
@@ -27,14 +32,18 @@ public struct MatchDetailViewFactory {
   
   @ViewBuilder
   public static func createMatchValueTalkView(
+    matchId: Int,
     getMatchValueTalkUseCase: GetMatchValueTalkUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     refuseMatchUseCase: RefuseMatchUseCase
   ) -> some View {
     ValueTalkView(
+      matchId: matchId,
       getMatchValueTalkUseCase: getMatchValueTalkUseCase,
       getMatchPhotoUseCase: getMatchPhotoUseCase,
+      postMatchPhotoUseCase: postMatchPhotoUseCase,
       acceptMatchUseCase: acceptMatchUseCase,
       refuseMatchUseCase: refuseMatchUseCase
     )
@@ -43,23 +52,19 @@ public struct MatchDetailViewFactory {
   
   @ViewBuilder
   public static func createMatchValuePickView(
+    matchId: Int,
     getMatchValuePickUseCase: GetMatchValuePickUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase
   ) -> some View {
     ValuePickView(
+      matchId: matchId,
       getMatchValuePickUseCase: getMatchValuePickUseCase,
       getMatchPhotoUseCase: getMatchPhotoUseCase,
+      postMatchPhotoUseCase: postMatchPhotoUseCase,
       acceptMatchUseCase: acceptMatchUseCase
     )
     .trackScreen(trackable: DefaultProgress.matchDetailValuePick)
-  }
-  
-  @ViewBuilder
-  public static func createMatchDetailPhotoView(
-    nickname: String,
-    uri: String
-  ) -> some View {
-    MatchDetailPhotoView(nickname: nickname, uri: uri)
   }
 }

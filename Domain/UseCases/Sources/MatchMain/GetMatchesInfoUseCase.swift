@@ -10,7 +10,7 @@ import LocalStorage
 import RepositoryInterfaces
 
 public protocol GetMatchesInfoUseCase {
-  func execute() async throws -> MatchInfosModel
+  func execute() async throws -> [MatchInfosModel]
 }
 
 final class GetMatchesInfoUseCaseImpl: GetMatchesInfoUseCase {
@@ -20,10 +20,8 @@ final class GetMatchesInfoUseCaseImpl: GetMatchesInfoUseCase {
     self.repository = repository
   }
   
-  func execute() async throws -> MatchInfosModel {
+  func execute() async throws -> [MatchInfosModel] {
     let matchInfo = try await repository.getMatchInfos()
-    PCUserDefaultsService.shared.setMatchedUserId(matchInfo.matchedUserId)
-    PCUserDefaultsService.shared.setMatchStatus(matchInfo.matchStatus)
     
     return matchInfo
   }
