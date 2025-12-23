@@ -358,7 +358,7 @@ private extension MatchingHomeViewModel {
       withSpinner { [weak self] in
         await self?.navigateToContact(matchId)
       }
-    } else { // - 2.1.2.2.2.2 사용자 퍼즐 개수가 모자란 경우 -> 스토어 이동 (✅)
+    } else {
       presentedAlert = .insufficientPuzzle // 퍼즐 부족 알럿 표시
     }
   }
@@ -384,7 +384,7 @@ private extension MatchingHomeViewModel {
   }
   
   func handleDidTapInsufficientPuzzleAlertConfirm() async {
-    // TODO: 스토어로 이동 로직
+    destination = .storeMain
   }
   
   func handleDidTapCreateNewMatchAlertConfirm() async {
