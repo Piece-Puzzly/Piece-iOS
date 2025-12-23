@@ -44,7 +44,8 @@ final class ValueTalkViewModel {
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
-    refuseMatchUseCase: RefuseMatchUseCase
+    refuseMatchUseCase: RefuseMatchUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) {
     self.matchId = matchId
     self.getMatchValueTalkUseCase = getMatchValueTalkUseCase
@@ -52,6 +53,7 @@ final class ValueTalkViewModel {
     self.postMatchPhotoUseCase = postMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
     self.refuseMatchUseCase = refuseMatchUseCase
+    self.getPuzzleCountUseCase = getPuzzleCountUseCase
     self.presentedAlert = nil
     
     Task {
@@ -89,6 +91,7 @@ final class ValueTalkViewModel {
   
   private(set) var showToastAction: MatchActionType? = nil
   private(set) var matchId: Int
+  private(set) var puzzleCount: Int = 0
   private(set) var timerManager: MatchingDetailTimerManager?
   
   private let getMatchValueTalkUseCase: GetMatchValueTalkUseCase
@@ -96,6 +99,7 @@ final class ValueTalkViewModel {
   private let postMatchPhotoUseCase: PostMatchPhotoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
   private let refuseMatchUseCase: RefuseMatchUseCase
+  private let getPuzzleCountUseCase: GetPuzzleCountUseCase
   
   func handleAction(_ action: Action) {
     switch action {
@@ -129,6 +133,7 @@ final class ValueTalkViewModel {
   
   private func fetchMatchValueTalk() async {
     do {
+      await loadPuzzleCount()
       let entity = try await getMatchValueTalkUseCase.execute(matchId: matchId)
       valueTalkModel = ValueTalkModel(model: entity)
       setupTimerManager(for: entity.createdAt)
@@ -282,5 +287,18 @@ private extension ValueTalkViewModel {
   
   func showTimeExpiredAlert() {
     presentedAlert = .timeExpired(matchId: matchId)
+  }
+}
+
+
+private extension ValueTalkViewModel {
+  func loadPuzzleCount() async {
+    do {
+      let result = try await getPuzzleCountUseCase.execute()
+      puzzleCount = result.puzzleCount
+    } catch {
+      print("Get Puzzle Count: \(error.localizedDescription)")
+      puzzleCount = 0
+    }
   }
 }

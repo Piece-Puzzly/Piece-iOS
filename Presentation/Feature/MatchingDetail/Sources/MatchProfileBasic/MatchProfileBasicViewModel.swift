@@ -11,6 +11,8 @@ import UseCases
 import PCAmplitude
 import Entities
 
+// TODO: 퍼즐 부족 시 알럿 관련 비즈니스 로직 구현 -> 매칭상세 3가지 뷰
+
 @MainActor
 @Observable
 final class MatchProfileBasicViewModel {
@@ -50,25 +52,29 @@ final class MatchProfileBasicViewModel {
   private(set) var photoUri: String = ""
   private(set) var showToastAction: MatchActionType? = nil
   private(set) var matchId: Int
+  private(set) var puzzleCount: Int = 0
   private(set) var timerManager: MatchingDetailTimerManager?
   
   private let getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
   private let postMatchPhotoUseCase: PostMatchPhotoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
+  private let getPuzzleCountUseCase: GetPuzzleCountUseCase
   
   init(
     matchId: Int,
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     postMatchPhotoUseCase: PostMatchPhotoUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase
+    acceptMatchUseCase: AcceptMatchUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) {
     self.matchId = matchId
     self.getMatchProfileBasicUseCase = getMatchProfileBasicUseCase
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
     self.postMatchPhotoUseCase = postMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
+    self.getPuzzleCountUseCase = getPuzzleCountUseCase
     self.presentedAlert = nil
     
     Task {
@@ -101,6 +107,7 @@ final class MatchProfileBasicViewModel {
   
   private func fetchMatchingBasicInfo() async {
     do {
+      await loadPuzzleCount()
       let entity = try await getMatchProfileBasicUseCase.execute(matchId: matchId)
       matchingBasicInfoModel = BasicInfoModel(model: entity)
       setupTimerManager(for: entity.createdAt)
@@ -229,5 +236,17 @@ private extension MatchProfileBasicViewModel {
   
   func showTimeExpiredAlert() {
     presentedAlert = .timeExpired(matchId: matchId)
+  }
+}
+
+private extension MatchProfileBasicViewModel {
+  func loadPuzzleCount() async {
+    do {
+      let result = try await getPuzzleCountUseCase.execute()
+      puzzleCount = result.puzzleCount
+    } catch {
+      print("Get Puzzle Count: \(error.localizedDescription)")
+      puzzleCount = 0
+    }
   }
 }
