@@ -10,6 +10,7 @@ let project = Project.app(
     .externalDependency(dependency: .KakaoSDKAuth),
     .externalDependency(dependency: .KakaoSDKUser),
     .externalDependency(dependency: .GoogleSignIn),
+    .externalDependency(dependency: .SDWebImageSVGCoder),
     .utility(target: .PCFirebase),
     .utility(target: .PCAmplitude),
     .utility(target: .PCNetworkMonitor)

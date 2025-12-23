@@ -34,13 +34,27 @@ public struct PCPuzzleCount: View {
       HStack(spacing: 8) {
         DesignSystemAsset.Icons.chevronLeft32.swiftUIImage
           .renderingMode(.template)
-          .foregroundStyle(Color.grayscaleWhite)
+          .foregroundStyle(Color.grayscaleBlack)
         
         PCPuzzleCountContent(count: count, style: style)
       }
       
     case .skeleton(let skeletonStyle):
-      PCPuzzleCountSkeleton(skeletonStyle: skeletonStyle)
+      switch skeletonStyle {
+      case .dark:
+        PCPuzzleCountSkeleton(skeletonStyle: skeletonStyle)
+          .pcShimmer()
+      
+      case .light:
+        HStack(spacing: 8) {
+          DesignSystemAsset.Icons.chevronLeft32.swiftUIImage
+            .renderingMode(.template)
+            .foregroundStyle(Color.grayscaleBlack)
+          
+          PCPuzzleCountSkeleton(skeletonStyle: skeletonStyle)
+            .pcShimmer()
+        }
+      }
     }
   }
 }
@@ -122,7 +136,7 @@ extension PCPuzzleCount {
       case .skeleton(let skeletonStyle):
         switch skeletonStyle {
         case .dark: (.alphaWhite10, .clear, .clear, .clear, 16, true)
-        case .light: (.grayscaleLight3, .clear, .clear, .clear, 0, false)
+        case .light: (.grayscaleWhite, .clear, .clear, .clear, 0, false)
         }
       }
     }

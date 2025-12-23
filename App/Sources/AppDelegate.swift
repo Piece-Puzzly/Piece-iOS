@@ -13,15 +13,19 @@ import PCNetwork
 import LocalStorage
 import Repository
 import UseCases
+import SDWebImageSVGCoder
 
 final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
-  
   func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
   ) -> Bool {
     
     print("🚀 앱 시작 - didFinishLaunchingWithOptions")
+    
+    // SVG 코더 등록
+    let SVGCoder = SDImageSVGCoder.shared
+    SDImageCodersManager.shared.addCoder(SVGCoder)
     
     // FCM 토큰 알림 구독
     NotificationCenter.default.addObserver(
@@ -68,7 +72,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, ObservableObject {
       PCNotificationService.shared.checkNotificationPermission()
       self.checkAPNsRegistrationStatus()
     }
-    
+
     print("🚀 앱 초기화 완료")
     return true
   }
