@@ -487,16 +487,19 @@ public struct Coordinator {
     case .storeMain:
       let storeRepository = repositoryFactory.createStoreRepository()
       let iapRepository = repositoryFactory.createIAPRepository()
+      let userRepository = repositoryFactory.createUserRepository()
       let getCashProductsUseCase = UseCaseFactory.createGetCashProductsUseCase(repository: iapRepository)
       let deletePaymentHistoryUseCase = UseCaseFactory.createDeletePaymentHistoryUseCase(repository: iapRepository)
       let fetchValidStoreProductsUseCase = UseCaseFactory.createFetchValidStoreProductsUseCase(repository: storeRepository)
       let completeIAPUseCase = UseCaseFactory.createCompletePurchaseUseCase(storeRepository: storeRepository, iapRepository: iapRepository)
+      let getPuzzleCountUseCase = UseCaseFactory.createGetPuzzleCountUseCase(repository: userRepository)
 
       StoreViewFactory.createStoreMainView(
         getCashProductsUseCase: getCashProductsUseCase,
         deletePaymentHistoryUseCase: deletePaymentHistoryUseCase,
         fetchValidStoreProductsUseCase: fetchValidStoreProductsUseCase,
         completeIAPUseCase: completeIAPUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
       )
     }
   }
