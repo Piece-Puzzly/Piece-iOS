@@ -59,6 +59,7 @@ struct StoreMainView: View {
         secondButtonAction: { viewModel.handleAction(.didCompletePurchase) }
       )
     }
+    .spinning(of: viewModel.isProcessingPayment)
   }
 }
 
