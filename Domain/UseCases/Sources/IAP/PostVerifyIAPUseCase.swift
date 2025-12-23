@@ -9,7 +9,7 @@ import Entities
 import RepositoryInterfaces
 
 public protocol PostVerifyIAPUseCase {
-  func execute(productUUID: String, purchaseCredential: String, store: AppStoreType) async throws -> VoidModel
+  func execute(productUUID: String, purchaseCredential: String, store: AppStoreType) async throws -> VerifyIAPModel
 }
 
 final class PostVerifyIAPUseCaseImpl: PostVerifyIAPUseCase {
@@ -19,7 +19,7 @@ final class PostVerifyIAPUseCaseImpl: PostVerifyIAPUseCase {
     self.repository = repository
   }
   
-  func execute(productUUID: String, purchaseCredential: String, store: AppStoreType) async throws -> VoidModel {
+  func execute(productUUID: String, purchaseCredential: String, store: AppStoreType) async throws -> VerifyIAPModel {
     try await repository.postVerifyIAP(productUUID: productUUID, purchaseCredential: purchaseCredential, store: store)
   }
 }

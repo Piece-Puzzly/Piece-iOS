@@ -254,4 +254,8 @@ public struct UseCaseFactory {
   public static func createFetchValidStoreProductsUseCase(repository: StoreRepositoryInterface) -> FetchValidStoreProductsUseCase {
     FetchValidStoreProductsUseCaseImpl(repository: repository)
   }
+  
+  public static func createCompletePurchaseUseCase(storeRepository: StoreRepositoryInterface, iapRepository: IAPRepositoryInterface) -> CompleteIAPUseCase {
+    CompleteIAPUseCaseImpl(storeRepository: storeRepository, iapRepository: iapRepository)
+  }
 }

@@ -14,12 +14,14 @@ public struct StoreViewFactory {
   public static func createStoreMainView(
     getCashProductsUseCase: GetCashProductsUseCase,
     deletePaymentHistoryUseCase: DeletePaymentHistoryUseCase,
-    fetchValidStoreProductsUseCase: FetchValidStoreProductsUseCase
+    fetchValidStoreProductsUseCase: FetchValidStoreProductsUseCase,
+    completeIAPUseCase: CompleteIAPUseCase,
   ) -> some View {
     StoreMainView(
       getCashProductsUseCase: getCashProductsUseCase,
       deletePaymentHistoryUseCase: deletePaymentHistoryUseCase,
-      fetchValidStoreProductsUseCase: fetchValidStoreProductsUseCase
+      fetchValidStoreProductsUseCase: fetchValidStoreProductsUseCase,
+      completeIAPUseCase: completeIAPUseCase,
     )
   }
 }

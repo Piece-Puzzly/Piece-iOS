@@ -20,12 +20,14 @@ struct StoreMainView: View {
     getCashProductsUseCase: GetCashProductsUseCase,
     deletePaymentHistoryUseCase: DeletePaymentHistoryUseCase,
     fetchValidStoreProductsUseCase: FetchValidStoreProductsUseCase,
+    completeIAPUseCase: CompleteIAPUseCase
   ) {
     _viewModel = .init(
       wrappedValue: .init(
         getCashProductsUseCase: getCashProductsUseCase,
         deletePaymentHistoryUseCase: deletePaymentHistoryUseCase,
         fetchValidStoreProductsUseCase: fetchValidStoreProductsUseCase,
+        completeIAPUseCase: completeIAPUseCase,
       )
     )
   }
@@ -111,12 +113,12 @@ fileprivate struct StoreMainListContentView: View {
               .padding(.top, 12)
               .padding(.bottom, 60)
           }
-          .immediateScrollTap()
         
         case .failure:
           Text("FAILURE STATE")
         }
       }
+      .immediateScrollTap()
     }
     .scrollIndicators(.hidden)
   }

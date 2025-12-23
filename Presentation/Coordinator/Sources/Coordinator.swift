@@ -459,11 +459,13 @@ public struct Coordinator {
       let getCashProductsUseCase = UseCaseFactory.createGetCashProductsUseCase(repository: iapRepository)
       let deletePaymentHistoryUseCase = UseCaseFactory.createDeletePaymentHistoryUseCase(repository: iapRepository)
       let fetchValidStoreProductsUseCase = UseCaseFactory.createFetchValidStoreProductsUseCase(repository: storeRepository)
-    
+      let completeIAPUseCase = UseCaseFactory.createCompletePurchaseUseCase(storeRepository: storeRepository, iapRepository: iapRepository)
+
       StoreViewFactory.createStoreMainView(
         getCashProductsUseCase: getCashProductsUseCase,
         deletePaymentHistoryUseCase: deletePaymentHistoryUseCase,
-        fetchValidStoreProductsUseCase: fetchValidStoreProductsUseCase
+        fetchValidStoreProductsUseCase: fetchValidStoreProductsUseCase,
+        completeIAPUseCase: completeIAPUseCase,
       )
     }
   }
