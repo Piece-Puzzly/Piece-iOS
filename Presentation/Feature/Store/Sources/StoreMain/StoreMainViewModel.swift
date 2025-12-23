@@ -34,7 +34,7 @@ final class StoreMainViewModel {
   private(set) var promotionProducts: [PromotionProductModel] = []
   private(set) var completedPuzzleCount: Int64 = 0
   private(set) var shouldDismiss: Bool = false
-  private(set) var isPurchasing: Bool = false
+  private(set) var isProcessingPayment: Bool = false  // StoreKit 결제창 표시 중 (스피너용)
   var isShowingPurchaseCompleteAlert: Bool = false
   
   init(
@@ -89,11 +89,11 @@ private extension StoreMainViewModel {
   }
   
   func purchaseNormalProduct(_ product: NormalProductModel) {
-    guard !isPurchasing else { return }
-    
+    guard !isProcessingPayment else { return }
+
     Task {
-      isPurchasing = true
-      defer { isPurchasing = false }
+      isProcessingPayment = true
+      defer { isProcessingPayment = false }
       
       do {
         let result = try await completeIAPUseCase.execute(productID: product.storeProduct.id)
@@ -106,11 +106,11 @@ private extension StoreMainViewModel {
   }
   
   func purchasePromotionProduct(_ product: PromotionProductModel) {
-    guard !isPurchasing else { return }
-    
+    guard !isProcessingPayment else { return }
+
     Task {
-      isPurchasing = true
-      defer { isPurchasing = false }
+      isProcessingPayment = true
+      defer { isProcessingPayment = false }
       
       do {
         let result = try await completeIAPUseCase.execute(productID: product.storeProduct.id)
