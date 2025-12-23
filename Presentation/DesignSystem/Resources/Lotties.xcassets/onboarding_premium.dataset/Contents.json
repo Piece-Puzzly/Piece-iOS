@@ -1,0 +1,12 @@
+{
+  "data" : [
+    {
+      "filename" : "onboarding_premium.json",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
