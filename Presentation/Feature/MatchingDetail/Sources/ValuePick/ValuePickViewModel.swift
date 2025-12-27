@@ -54,8 +54,8 @@ final class ValuePickViewModel {
     self.getPuzzleCountUseCase = getPuzzleCountUseCase
     self.presentedAlert = nil
     
-    Task {
-      await fetchMatchValuePick()
+    withSpinner { [weak self] in
+      await self?.fetchMatchValuePick()
     }
   }
   
@@ -69,7 +69,7 @@ final class ValuePickViewModel {
   var presentedAlert: MatchingDetailAlertType? = nil
 
   private(set) var valuePickModel: MatchValuePickModel?
-  private(set) var isLoading = true
+  private(set) var showSpinner = true
   private(set) var error: Error?
   private(set) var contentOffset: CGFloat = 0
   private(set) var isNameViewVisible: Bool = true
@@ -112,17 +112,22 @@ final class ValuePickViewModel {
       }
       
     case .didTapPhotoButton:
-      handleDidTapPhotoButton()
+      withSpinner { [weak self] in
+        self?.handleDidTapPhotoButton()
+      }
 
     case .didTapAcceptButton:
-      handleDidTapAcceptButton()
-      
+      withSpinner { [weak self] in
+        self?.handleDidTapAcceptButton()
+      }
     case .dismissAlert:
       presentedAlert = nil
 
     case .didConfirmAlert(let alertType):
-      presentedAlert = nil
-      handleAlertConfirm(alertType)
+      withSpinner { [weak self] in
+        self?.presentedAlert = nil
+        self?.handleAlertConfirm(alertType)
+      }
       
     case .clearToast:
       showToastAction = nil
@@ -143,8 +148,6 @@ final class ValuePickViewModel {
     } catch {
       self.error = error
     }
-    
-    isLoading = false
   }
   
   private func buyMatchPhoto() async {
@@ -289,6 +292,26 @@ private extension ValuePickViewModel {
     } catch {
       print("Get Puzzle Count: \(error.localizedDescription)")
       puzzleCount = 0
+    }
+  }
+}
+
+// MARK: - Spinner
+private extension ValuePickViewModel {
+  func setSpinnerVisible(_ visible: Bool) {
+    showSpinner = visible
+  }
+  
+  func withSpinner(_ action: @escaping () async -> Void) {
+    Task {
+      setSpinnerVisible(true)
+      defer { setSpinnerVisible(false) }  // 에러 발생해도 false 처리
+
+      // 최소 0.1초 딜레이를 먼저 기다림
+      try? await Task.sleep(nanoseconds: 100_000_000) // 0.1초
+
+      // 그 후 action 실행
+      await action()
     }
   }
 }

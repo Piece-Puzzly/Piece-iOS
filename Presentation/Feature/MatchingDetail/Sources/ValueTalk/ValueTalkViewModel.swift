@@ -56,8 +56,8 @@ final class ValueTalkViewModel {
     self.getPuzzleCountUseCase = getPuzzleCountUseCase
     self.presentedAlert = nil
     
-    Task {
-      await fetchMatchValueTalk()
+    withSpinner { [weak self] in
+      await self?.fetchMatchValueTalk()
     }
   }
   
@@ -72,7 +72,7 @@ final class ValueTalkViewModel {
   private(set) var valueTalkModel: ValueTalkModel?
   private(set) var contentOffset: CGFloat = 0
   private(set) var isNameViewVisible: Bool = true
-  private(set) var isLoading = true
+  private(set) var showSpinner = true
   private(set) var error: Error?
   private(set) var photoUri: String = ""
   
@@ -112,21 +112,27 @@ final class ValueTalkViewModel {
       handleDidTapMoreButton()
 
     case .didTapPhotoButton:
-      handleDidTapPhotoButton()
+      withSpinner { [weak self] in
+        self?.handleDidTapPhotoButton()
+      }
 
     case .didTapAcceptButton:
-      handleDidTapAcceptButton()
-
+      withSpinner { [weak self] in
+        self?.handleDidTapAcceptButton()
+      }
     case .didTapRefuseButton:
-      handleDidTapRefuseButton()
+      withSpinner { [weak self] in
+        self?.handleDidTapRefuseButton()
+      }
 
     case .dismissAlert:
       presentedAlert = nil
 
     case .didConfirmAlert(let alertType):
-      presentedAlert = nil
-      handleAlertConfirm(alertType)
-      
+      withSpinner { [weak self] in
+        self?.presentedAlert = nil
+        self?.handleAlertConfirm(alertType)
+      }
     case .clearToast:
       showToastAction = nil
     }
@@ -143,7 +149,6 @@ final class ValueTalkViewModel {
       self.error = error
       // TODO: 에러 핸들링
     }
-    isLoading = false
   }
   
   private func buyMatchPhoto() async {
@@ -307,6 +312,27 @@ private extension ValueTalkViewModel {
     } catch {
       print("Get Puzzle Count: \(error.localizedDescription)")
       puzzleCount = 0
+    }
+  }
+}
+
+
+// MARK: - Spinner
+private extension ValueTalkViewModel {
+  func setSpinnerVisible(_ visible: Bool) {
+    showSpinner = visible
+  }
+  
+  func withSpinner(_ action: @escaping () async -> Void) {
+    Task {
+      setSpinnerVisible(true)
+      defer { setSpinnerVisible(false) }  // 에러 발생해도 false 처리
+
+      // 최소 0.1초 딜레이를 먼저 기다림
+      try? await Task.sleep(nanoseconds: 100_000_000) // 0.1초
+
+      // 그 후 action 실행
+      await action()
     }
   }
 }

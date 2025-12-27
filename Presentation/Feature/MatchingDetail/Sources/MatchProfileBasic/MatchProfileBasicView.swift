@@ -51,6 +51,7 @@ struct MatchProfileBasicView: View {
         .onDisappear {
           toastManager.hideToast(for: .matchProfileBasic)
         }
+        .spinning(of: viewModel.showSpinner)
     } else {
       EmptyView()
     }

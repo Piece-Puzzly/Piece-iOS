@@ -154,6 +154,7 @@ struct ValuePickView: View {
         EmptyView()
       }
     }
+    .spinning(of: viewModel.showSpinner)
   }
   
   // MARK: - 탭

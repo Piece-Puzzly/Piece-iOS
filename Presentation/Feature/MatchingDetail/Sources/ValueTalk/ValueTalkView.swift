@@ -69,6 +69,7 @@ struct ValueTalkView: View {
           bottomSheetContent(model: valueTalkModel)
             .presentationDetents([.height(160)])
         }
+        .spinning(of: viewModel.showSpinner)
     } else {
       EmptyView()
     }
