@@ -54,6 +54,7 @@ final class MatchProfileBasicViewModel {
   private(set) var matchId: Int
   private(set) var puzzleCount: Int = 0
   private(set) var timerManager: MatchingDetailTimerManager?
+  private(set) var shouldNavigateToStore: Bool = false
   
   private let getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
@@ -164,7 +165,11 @@ extension MatchProfileBasicViewModel {
       presentedAlert = .freeAccept(matchId: matchId)
       
     case .TRIAL, .PREMIUM, .AUTO:
-      presentedAlert = .paidAccept(matchId: matchId)
+      if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
+        presentedAlert = .paidAccept(matchId: matchId)
+      } else {
+        presentedAlert = .insufficientPuzzle
+      }
     }
     
     PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
@@ -188,7 +193,11 @@ extension MatchProfileBasicViewModel {
           isPhotoViewPresented = true
         }
       } else {
-        presentedAlert = .paidPhoto(matchId: matchId)
+        if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
+          presentedAlert = .paidPhoto(matchId: matchId)
+        } else {
+          presentedAlert = .insufficientPuzzle
+        }
       }
     }
     
@@ -217,6 +226,9 @@ extension MatchProfileBasicViewModel {
 
     case .timeExpired:
       showToastAction = .timeExpired
+      
+    case .insufficientPuzzle:
+      shouldNavigateToStore = true
       
     default:
       break

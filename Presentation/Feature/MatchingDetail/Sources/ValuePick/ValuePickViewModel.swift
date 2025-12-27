@@ -82,7 +82,8 @@ final class ValuePickViewModel {
   private(set) var matchId: Int
   private(set) var puzzleCount: Int = 0
   private(set) var timerManager: MatchingDetailTimerManager?
-  
+  private(set) var shouldNavigateToStore: Bool = false
+
   private var valuePicks: [MatchValuePickItemModel] = []
   private let getMatchValuePickUseCase: GetMatchValuePickUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
@@ -191,7 +192,11 @@ extension ValuePickViewModel {
       presentedAlert = .freeAccept(matchId: matchId)
       
     case .TRIAL, .PREMIUM, .AUTO:
-      presentedAlert = .paidAccept(matchId: matchId)
+      if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
+        presentedAlert = .paidAccept(matchId: matchId)
+      } else {
+        presentedAlert = .insufficientPuzzle
+      }
     }
     
     PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
@@ -215,7 +220,11 @@ extension ValuePickViewModel {
           isPhotoViewPresented = true
         }
       } else {
-        presentedAlert = .paidPhoto(matchId: matchId)
+        if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
+          presentedAlert = .paidPhoto(matchId: matchId)
+        } else {
+          presentedAlert = .insufficientPuzzle
+        }
       }
     }
     
@@ -248,6 +257,9 @@ extension ValuePickViewModel {
       showToastAction = nil
       showToastAction = .timeExpired
 
+    case .insufficientPuzzle:
+      shouldNavigateToStore = true
+      
     default:
       break
     }

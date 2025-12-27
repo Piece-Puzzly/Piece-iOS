@@ -138,6 +138,11 @@ struct ValuePickView: View {
       
       viewModel.handleAction(.clearToast)
     }
+    .onChange(of: viewModel.shouldNavigateToStore) { _, shouldNavigate in
+      if shouldNavigate {
+        router.push(to: .storeMain)
+      }
+    }
     .pcAlert(item: $viewModel.presentedAlert) { alertType in
       MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)
     }

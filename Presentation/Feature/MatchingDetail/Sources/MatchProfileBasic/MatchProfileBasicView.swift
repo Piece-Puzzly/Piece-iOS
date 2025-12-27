@@ -159,6 +159,11 @@ struct MatchProfileBasicView: View {
       
       viewModel.handleAction(.clearToast)
     }
+    .onChange(of: viewModel.shouldNavigateToStore) { _, shouldNavigate in
+      if shouldNavigate {
+        router.push(to: .storeMain)
+      }
+    }
   }
   
   private var title: some View {

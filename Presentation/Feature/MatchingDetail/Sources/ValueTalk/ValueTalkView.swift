@@ -188,6 +188,11 @@ struct ValueTalkView: View {
       
       viewModel.handleAction(.clearToast)
     }
+    .onChange(of: viewModel.shouldNavigateToStore) { _, shouldNavigate in
+      if shouldNavigate {
+        router.push(to: .storeMain)
+      }
+    }
   }
   
   private func talkCards(valueTalkModel: ValueTalkModel) -> some View {

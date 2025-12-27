@@ -93,6 +93,7 @@ final class ValueTalkViewModel {
   private(set) var matchId: Int
   private(set) var puzzleCount: Int = 0
   private(set) var timerManager: MatchingDetailTimerManager?
+  private(set) var shouldNavigateToStore: Bool = false
   
   private let getMatchValueTalkUseCase: GetMatchValueTalkUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
@@ -199,7 +200,11 @@ private extension ValueTalkViewModel {
       presentedAlert = .freeAccept(matchId: matchId)
       
     case .TRIAL, .PREMIUM, .AUTO:
-      presentedAlert = .paidAccept(matchId: matchId)
+      if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
+        presentedAlert = .paidAccept(matchId: matchId)
+      } else {
+        presentedAlert = .insufficientPuzzle
+      }
     }
     
     PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
@@ -228,7 +233,11 @@ private extension ValueTalkViewModel {
           isPhotoViewPresented = true
         }
       } else {
-        presentedAlert = .paidPhoto(matchId: matchId)
+        if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
+          presentedAlert = .paidPhoto(matchId: matchId)
+        } else {
+          presentedAlert = .insufficientPuzzle
+        }
       }
     }
     
@@ -269,8 +278,7 @@ private extension ValueTalkViewModel {
       showToastAction = .timeExpired
     
     case .insufficientPuzzle:
-      // TODO: 스토어 이동
-      break
+      shouldNavigateToStore = true
     }
   }
 }
