@@ -199,8 +199,7 @@ private extension MatchingHomeViewModel {
       }
     } catch {
       print("Check Can Free Match Error: \(error.localizedDescription)")
-      // 에러 발생 시 기본적으로 프리미엄 알럿 표시
-      presentedAlert = .createNewMatch
+      presentedAlert = .matchPoolExhausted
     }
   }
   
@@ -209,13 +208,16 @@ private extension MatchingHomeViewModel {
     
     switch alertType {
     case .contactConfirm(let matchId):
-        await handleDidTapContactConfirmAlertConfirm(matchId)
+      await handleDidTapContactConfirmAlertConfirm(matchId)
       
     case .insufficientPuzzle:
-        await handleDidTapInsufficientPuzzleAlertConfirm()
+      await handleDidTapInsufficientPuzzleAlertConfirm()
       
     case .createNewMatch:
-        await handleDidTapCreateNewMatchAlertConfirm()
+      await handleDidTapCreateNewMatchAlertConfirm()
+      
+    default:
+      break
     }
   }
 }
@@ -413,7 +415,7 @@ private extension MatchingHomeViewModel {
         showToastAction = .createNewMatch
       } catch {
         print("Create New Match Error: \(error.localizedDescription)")
-        // TODO: Handle error
+        presentedAlert = .matchPoolExhausted
       }
     } else {
       presentedAlert = .insufficientPuzzle // 퍼즐 부족 알럿 표시

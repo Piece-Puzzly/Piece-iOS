@@ -30,6 +30,8 @@ extension MatchingHomeView {
         insufficientPuzzleAlert()
       case .createNewMatch:
         createNewMatchAlert()
+      case .matchPoolExhausted:
+        matchPoolExhaustedAlert()
       }
     }
   }
@@ -76,6 +78,18 @@ private extension MatchingHomeView.MatchingHomeAlertView {
       firstButtonAction: { matchingHomeViewModel.handleAction(.dismissAlert) },
       secondButtonAction: { matchingHomeViewModel.handleAction(.didTapAlertConfirm(.createNewMatch)) },
       secondButtonIcon: DesignSystemAsset.Icons.puzzleSolidRotate32.swiftUIImage
+    )
+  }
+  
+  func matchPoolExhaustedAlert() -> some View {
+    AlertView(
+      icon: DesignSystemAsset.Icons.notice40.swiftUIImage,
+      title: { Text("오늘은 꼭 맞는 인연이 없어요") },
+      message: "피스가 더 잘 맞는 인연을 찾고 있어요.\n사용하신 퍼즐은 돌려드렸어요.",
+      secondButtonText: "다음에 다시 시도할게요",
+      secondButtonAction: {
+        matchingHomeViewModel.handleAction(.dismissAlert)
+      }
     )
   }
 }
