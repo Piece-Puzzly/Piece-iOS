@@ -27,9 +27,7 @@ struct MatchingEmptyCardView: View {
       }
       .multilineTextAlignment(.center)
       
-//      Spacer()
       DesignSystemAsset.Images.imgMatching240.swiftUIImage
-//      Spacer()
       
       RoundedButton(
         type: .solid,
