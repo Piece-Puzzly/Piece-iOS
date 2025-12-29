@@ -21,6 +21,7 @@ struct MatchingCardsView: View {
         onSelect: { viewModel.handleAction(.onSelectMatchingCard(matchId: cardModel.id)) },
         onConfirm: { viewModel.handleAction(.onConfirmMatchingCard(matchId: cardModel.id)) }
       )
+      .id(cardModel.id)
     }
   }
 }

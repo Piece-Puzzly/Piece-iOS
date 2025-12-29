@@ -9,52 +9,52 @@ import Router
 import SwiftUI
 import DesignSystem
 
-// TODO: - 주석 삭제하는 경우 MatchingEmptyCardView에서도 Spacer() 2개 지워야함
-
 // MARK: - User Matching List View (UserRole -> USER)
 struct MatchingCardListView: View {
-  private let viewModel: MatchingHomeViewModel
-//  @State private var createNewMatchButtonHeight: CGFloat = 0
-//  @State private var emptyCardViewHeight: CGFloat = 0
-  
   @Environment(Router.self) private var router: Router
-
+  private let viewModel: MatchingHomeViewModel
+  
   init(viewModel: MatchingHomeViewModel) {
     self.viewModel = viewModel
   }
   
   var body: some View {
-//    GeometryReader { geometry in
-      ScrollView(showsIndicators: false) {
-        VStack(spacing: Constants.cardSpacing) {
-          if viewModel.matchingCards.isEmpty {
-            MatchingEmptyCardView()
-//              .frame(height: emptyCardViewHeight)
-          } else {
-            MatchingCardsView(viewModel: viewModel)
-          }
+      ScrollViewReader { proxy in
+        ScrollView(showsIndicators: false) {
+          VStack(spacing: Constants.cardSpacing) {
+            if viewModel.matchingCards.isEmpty {
+              MatchingEmptyCardView()
+            } else {
+              MatchingCardsView(viewModel: viewModel)
+            }
 
-          // TODO: - API 나온 이후 상세 구현
-          CreateNewMatchButton(
-            isTrial: viewModel.isTrial,
-            action: { viewModel.handleAction(.didTapCreateNewMatchButton) }
-          )
-//          .background(
-//            GeometryReader { geometry in
-//              Color.clear
-//                .onAppear { createNewMatchButtonHeight = geometry.size.height }
-//            }
-//          )
-//        }
+            CreateNewMatchButton(
+              isTrial: viewModel.isTrial,
+              action: { viewModel.handleAction(.didTapCreateNewMatchButton) }
+            )
+        }
+        .animation(.interactiveSpring(response: 0.45), value: viewModel.selectedMatchId)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.horizontal, Constants.horizontalMargin)
+        .padding(.top, Constants.topMargin)
+        .padding(.bottom, Constants.bottomMargin)
       }
-      .animation(.interactiveSpring(response: 0.45), value: viewModel.selectedMatchId)
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .padding(.horizontal, Constants.horizontalMargin)
-      .padding(.top, Constants.topMargin)
-      .padding(.bottom, Constants.bottomMargin)
-//      .onChange(of: createNewMatchButtonHeight) { _, newMatchButtonHeight in
-//        emptyCardViewHeight = geometry.size.height - Constants.topMargin - Constants.bottomMargin - newMatchButtonHeight - Constants.cardSpacing
-//      }
+      .onChange(of: viewModel.selectedMatchId) { _, newSelectedId in
+        if let selectedId = newSelectedId {
+          withAnimation(.interactiveSpring(duration: 0.45)) {
+            proxy.scrollTo(selectedId, anchor: .center)
+          }
+        }
+      }
+      .onChange(of: viewModel.matchingCards.map { $0.id }) { _, _ in
+        if let selectedId = viewModel.selectedMatchId {
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            withAnimation(.interactiveSpring(duration: 0.45)) {
+              proxy.scrollTo(selectedId, anchor: .center)
+            }
+          }
+        }
+      }
     }
   }
 

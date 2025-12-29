@@ -111,7 +111,6 @@ final class MatchingHomeViewModel {
 private extension MatchingHomeViewModel {
   func handleOnAppear() {
     destination = nil
-    selectedMatchId = nil
     presentedAlert = nil
     showToastAction = nil
 
@@ -189,6 +188,11 @@ private extension MatchingHomeViewModel {
       if isTrial {
         let result = try await createNewMatchUseCase.execute()
         let matchId = result.matchId
+        
+        // 생성된 매칭을 Waiting으로 상태 변경
+        _ = try? await patchMatchesCheckPieceUseCase.execute(matchId: matchId)
+        
+        selectedMatchId = matchId
         destination = .matchProfileBasic(matchId: matchId)
       } else {
         presentedAlert = .createNewMatch // premium이면 "새로운 인연 만나기 알럿"으로 진입
@@ -289,7 +293,13 @@ private extension MatchingHomeViewModel {
       .filter { $0.matchStatus != .BLOCKED }
       .filter { !$0.isBlocked }
       .filter { !isMatchExpired($0) }
-    
+
+    // 0. 이전에 선택된 카드가 있고, 해당 카드가 리스트에 존재하면 유지
+    if let currentSelectedId = selectedMatchId,
+       filteredInfos.contains(where: { $0.matchId == currentSelectedId }) {
+      return currentSelectedId
+    }
+
     // 1. 타의적 매칭이 아닌 첫 번째 카드
     if let firstNonAuto = filteredInfos.first(where: { $0.matchType != .AUTO }) {
       return firstNonAuto.matchId
@@ -394,6 +404,11 @@ private extension MatchingHomeViewModel {
       do {
         let result = try await createNewMatchUseCase.execute()
         let matchId = result.matchId
+
+        // 생성된 매칭을 Waiting으로 상태 변경
+        _ = try? await patchMatchesCheckPieceUseCase.execute(matchId: matchId)
+        
+        selectedMatchId = matchId
         destination = .matchProfileBasic(matchId: matchId)
         showToastAction = .createNewMatch
       } catch {

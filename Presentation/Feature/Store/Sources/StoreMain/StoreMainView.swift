@@ -45,7 +45,7 @@ struct StoreMainView: View {
       viewModel.handleAction(.onAppear)
     }
     .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
-      if shouldDismiss { router.pop() }
+      if shouldDismiss { router.popToRoot() }
     }
     .pcAlert(isPresented: $viewModel.isShowingPurchaseCompleteAlert) {
       AlertView(
