@@ -20,7 +20,8 @@ struct StoreMainView: View {
     getCashProductsUseCase: GetCashProductsUseCase,
     deletePaymentHistoryUseCase: DeletePaymentHistoryUseCase,
     fetchValidStoreProductsUseCase: FetchValidStoreProductsUseCase,
-    completeIAPUseCase: CompleteIAPUseCase
+    completeIAPUseCase: CompleteIAPUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) {
     _viewModel = .init(
       wrappedValue: .init(
@@ -28,6 +29,7 @@ struct StoreMainView: View {
         deletePaymentHistoryUseCase: deletePaymentHistoryUseCase,
         fetchValidStoreProductsUseCase: fetchValidStoreProductsUseCase,
         completeIAPUseCase: completeIAPUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
       )
     )
   }
@@ -57,6 +59,7 @@ struct StoreMainView: View {
         secondButtonAction: { viewModel.handleAction(.didCompletePurchase) }
       )
     }
+    .spinning(of: viewModel.isProcessingPayment)
   }
 }
 

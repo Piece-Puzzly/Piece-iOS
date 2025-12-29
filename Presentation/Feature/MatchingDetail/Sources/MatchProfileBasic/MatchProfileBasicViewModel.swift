@@ -44,35 +44,40 @@ final class MatchProfileBasicViewModel {
   var isBottomSheetPresented: Bool = false
   var presentedAlert: MatchingDetailAlertType? = nil
 
-  private(set) var isLoading = true
+  private(set) var showSpinner = true
   private(set) var error: Error?
   private(set) var matchingBasicInfoModel: BasicInfoModel?
   private(set) var photoUri: String = ""
   private(set) var showToastAction: MatchActionType? = nil
   private(set) var matchId: Int
+  private(set) var puzzleCount: Int = 0
   private(set) var timerManager: MatchingDetailTimerManager?
+  private(set) var shouldNavigateToStore: Bool = false
   
   private let getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
   private let postMatchPhotoUseCase: PostMatchPhotoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
+  private let getPuzzleCountUseCase: GetPuzzleCountUseCase
   
   init(
     matchId: Int,
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     postMatchPhotoUseCase: PostMatchPhotoUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase
+    acceptMatchUseCase: AcceptMatchUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) {
     self.matchId = matchId
     self.getMatchProfileBasicUseCase = getMatchProfileBasicUseCase
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
     self.postMatchPhotoUseCase = postMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
+    self.getPuzzleCountUseCase = getPuzzleCountUseCase
     self.presentedAlert = nil
     
-    Task {
-      await fetchMatchingBasicInfo()
+    withSpinner { [weak self] in
+      await self?.fetchMatchingBasicInfo()
     }
   }
   
@@ -82,17 +87,22 @@ final class MatchProfileBasicViewModel {
       handleDidTapMoreButton()
 
     case .didTapPhotoButton:
-      handleDidTapPhotoButton()
+      withSpinner { [weak self] in
+        self?.handleDidTapPhotoButton()
+      }
 
     case .didTapAcceptButton:
-      handleDidTapAcceptButton()
-      
+      withSpinner { [weak self] in
+        self?.handleDidTapAcceptButton()
+      }
     case .dismissAlert:
       presentedAlert = nil
 
     case .didConfirmAlert(let alertType):
-      presentedAlert = nil
-      handleAlertConfirm(alertType)
+      withSpinner { [weak self] in
+        self?.presentedAlert = nil
+        self?.handleAlertConfirm(alertType)
+      }
     
     case .clearToast:
       showToastAction = nil
@@ -101,6 +111,7 @@ final class MatchProfileBasicViewModel {
   
   private func fetchMatchingBasicInfo() async {
     do {
+      await loadPuzzleCount()
       let entity = try await getMatchProfileBasicUseCase.execute(matchId: matchId)
       matchingBasicInfoModel = BasicInfoModel(model: entity)
       setupTimerManager(for: entity.createdAt)
@@ -109,7 +120,6 @@ final class MatchProfileBasicViewModel {
       // TODO: 에러 핸들링
       self.error = error
     }
-    isLoading = false
   }
   
   private func buyMatchPhoto() async {
@@ -157,7 +167,11 @@ extension MatchProfileBasicViewModel {
       presentedAlert = .freeAccept(matchId: matchId)
       
     case .TRIAL, .PREMIUM, .AUTO:
-      presentedAlert = .paidAccept(matchId: matchId)
+      if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
+        presentedAlert = .paidAccept(matchId: matchId)
+      } else {
+        presentedAlert = .insufficientPuzzle
+      }
     }
     
     PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
@@ -181,7 +195,11 @@ extension MatchProfileBasicViewModel {
           isPhotoViewPresented = true
         }
       } else {
-        presentedAlert = .paidPhoto(matchId: matchId)
+        if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
+          presentedAlert = .paidPhoto(matchId: matchId)
+        } else {
+          presentedAlert = .insufficientPuzzle
+        }
       }
     }
     
@@ -211,6 +229,9 @@ extension MatchProfileBasicViewModel {
     case .timeExpired:
       showToastAction = .timeExpired
       
+    case .insufficientPuzzle:
+      shouldNavigateToStore = true
+      
     default:
       break
     }
@@ -229,5 +250,37 @@ private extension MatchProfileBasicViewModel {
   
   func showTimeExpiredAlert() {
     presentedAlert = .timeExpired(matchId: matchId)
+  }
+}
+
+private extension MatchProfileBasicViewModel {
+  func loadPuzzleCount() async {
+    do {
+      let result = try await getPuzzleCountUseCase.execute()
+      puzzleCount = result.puzzleCount
+    } catch {
+      print("Get Puzzle Count: \(error.localizedDescription)")
+      puzzleCount = 0
+    }
+  }
+}
+
+// MARK: - Spinner
+private extension MatchProfileBasicViewModel {
+  func setSpinnerVisible(_ visible: Bool) {
+    showSpinner = visible
+  }
+  
+  func withSpinner(_ action: @escaping () async -> Void) {
+    Task {
+      setSpinnerVisible(true)
+      defer { setSpinnerVisible(false) }  // 에러 발생해도 false 처리
+
+      // 최소 0.1초 딜레이를 먼저 기다림
+      try? await Task.sleep(nanoseconds: 100_000_000) // 0.1초
+
+      // 그 후 action 실행
+      await action()
+    }
   }
 }

@@ -157,46 +157,55 @@ public struct Coordinator {
       // MARK: - 매칭 상세
     case let .matchProfileBasic(matchId):
       let matchesRepository = repositoryFactory.createMatchesRepository()
+      let userRepository = repositoryFactory.createUserRepository()
       let getMatchProfileBasicUseCase = UseCaseFactory.createGetMatchProfileBasicUseCase(repository: matchesRepository)
       let getMatchPhotoUseCase = UseCaseFactory.createGetMatchPhotoUseCase(repository: matchesRepository)
       let postMatchPhotoUseCase = UseCaseFactory.createPostMatchPhotoUseCase(repository: matchesRepository)
       let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
+      let getPuzzleCountUseCase = UseCaseFactory.createGetPuzzleCountUseCase(repository: userRepository)
       MatchDetailViewFactory.createMatchProfileBasicView(
         matchId: matchId,
         getMatchProfileBasicUseCase: getMatchProfileBasicUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
         postMatchPhotoUseCase: postMatchPhotoUseCase,
-        acceptMatchUseCase: acceptMatchUseCase
+        acceptMatchUseCase: acceptMatchUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
       )
       
     case let .matchValueTalk(matchId):
       let matchesRepository = repositoryFactory.createMatchesRepository()
+      let userRepository = repositoryFactory.createUserRepository()
       let getMatchValueTalkUseCase = UseCaseFactory.createGetMatchValueTalkUseCase(repository: matchesRepository)
       let getMatchPhotoUseCase = UseCaseFactory.createGetMatchPhotoUseCase(repository: matchesRepository)
       let postMatchPhotoUseCase = UseCaseFactory.createPostMatchPhotoUseCase(repository: matchesRepository)
       let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
       let refuseMatchUseCase = UseCaseFactory.createRefuseMatchUseCase(repository: matchesRepository)
+      let getPuzzleCountUseCase = UseCaseFactory.createGetPuzzleCountUseCase(repository: userRepository)
       MatchDetailViewFactory.createMatchValueTalkView(
         matchId: matchId,
         getMatchValueTalkUseCase: getMatchValueTalkUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
         postMatchPhotoUseCase: postMatchPhotoUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
-        refuseMatchUseCase: refuseMatchUseCase
+        refuseMatchUseCase: refuseMatchUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
       )
       
     case let .matchValuePick(matchId):
       let matchesRepository = repositoryFactory.createMatchesRepository()
+      let userRepository = repositoryFactory.createUserRepository()
       let getMatchValuePickUseCase = UseCaseFactory.createGetMatchValuePickUseCase(repository: matchesRepository)
       let acceptMatchUseCase = UseCaseFactory.createAcceptMatchUseCase(repository: matchesRepository)
       let getMatchPhotoUseCase = UseCaseFactory.createGetMatchPhotoUseCase(repository: matchesRepository)
       let postMatchPhotoUseCase = UseCaseFactory.createPostMatchPhotoUseCase(repository: matchesRepository)
+      let getPuzzleCountUseCase = UseCaseFactory.createGetPuzzleCountUseCase(repository: userRepository)
       MatchDetailViewFactory.createMatchValuePickView(
         matchId: matchId,
         getMatchValuePickUseCase: getMatchValuePickUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
         postMatchPhotoUseCase: postMatchPhotoUseCase,
-        acceptMatchUseCase: acceptMatchUseCase
+        acceptMatchUseCase: acceptMatchUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
       )
       
     case let .blockUser(info):
@@ -487,16 +496,19 @@ public struct Coordinator {
     case .storeMain:
       let storeRepository = repositoryFactory.createStoreRepository()
       let iapRepository = repositoryFactory.createIAPRepository()
+      let userRepository = repositoryFactory.createUserRepository()
       let getCashProductsUseCase = UseCaseFactory.createGetCashProductsUseCase(repository: iapRepository)
       let deletePaymentHistoryUseCase = UseCaseFactory.createDeletePaymentHistoryUseCase(repository: iapRepository)
       let fetchValidStoreProductsUseCase = UseCaseFactory.createFetchValidStoreProductsUseCase(repository: storeRepository)
       let completeIAPUseCase = UseCaseFactory.createCompletePurchaseUseCase(storeRepository: storeRepository, iapRepository: iapRepository)
+      let getPuzzleCountUseCase = UseCaseFactory.createGetPuzzleCountUseCase(repository: userRepository)
 
       StoreViewFactory.createStoreMainView(
         getCashProductsUseCase: getCashProductsUseCase,
         deletePaymentHistoryUseCase: deletePaymentHistoryUseCase,
         fetchValidStoreProductsUseCase: fetchValidStoreProductsUseCase,
         completeIAPUseCase: completeIAPUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
       )
     }
   }

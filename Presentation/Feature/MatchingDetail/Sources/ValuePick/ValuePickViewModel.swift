@@ -43,17 +43,19 @@ final class ValuePickViewModel {
     getMatchValuePickUseCase: GetMatchValuePickUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     postMatchPhotoUseCase: PostMatchPhotoUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase
+    acceptMatchUseCase: AcceptMatchUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) {
     self.matchId = matchId
     self.getMatchValuePickUseCase = getMatchValuePickUseCase
     self.getMatchPhotoUseCase = getMatchPhotoUseCase
     self.postMatchPhotoUseCase = postMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
+    self.getPuzzleCountUseCase = getPuzzleCountUseCase
     self.presentedAlert = nil
     
-    Task {
-      await fetchMatchValuePick()
+    withSpinner { [weak self] in
+      await self?.fetchMatchValuePick()
     }
   }
   
@@ -67,7 +69,7 @@ final class ValuePickViewModel {
   var presentedAlert: MatchingDetailAlertType? = nil
 
   private(set) var valuePickModel: MatchValuePickModel?
-  private(set) var isLoading = true
+  private(set) var showSpinner = true
   private(set) var error: Error?
   private(set) var contentOffset: CGFloat = 0
   private(set) var isNameViewVisible: Bool = true
@@ -78,13 +80,16 @@ final class ValuePickViewModel {
   private(set) var photoUri: String = ""
   private(set) var showToastAction: MatchActionType? = nil
   private(set) var matchId: Int
+  private(set) var puzzleCount: Int = 0
   private(set) var timerManager: MatchingDetailTimerManager?
-  
+  private(set) var shouldNavigateToStore: Bool = false
+
   private var valuePicks: [MatchValuePickItemModel] = []
   private let getMatchValuePickUseCase: GetMatchValuePickUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
   private let postMatchPhotoUseCase: PostMatchPhotoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
+  private let getPuzzleCountUseCase: GetPuzzleCountUseCase
   
   func handleAction(_ action: Action) {
     switch action {
@@ -107,17 +112,22 @@ final class ValuePickViewModel {
       }
       
     case .didTapPhotoButton:
-      handleDidTapPhotoButton()
+      withSpinner { [weak self] in
+        self?.handleDidTapPhotoButton()
+      }
 
     case .didTapAcceptButton:
-      handleDidTapAcceptButton()
-      
+      withSpinner { [weak self] in
+        self?.handleDidTapAcceptButton()
+      }
     case .dismissAlert:
       presentedAlert = nil
 
     case .didConfirmAlert(let alertType):
-      presentedAlert = nil
-      handleAlertConfirm(alertType)
+      withSpinner { [weak self] in
+        self?.presentedAlert = nil
+        self?.handleAlertConfirm(alertType)
+      }
       
     case .clearToast:
       showToastAction = nil
@@ -126,6 +136,7 @@ final class ValuePickViewModel {
   
   func fetchMatchValuePick() async {
     do {
+      await loadPuzzleCount()
       let entity = try await getMatchValuePickUseCase.execute(matchId: matchId)
       valuePickModel = entity
       valuePicks = entity.valuePicks
@@ -137,8 +148,6 @@ final class ValuePickViewModel {
     } catch {
       self.error = error
     }
-    
-    isLoading = false
   }
   
   private func buyMatchPhoto() async {
@@ -186,7 +195,11 @@ extension ValuePickViewModel {
       presentedAlert = .freeAccept(matchId: matchId)
       
     case .TRIAL, .PREMIUM, .AUTO:
-      presentedAlert = .paidAccept(matchId: matchId)
+      if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
+        presentedAlert = .paidAccept(matchId: matchId)
+      } else {
+        presentedAlert = .insufficientPuzzle
+      }
     }
     
     PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
@@ -210,7 +223,11 @@ extension ValuePickViewModel {
           isPhotoViewPresented = true
         }
       } else {
-        presentedAlert = .paidPhoto(matchId: matchId)
+        if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
+          presentedAlert = .paidPhoto(matchId: matchId)
+        } else {
+          presentedAlert = .insufficientPuzzle
+        }
       }
     }
     
@@ -243,6 +260,9 @@ extension ValuePickViewModel {
       showToastAction = nil
       showToastAction = .timeExpired
 
+    case .insufficientPuzzle:
+      shouldNavigateToStore = true
+      
     default:
       break
     }
@@ -261,5 +281,37 @@ private extension ValuePickViewModel {
   
   func showTimeExpiredAlert() {
     presentedAlert = .timeExpired(matchId: matchId)
+  }
+}
+
+private extension ValuePickViewModel {
+  func loadPuzzleCount() async {
+    do {
+      let result = try await getPuzzleCountUseCase.execute()
+      puzzleCount = result.puzzleCount
+    } catch {
+      print("Get Puzzle Count: \(error.localizedDescription)")
+      puzzleCount = 0
+    }
+  }
+}
+
+// MARK: - Spinner
+private extension ValuePickViewModel {
+  func setSpinnerVisible(_ visible: Bool) {
+    showSpinner = visible
+  }
+  
+  func withSpinner(_ action: @escaping () async -> Void) {
+    Task {
+      setSpinnerVisible(true)
+      defer { setSpinnerVisible(false) }  // 에러 발생해도 false 처리
+
+      // 최소 0.1초 딜레이를 먼저 기다림
+      try? await Task.sleep(nanoseconds: 100_000_000) // 0.1초
+
+      // 그 후 action 실행
+      await action()
+    }
   }
 }

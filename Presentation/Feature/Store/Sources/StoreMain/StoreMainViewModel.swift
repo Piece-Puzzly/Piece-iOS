@@ -28,11 +28,13 @@ final class StoreMainViewModel {
   private let deletePaymentHistoryUseCase: DeletePaymentHistoryUseCase
   private let fetchValidStoreProductsUseCase: FetchValidStoreProductsUseCase
   private let completeIAPUseCase: CompleteIAPUseCase
+  private let getPuzzleCountUseCase: GetPuzzleCountUseCase
 
   private(set) var viewState: StoreMainViewState = .loading
   private(set) var normalProducts: [NormalProductModel] = []
   private(set) var promotionProducts: [PromotionProductModel] = []
   private(set) var completedPuzzleCount: Int64 = 0
+  private(set) var puzzleCount: Int = 0
   private(set) var shouldDismiss: Bool = false
   private(set) var isProcessingPayment: Bool = false  // StoreKit 결제창 표시 중 (스피너용)
   var isShowingPurchaseCompleteAlert: Bool = false
@@ -42,11 +44,13 @@ final class StoreMainViewModel {
     deletePaymentHistoryUseCase: DeletePaymentHistoryUseCase,
     fetchValidStoreProductsUseCase: FetchValidStoreProductsUseCase,
     completeIAPUseCase: CompleteIAPUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) {
     self.getCashProductsUseCase = getCashProductsUseCase
     self.deletePaymentHistoryUseCase = deletePaymentHistoryUseCase
     self.fetchValidStoreProductsUseCase = fetchValidStoreProductsUseCase
     self.completeIAPUseCase = completeIAPUseCase
+    self.getPuzzleCountUseCase = getPuzzleCountUseCase
   }
   
   func handleAction(_ action: Action) {
@@ -80,6 +84,7 @@ private extension StoreMainViewModel {
   
   func loadProducts() {
     Task {
+      await loadPuzzleCount()
       let cashProducts = try await getCashProductsUseCase.execute()
       let validProducts = try await fetchValidStoreProductsUseCase.execute(cashProducts: cashProducts)
       self.normalProducts = validProducts.normalProducts
@@ -126,6 +131,18 @@ private extension StoreMainViewModel {
     Task {
       isShowingPurchaseCompleteAlert = false
       shouldDismiss = true
+    }
+  }
+}
+
+private extension StoreMainViewModel {
+  func loadPuzzleCount() async {
+    do {
+      let result = try await getPuzzleCountUseCase.execute()
+      puzzleCount = result.puzzleCount
+    } catch {
+      print("Get Puzzle Count: \(error.localizedDescription)")
+      puzzleCount = 0
     }
   }
 }

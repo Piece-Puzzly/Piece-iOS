@@ -45,7 +45,8 @@ struct ValueTalkView: View {
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
-    refuseMatchUseCase: RefuseMatchUseCase
+    refuseMatchUseCase: RefuseMatchUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) {
     _viewModel = .init(
       wrappedValue: .init(
@@ -54,7 +55,8 @@ struct ValueTalkView: View {
         getMatchPhotoUseCase: getMatchPhotoUseCase,
         postMatchPhotoUseCase: postMatchPhotoUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
-        refuseMatchUseCase: refuseMatchUseCase
+        refuseMatchUseCase: refuseMatchUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
       )
     )
   }
@@ -67,6 +69,7 @@ struct ValueTalkView: View {
           bottomSheetContent(model: valueTalkModel)
             .presentationDetents([.height(160)])
         }
+        .spinning(of: viewModel.showSpinner)
     } else {
       EmptyView()
     }
@@ -185,6 +188,11 @@ struct ValueTalkView: View {
       }
       
       viewModel.handleAction(.clearToast)
+    }
+    .onChange(of: viewModel.shouldNavigateToStore) { _, shouldNavigate in
+      if shouldNavigate {
+        router.push(to: .storeMain)
+      }
     }
   }
   

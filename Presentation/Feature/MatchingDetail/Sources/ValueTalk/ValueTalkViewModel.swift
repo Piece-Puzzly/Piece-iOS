@@ -44,7 +44,8 @@ final class ValueTalkViewModel {
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
-    refuseMatchUseCase: RefuseMatchUseCase
+    refuseMatchUseCase: RefuseMatchUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) {
     self.matchId = matchId
     self.getMatchValueTalkUseCase = getMatchValueTalkUseCase
@@ -52,10 +53,11 @@ final class ValueTalkViewModel {
     self.postMatchPhotoUseCase = postMatchPhotoUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
     self.refuseMatchUseCase = refuseMatchUseCase
+    self.getPuzzleCountUseCase = getPuzzleCountUseCase
     self.presentedAlert = nil
     
-    Task {
-      await fetchMatchValueTalk()
+    withSpinner { [weak self] in
+      await self?.fetchMatchValueTalk()
     }
   }
   
@@ -70,7 +72,7 @@ final class ValueTalkViewModel {
   private(set) var valueTalkModel: ValueTalkModel?
   private(set) var contentOffset: CGFloat = 0
   private(set) var isNameViewVisible: Bool = true
-  private(set) var isLoading = true
+  private(set) var showSpinner = true
   private(set) var error: Error?
   private(set) var photoUri: String = ""
   
@@ -89,13 +91,16 @@ final class ValueTalkViewModel {
   
   private(set) var showToastAction: MatchActionType? = nil
   private(set) var matchId: Int
+  private(set) var puzzleCount: Int = 0
   private(set) var timerManager: MatchingDetailTimerManager?
+  private(set) var shouldNavigateToStore: Bool = false
   
   private let getMatchValueTalkUseCase: GetMatchValueTalkUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
   private let postMatchPhotoUseCase: PostMatchPhotoUseCase
   private let acceptMatchUseCase: AcceptMatchUseCase
   private let refuseMatchUseCase: RefuseMatchUseCase
+  private let getPuzzleCountUseCase: GetPuzzleCountUseCase
   
   func handleAction(_ action: Action) {
     switch action {
@@ -107,21 +112,27 @@ final class ValueTalkViewModel {
       handleDidTapMoreButton()
 
     case .didTapPhotoButton:
-      handleDidTapPhotoButton()
+      withSpinner { [weak self] in
+        self?.handleDidTapPhotoButton()
+      }
 
     case .didTapAcceptButton:
-      handleDidTapAcceptButton()
-
+      withSpinner { [weak self] in
+        self?.handleDidTapAcceptButton()
+      }
     case .didTapRefuseButton:
-      handleDidTapRefuseButton()
+      withSpinner { [weak self] in
+        self?.handleDidTapRefuseButton()
+      }
 
     case .dismissAlert:
       presentedAlert = nil
 
     case .didConfirmAlert(let alertType):
-      presentedAlert = nil
-      handleAlertConfirm(alertType)
-      
+      withSpinner { [weak self] in
+        self?.presentedAlert = nil
+        self?.handleAlertConfirm(alertType)
+      }
     case .clearToast:
       showToastAction = nil
     }
@@ -129,6 +140,7 @@ final class ValueTalkViewModel {
   
   private func fetchMatchValueTalk() async {
     do {
+      await loadPuzzleCount()
       let entity = try await getMatchValueTalkUseCase.execute(matchId: matchId)
       valueTalkModel = ValueTalkModel(model: entity)
       setupTimerManager(for: entity.createdAt)
@@ -137,7 +149,6 @@ final class ValueTalkViewModel {
       self.error = error
       // TODO: 에러 핸들링
     }
-    isLoading = false
   }
   
   private func buyMatchPhoto() async {
@@ -194,7 +205,11 @@ private extension ValueTalkViewModel {
       presentedAlert = .freeAccept(matchId: matchId)
       
     case .TRIAL, .PREMIUM, .AUTO:
-      presentedAlert = .paidAccept(matchId: matchId)
+      if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
+        presentedAlert = .paidAccept(matchId: matchId)
+      } else {
+        presentedAlert = .insufficientPuzzle
+      }
     }
     
     PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
@@ -223,7 +238,11 @@ private extension ValueTalkViewModel {
           isPhotoViewPresented = true
         }
       } else {
-        presentedAlert = .paidPhoto(matchId: matchId)
+        if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
+          presentedAlert = .paidPhoto(matchId: matchId)
+        } else {
+          presentedAlert = .insufficientPuzzle
+        }
       }
     }
     
@@ -264,8 +283,7 @@ private extension ValueTalkViewModel {
       showToastAction = .timeExpired
     
     case .insufficientPuzzle:
-      // TODO: 스토어 이동
-      break
+      shouldNavigateToStore = true
     }
   }
 }
@@ -282,5 +300,39 @@ private extension ValueTalkViewModel {
   
   func showTimeExpiredAlert() {
     presentedAlert = .timeExpired(matchId: matchId)
+  }
+}
+
+
+private extension ValueTalkViewModel {
+  func loadPuzzleCount() async {
+    do {
+      let result = try await getPuzzleCountUseCase.execute()
+      puzzleCount = result.puzzleCount
+    } catch {
+      print("Get Puzzle Count: \(error.localizedDescription)")
+      puzzleCount = 0
+    }
+  }
+}
+
+
+// MARK: - Spinner
+private extension ValueTalkViewModel {
+  func setSpinnerVisible(_ visible: Bool) {
+    showSpinner = visible
+  }
+  
+  func withSpinner(_ action: @escaping () async -> Void) {
+    Task {
+      setSpinnerVisible(true)
+      defer { setSpinnerVisible(false) }  // 에러 발생해도 false 처리
+
+      // 최소 0.1초 딜레이를 먼저 기다림
+      try? await Task.sleep(nanoseconds: 100_000_000) // 0.1초
+
+      // 그 후 action 실행
+      await action()
+    }
   }
 }

@@ -30,7 +30,7 @@ struct StoreNavigationBar: View {
     case .success:
       HomeNavigationBar(
         foregroundColor: .grayscaleBlack,
-        leftButton: { PCPuzzleCount(count: 22, style: .light) },
+        leftButton: { PCPuzzleCount(count: viewModel.puzzleCount, style: .light) },
         leftButtonTap: {
           router.pop()
         }

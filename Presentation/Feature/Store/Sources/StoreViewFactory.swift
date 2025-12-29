@@ -16,12 +16,14 @@ public struct StoreViewFactory {
     deletePaymentHistoryUseCase: DeletePaymentHistoryUseCase,
     fetchValidStoreProductsUseCase: FetchValidStoreProductsUseCase,
     completeIAPUseCase: CompleteIAPUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) -> some View {
     StoreMainView(
       getCashProductsUseCase: getCashProductsUseCase,
       deletePaymentHistoryUseCase: deletePaymentHistoryUseCase,
       fetchValidStoreProductsUseCase: fetchValidStoreProductsUseCase,
       completeIAPUseCase: completeIAPUseCase,
+      getPuzzleCountUseCase: getPuzzleCountUseCase,
     )
   }
 }

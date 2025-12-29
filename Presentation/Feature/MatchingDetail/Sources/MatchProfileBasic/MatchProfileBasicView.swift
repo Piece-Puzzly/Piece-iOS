@@ -25,7 +25,8 @@ struct MatchProfileBasicView: View {
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     postMatchPhotoUseCase: PostMatchPhotoUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase
+    acceptMatchUseCase: AcceptMatchUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) {
     _viewModel = .init(
       wrappedValue: .init(
@@ -33,7 +34,8 @@ struct MatchProfileBasicView: View {
         getMatchProfileBasicUseCase: getMatchProfileBasicUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
         postMatchPhotoUseCase: postMatchPhotoUseCase,
-        acceptMatchUseCase: acceptMatchUseCase
+        acceptMatchUseCase: acceptMatchUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
       )
     )
   }
@@ -49,6 +51,7 @@ struct MatchProfileBasicView: View {
         .onDisappear {
           toastManager.hideToast(for: .matchProfileBasic)
         }
+        .spinning(of: viewModel.showSpinner)
     } else {
       EmptyView()
     }
@@ -156,6 +159,11 @@ struct MatchProfileBasicView: View {
       }
       
       viewModel.handleAction(.clearToast)
+    }
+    .onChange(of: viewModel.shouldNavigateToStore) { _, shouldNavigate in
+      if shouldNavigate {
+        router.push(to: .storeMain)
+      }
     }
   }
   

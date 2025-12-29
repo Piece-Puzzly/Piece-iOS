@@ -17,14 +17,16 @@ public struct MatchDetailViewFactory {
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     postMatchPhotoUseCase: PostMatchPhotoUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase
+    acceptMatchUseCase: AcceptMatchUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) -> some View {
     MatchProfileBasicView(
       matchId: matchId,
       getMatchProfileBasicUseCase: getMatchProfileBasicUseCase,
       getMatchPhotoUseCase: getMatchPhotoUseCase,
       postMatchPhotoUseCase: postMatchPhotoUseCase,
-      acceptMatchUseCase: acceptMatchUseCase
+      acceptMatchUseCase: acceptMatchUseCase,
+      getPuzzleCountUseCase: getPuzzleCountUseCase,
     )
     .trackScreen(trackable: DefaultProgress.matchDetailBasicProfile)
     .trackDuration(action: .matchDetailBasicProfileDuration)
@@ -37,7 +39,8 @@ public struct MatchDetailViewFactory {
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
-    refuseMatchUseCase: RefuseMatchUseCase
+    refuseMatchUseCase: RefuseMatchUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) -> some View {
     ValueTalkView(
       matchId: matchId,
@@ -45,7 +48,8 @@ public struct MatchDetailViewFactory {
       getMatchPhotoUseCase: getMatchPhotoUseCase,
       postMatchPhotoUseCase: postMatchPhotoUseCase,
       acceptMatchUseCase: acceptMatchUseCase,
-      refuseMatchUseCase: refuseMatchUseCase
+      refuseMatchUseCase: refuseMatchUseCase,
+      getPuzzleCountUseCase: getPuzzleCountUseCase,
     )
     .trackScreen(trackable: DefaultProgress.matchDetailValueTalk)
   }
@@ -56,14 +60,16 @@ public struct MatchDetailViewFactory {
     getMatchValuePickUseCase: GetMatchValuePickUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     postMatchPhotoUseCase: PostMatchPhotoUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase
+    acceptMatchUseCase: AcceptMatchUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) -> some View {
     ValuePickView(
       matchId: matchId,
       getMatchValuePickUseCase: getMatchValuePickUseCase,
       getMatchPhotoUseCase: getMatchPhotoUseCase,
       postMatchPhotoUseCase: postMatchPhotoUseCase,
-      acceptMatchUseCase: acceptMatchUseCase
+      acceptMatchUseCase: acceptMatchUseCase,
+      getPuzzleCountUseCase: getPuzzleCountUseCase,
     )
     .trackScreen(trackable: DefaultProgress.matchDetailValuePick)
   }

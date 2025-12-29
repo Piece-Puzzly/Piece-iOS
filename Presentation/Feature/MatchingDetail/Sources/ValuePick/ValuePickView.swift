@@ -22,7 +22,8 @@ struct ValuePickView: View {
     getMatchValuePickUseCase: GetMatchValuePickUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
     postMatchPhotoUseCase: PostMatchPhotoUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase
+    acceptMatchUseCase: AcceptMatchUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) {
     _viewModel = .init(
       wrappedValue: .init(
@@ -30,7 +31,8 @@ struct ValuePickView: View {
         getMatchValuePickUseCase: getMatchValuePickUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
         postMatchPhotoUseCase: postMatchPhotoUseCase,
-        acceptMatchUseCase: acceptMatchUseCase
+        acceptMatchUseCase: acceptMatchUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
       )
     )
   }
@@ -136,6 +138,11 @@ struct ValuePickView: View {
       
       viewModel.handleAction(.clearToast)
     }
+    .onChange(of: viewModel.shouldNavigateToStore) { _, shouldNavigate in
+      if shouldNavigate {
+        router.push(to: .storeMain)
+      }
+    }
     .pcAlert(item: $viewModel.presentedAlert) { alertType in
       MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)
     }
@@ -147,6 +154,7 @@ struct ValuePickView: View {
         EmptyView()
       }
     }
+    .spinning(of: viewModel.showSpinner)
   }
   
   // MARK: - 탭
