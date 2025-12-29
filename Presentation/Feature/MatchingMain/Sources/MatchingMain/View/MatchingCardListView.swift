@@ -19,25 +19,42 @@ struct MatchingCardListView: View {
   }
   
   var body: some View {
-      ScrollView(showsIndicators: false) {
-        VStack(spacing: Constants.cardSpacing) {
-          if viewModel.matchingCards.isEmpty {
-            MatchingEmptyCardView()
-          } else {
-            MatchingCardsView(viewModel: viewModel)
-          }
+      ScrollViewReader { proxy in
+        ScrollView(showsIndicators: false) {
+          VStack(spacing: Constants.cardSpacing) {
+            if viewModel.matchingCards.isEmpty {
+              MatchingEmptyCardView()
+            } else {
+              MatchingCardsView(viewModel: viewModel)
+            }
 
-          // TODO: - API 나온 이후 상세 구현
-          CreateNewMatchButton(
-            isTrial: viewModel.isTrial,
-            action: { viewModel.handleAction(.didTapCreateNewMatchButton) }
-          )
+            CreateNewMatchButton(
+              isTrial: viewModel.isTrial,
+              action: { viewModel.handleAction(.didTapCreateNewMatchButton) }
+            )
+        }
+        .animation(.interactiveSpring(response: 0.45), value: viewModel.selectedMatchId)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.horizontal, Constants.horizontalMargin)
+        .padding(.top, Constants.topMargin)
+        .padding(.bottom, Constants.bottomMargin)
       }
-      .animation(.interactiveSpring(response: 0.45), value: viewModel.selectedMatchId)
-      .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .padding(.horizontal, Constants.horizontalMargin)
-      .padding(.top, Constants.topMargin)
-      .padding(.bottom, Constants.bottomMargin)
+      .onChange(of: viewModel.selectedMatchId) { _, newSelectedId in
+        if let selectedId = newSelectedId {
+          withAnimation(.interactiveSpring(duration: 0.45)) {
+            proxy.scrollTo(selectedId, anchor: .center)
+          }
+        }
+      }
+      .onChange(of: viewModel.matchingCards.map { $0.id }) { _, _ in
+        if let selectedId = viewModel.selectedMatchId {
+          DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            withAnimation(.interactiveSpring(duration: 0.45)) {
+              proxy.scrollTo(selectedId, anchor: .center)
+            }
+          }
+        }
+      }
     }
   }
 
