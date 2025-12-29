@@ -115,8 +115,8 @@ private extension MatchingHomeViewModel {
     presentedAlert = nil
     showToastAction = nil
 
-    withSpinner {
-      await self.getUserRole()
+    Task {
+      await getUserRole()
     }
   }
   
