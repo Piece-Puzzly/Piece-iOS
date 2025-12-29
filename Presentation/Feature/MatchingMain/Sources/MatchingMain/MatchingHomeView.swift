@@ -173,9 +173,11 @@ fileprivate struct MatchingListContentView: View {
   var body: some View {
     switch matchingHomeViewModel.viewState {
     case .loading:
-      // TODO: 스켈레톤 ㄱㄱ
-      Text("LOADING STATE")
-    
+      MatchingHomeSkeletonView()
+        .padding(.top, 16)
+        .padding(.bottom, 12)
+        .padding(.horizontal, 20)
+      
     case .profileStatusRejected:
       ProfileRejectedView(viewModel: profileRejectedViewModel)
     
