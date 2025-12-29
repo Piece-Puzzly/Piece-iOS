@@ -189,6 +189,10 @@ private extension MatchingHomeViewModel {
       if isTrial {
         let result = try await createNewMatchUseCase.execute()
         let matchId = result.matchId
+        
+        // 생성된 매칭을 Waiting으로 상태 변경
+        _ = try? await patchMatchesCheckPieceUseCase.execute(matchId: matchId)
+        
         destination = .matchProfileBasic(matchId: matchId)
       } else {
         presentedAlert = .createNewMatch // premium이면 "새로운 인연 만나기 알럿"으로 진입
@@ -394,6 +398,10 @@ private extension MatchingHomeViewModel {
       do {
         let result = try await createNewMatchUseCase.execute()
         let matchId = result.matchId
+
+        // 생성된 매칭을 Waiting으로 상태 변경
+        _ = try? await patchMatchesCheckPieceUseCase.execute(matchId: matchId)
+        
         destination = .matchProfileBasic(matchId: matchId)
         showToastAction = .createNewMatch
       } catch {
