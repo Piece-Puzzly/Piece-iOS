@@ -11,10 +11,9 @@ public enum UserDefaultsKeys: String {
   case socialLoginType
   case hasRequestedPermissions
   case userRole
-  case matchedUserId
-  case matchStatus
   case latestSyncDate
   case onboardingProgress
   case signUpProgress
   case createProfileProgress
+  case lastBasicMatchPoolExhaustedAlertDate
 }

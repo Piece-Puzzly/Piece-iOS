@@ -6,10 +6,10 @@
 //
 
 import DesignSystem
-import Entities
 import Router
 import SwiftUI
 import UseCases
+import Entities
 
 struct MatchProfileBasicView: View {
   private enum Constant {
@@ -21,15 +21,21 @@ struct MatchProfileBasicView: View {
   @Environment(PCToastManager.self) private var toastManager: PCToastManager
   
   init(
+    matchId: Int,
     getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
-    acceptMatchUseCase: AcceptMatchUseCase
+    postMatchPhotoUseCase: PostMatchPhotoUseCase,
+    acceptMatchUseCase: AcceptMatchUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) {
     _viewModel = .init(
       wrappedValue: .init(
+        matchId: matchId,
         getMatchProfileBasicUseCase: getMatchProfileBasicUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
-        acceptMatchUseCase: acceptMatchUseCase
+        postMatchPhotoUseCase: postMatchPhotoUseCase,
+        acceptMatchUseCase: acceptMatchUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
       )
     )
   }
@@ -42,6 +48,13 @@ struct MatchProfileBasicView: View {
           bottomSheetContent(model: basicInfoModel)
             .presentationDetents([.height(160)])
         }
+        .onAppear {
+          viewModel.handleAction(.onAppear)
+        }
+        .onDisappear {
+          toastManager.hideToast(for: .matchProfileBasic)
+        }
+        .spinning(of: viewModel.showSpinner)
     } else {
       EmptyView()
     }
@@ -57,12 +70,28 @@ struct MatchProfileBasicView: View {
           DesignSystemAsset.Icons.close32.swiftUIImage
         }
       )
+      .overlay(alignment: .leading) {
+        if let timer = viewModel.timerManager, timer.shouldShowTimer {
+          HStack(spacing: 4) {
+            DesignSystemAsset.Icons.variant2.swiftUIImage
+              .renderingMode(.template)
+              .foregroundStyle(.systemError)
+            
+            Text(timer.remainingTime)
+              .pretendard(.body_S_M)
+              .foregroundStyle(.systemError)
+            
+            Spacer()
+          }
+          .padding(.horizontal, Constant.horizontalPadding)
+        }
+      }
       
       VStack(alignment: .leading) {
         title
         Spacer()
         BasicInfoNameView(
-          shortIntroduction: basicInfoModel.shortIntroduction,
+          shortIntroduction: basicInfoModel.description,
           nickname: basicInfoModel.nickname,
           moreButtonAction: { viewModel.handleAction(.didTapMoreButton) }
         )
@@ -81,26 +110,63 @@ struct MatchProfileBasicView: View {
         .resizable()
         .ignoresSafeArea()
     )
-    .fullScreenCover(isPresented: $viewModel.isPhotoViewPresented) {
-      MatchDetailPhotoView(
-        nickname: viewModel.matchingBasicInfoModel?.nickname ?? "",
-        uri: viewModel.photoUri,
-        onAcceptMatch: { viewModel.handleAction(.didAcceptMatch) }
-      )
+    .overlay {
+      if viewModel.isPhotoViewPresented {
+        MatchDetailPhotoView(
+          nickname: viewModel.matchingBasicInfoModel?.nickname ?? "",
+          matchStatus: viewModel.matchingBasicInfoModel?.matchStatus ?? .RESPONDED,
+          uri: viewModel.photoUri,
+          onDismiss: { viewModel.isPhotoViewPresented = false },
+          onAcceptButtonTap: { viewModel.handleAction(.didTapAcceptButton) },
+        )
+      }
     }
-    .onChange(of: viewModel.isMatchAccepted) { _, isMatchAccepted in
-      if isMatchAccepted {
+    .pcAlert(item: $viewModel.presentedAlert) { alertType in
+      MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)
+    }
+    .overlay(alignment: .top) {
+      if toastManager.shouldShowToast(for: .matchProfileBasic) {
+        PCToast(
+          isVisible: Bindable(toastManager).isVisible,
+          icon: toastManager.icon,
+          text: toastManager.text,
+          backgroundColor: toastManager.backgroundColor
+        )
+        .padding(.top, 56)
+      }
+    }
+    .onChange(of: viewModel.showToastAction) { _, actionType in
+      guard let actionType else { return }
+      
+      switch actionType {
+      case .accept:
         router.popToRoot()
         
         toastManager.showToast(
+          target: .matchingHome,
           icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
           text: "인연을 수락했습니다",
           backgroundColor: .primaryDefault
         )
+        
+      case .viewPhoto:
+        toastManager.showToast(
+          target: .matchDetailPhoto,
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "퍼즐을 \(DomainConstants.PuzzleCost.viewPhoto)개 사용했어요",
+          backgroundColor: .primaryDefault
+        )
+        
+      case .timeExpired:
+        router.popToRoot()
       }
+      
+      viewModel.handleAction(.clearToast)
     }
-    .transaction { transaction in
-        transaction.disablesAnimations = true
+    .onChange(of: viewModel.destination) { _, destination in
+      if let destination {
+        router.push(to: destination)
+      }
     }
   }
   
@@ -177,7 +243,7 @@ struct MatchProfileBasicView: View {
           .pretendard(.body_S_M)
           .foregroundStyle(Color.grayscaleBlack)
       }
-      Text("\(basicInfoModel.birthYear)년생")
+      Text("\(basicInfoModel.birthYear.suffix(2))년생")
         .lineLimit(1)
         .pretendard(.body_S_M)
         .foregroundStyle(Color.grayscaleDark2)
@@ -207,7 +273,7 @@ struct MatchProfileBasicView: View {
   }
   
   private func regionAnswer(basicInfoModel: BasicInfoModel) -> some View  {
-    Text(basicInfoModel.region)
+    Text(basicInfoModel.location)
       .pretendard(.heading_S_SB)
       .foregroundStyle(Color.grayscaleBlack)
   }
@@ -236,6 +302,7 @@ struct MatchProfileBasicView: View {
       nextButton
     }
     .padding(.top, 12)
+    .padding(.bottom, 10)
   }
   
   private var photoButton: some View {
@@ -260,7 +327,7 @@ struct MatchProfileBasicView: View {
     CircleButton(
       type: .solid_primary,
       icon: DesignSystemAsset.Icons.arrowRight32.swiftUIImage,
-      action: { router.push(to: .matchValuePick) }
+      action: { router.push(to: .matchValuePick(matchId: viewModel.matchId)) }
     )
   }
   
@@ -269,16 +336,11 @@ struct MatchProfileBasicView: View {
     VStack(spacing: 0) {
       bottomSheetContentRow(text: "차단하기") {
         viewModel.isBottomSheetPresented = false
-        router.push(
-          to: .blockUser(
-            matchId: model.id,
-            nickname: model.nickname
-          )
-        )
+        router.push(to: .blockUser(info: .init(model)))
       }
       bottomSheetContentRow(text: "신고하기") {
         viewModel.isBottomSheetPresented = false
-        router.push(to: .reportUser(nickname: model.nickname))
+        router.push(to: .reportUser(info: .init(model)))
       }
     }
   }
@@ -299,46 +361,3 @@ struct MatchProfileBasicView: View {
     }
   }
 }
-
-#Preview {
-  MatchProfileBasicView(
-    getMatchProfileBasicUseCase: DummyGetMatchProfileUseCase(),
-    getMatchPhotoUseCase: DummyGetMatchPhotoUseCase(),
-    acceptMatchUseCase: DummyAcceptMatchUseCase()
-  )
-  .environment(Router())
-}
-
-private final class DummyGetMatchProfileUseCase: GetMatchProfileBasicUseCase {
-  func execute() async throws -> Entities.MatchProfileBasicModel {
-    return MatchProfileBasicModel(
-      id: 0,
-      description: "음악과 요리를 좋아하는",
-      nickname: "수줍은 수달",
-      age: 25,
-      birthYear: "00",
-      height: 180,
-      weight: 72,
-      location: "세종특별자치시",
-      job: "프리랜서",
-      smokingStatus: "비흡연"
-    )
-  }
-}
-
-private final class DummyGetMatchPhotoUseCase: GetMatchPhotoUseCase {
-  func execute() async throws -> String {
-    return "https://www.thesprucepets.com/thmb/AyzHgPQM_X8OKhXEd8XTVIa-UT0=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-145577979-d97e955b5d8043fd96747447451f78b7.jpg"
-  }
-}
-
-private final class DummyAcceptMatchUseCase: AcceptMatchUseCase {
-  func execute() async throws -> VoidModel {
-    VoidModel()
-  }
-  
-  func execute() async throws -> String {
-    return "https://www.thesprucepets.com/thmb/AyzHgPQM_X8OKhXEd8XTVIa-UT0=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/GettyImages-145577979-d97e955b5d8043fd96747447451f78b7.jpg"
-  }
-}
-

@@ -18,10 +18,14 @@ public struct HomeViewFactory {
     getProfileUseCase: GetProfileBasicUseCase,
     // matchMain
     getUserInfoUseCase: GetUserInfoUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
     getUserRejectUseCase: GetUserRejectUseCase,
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
+    createNewMatchUseCase: CreateNewMatchUseCase,
+    checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
+    postMatchContactsUseCase: PostMatchContactsUseCase,
     // settings
     getSettingsInfoUseCase: GetSettingsInfoUseCase,
     fetchTermsUseCase: FetchTermsUseCase,
@@ -44,10 +48,14 @@ public struct HomeViewFactory {
       getProfileUseCase: getProfileUseCase,
       // matchMain
       getUserInfoUseCase: getUserInfoUseCase,
+      getPuzzleCountUseCase: getPuzzleCountUseCase,
       acceptMatchUseCase: acceptMatchUseCase,
       getMatchesInfoUseCase: getMatchesInfoUseCase,
       getUserRejectUseCase: getUserRejectUseCase,
       patchMatchesCheckPieceUseCase: patchMatchesCheckPieceUseCase,
+      createNewMatchUseCase: createNewMatchUseCase,
+      checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
+      postMatchContactsUseCase: postMatchContactsUseCase,
       // settings
       getSettingsInfoUseCase: getSettingsInfoUseCase,
       fetchTermsUseCase: fetchTermsUseCase,

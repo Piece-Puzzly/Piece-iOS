@@ -8,13 +8,19 @@
 import Foundation
 
 public enum OnboardingProgress: String, ProgressTrackable {
-  case dailyMatch = "onboarding_dailymatch"
-  case safetyNotice = "onboarding_safetynotice"
+  case onboarding_basic = "onboarding_basic"
+  case onboarding_premium = "onboarding_premium"
+  case onboarding_greenlight = "onboarding_greenlight"
+  case onboarding_talk = "onboarding_talk"
+  case onboarding_camera_block = "onboarding_camera_block"
   
   public var order: Int {
     switch self {
-    case .dailyMatch: return 0
-    case .safetyNotice: return 1
+    case .onboarding_basic: return 0
+    case .onboarding_premium: return 1
+    case .onboarding_greenlight: return 2
+    case .onboarding_talk: return 3
+    case .onboarding_camera_block: return 4
     }
   }
 }

@@ -23,10 +23,14 @@ final class HomeViewModel {
     getProfileUseCase: GetProfileBasicUseCase,
     // matchmain
     getUserInfoUseCase: GetUserInfoUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
     getMatchesInfoUseCase: GetMatchesInfoUseCase,
     getUserRejectUseCase: GetUserRejectUseCase,
     patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase,
+    createNewMatchUseCase: CreateNewMatchUseCase,
+    checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
+    postMatchContactsUseCase: PostMatchContactsUseCase,
     // settings
     getSettingsInfoUseCase: GetSettingsInfoUseCase,
     fetchTermsUseCase: FetchTermsUseCase,
@@ -48,10 +52,14 @@ final class HomeViewModel {
     self.getProfileUseCase = getProfileUseCase
     // matchmain
     self.getUserInfoUseCase = getUserInfoUseCase
+    self.getPuzzleCountUseCase = getPuzzleCountUseCase
     self.acceptMatchUseCase = acceptMatchUseCase
     self.getMatchesInfoUseCase = getMatchesInfoUseCase
     self.getUserRejectUseCase = getUserRejectUseCase
     self.patchMatchesCheckPieceUseCase = patchMatchesCheckPieceUseCase
+    self.createNewMatchUseCase = createNewMatchUseCase
+    self.checkCanFreeMatchUseCase = checkCanFreeMatchUseCase
+    self.postMatchContactsUseCase = postMatchContactsUseCase
     // settings
     self.getSettingsInfoUseCase = getSettingsInfoUseCase
     self.fetchTermsUseCase = fetchTermsUseCase
@@ -72,10 +80,14 @@ final class HomeViewModel {
   let getProfileUseCase: GetProfileBasicUseCase
   // matchmain
   let getUserInfoUseCase: GetUserInfoUseCase
+  let getPuzzleCountUseCase: GetPuzzleCountUseCase
   let acceptMatchUseCase: AcceptMatchUseCase
   let getMatchesInfoUseCase: GetMatchesInfoUseCase
   let getUserRejectUseCase: GetUserRejectUseCase
   let patchMatchesCheckPieceUseCase: PatchMatchesCheckPieceUseCase
+  let createNewMatchUseCase: CreateNewMatchUseCase
+  let checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase
+  let postMatchContactsUseCase: PostMatchContactsUseCase
   // settings
   let getSettingsInfoUseCase: GetSettingsInfoUseCase
   let fetchTermsUseCase: FetchTermsUseCase

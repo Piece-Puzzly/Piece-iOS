@@ -9,7 +9,7 @@ import DesignSystem
 import Router
 import SwiftUI
 import UseCases
-import LocalStorage
+import Entities
 
 struct ValueTalkView: View {
   private enum Constant {
@@ -40,17 +40,23 @@ struct ValueTalkView: View {
   ]
   
   init(
+    matchId: Int,
     getMatchValueTalkUseCase: GetMatchValueTalkUseCase,
     getMatchPhotoUseCase: GetMatchPhotoUseCase,
+    postMatchPhotoUseCase: PostMatchPhotoUseCase,
     acceptMatchUseCase: AcceptMatchUseCase,
-    refuseMatchUseCase: RefuseMatchUseCase
+    refuseMatchUseCase: RefuseMatchUseCase,
+    getPuzzleCountUseCase: GetPuzzleCountUseCase,
   ) {
     _viewModel = .init(
       wrappedValue: .init(
+        matchId: matchId,
         getMatchValueTalkUseCase: getMatchValueTalkUseCase,
         getMatchPhotoUseCase: getMatchPhotoUseCase,
+        postMatchPhotoUseCase: postMatchPhotoUseCase,
         acceptMatchUseCase: acceptMatchUseCase,
-        refuseMatchUseCase: refuseMatchUseCase
+        refuseMatchUseCase: refuseMatchUseCase,
+        getPuzzleCountUseCase: getPuzzleCountUseCase,
       )
     )
   }
@@ -63,6 +69,10 @@ struct ValueTalkView: View {
           bottomSheetContent(model: valueTalkModel)
             .presentationDetents([.height(160)])
         }
+        .onAppear {
+          viewModel.handleAction(.onAppear)
+        }
+        .spinning(of: viewModel.showSpinner)
     } else {
       EmptyView()
     }
@@ -79,6 +89,22 @@ struct ValueTalkView: View {
         },
         backgroundColor: .grayscaleWhite
       )
+      .overlay(alignment: .leading) {
+        if let timer = viewModel.timerManager, timer.shouldShowTimer {
+          HStack(spacing: 4) {
+            DesignSystemAsset.Icons.variant2.swiftUIImage
+              .renderingMode(.template)
+              .foregroundStyle(.systemError)
+            
+            Text(timer.remainingTime)
+              .pretendard(.body_S_M)
+              .foregroundStyle(.systemError)
+            
+            Spacer()
+          }
+          .padding(.horizontal, Constant.horizontalPadding)
+        }
+      }
       .overlay(alignment: .bottom) {
         Divider(weight: .normal, isVertical: false)
       }
@@ -115,63 +141,60 @@ struct ValueTalkView: View {
     }
     .toolbar(.hidden)
     .animation(.easeOut(duration: 0.3), value: viewModel.isNameViewVisible)
-    .fullScreenCover(isPresented: $viewModel.isPhotoViewPresented) {
-      MatchDetailPhotoView(
-        nickname: viewModel.valueTalkModel?.nickname ?? "",
-        uri: viewModel.photoUri,
-        onAcceptMatch: { viewModel.handleAction(.didAcceptMatch) }
-      )
-    }
-    .pcAlert(isPresented: $viewModel.isMatchAcceptAlertPresented) {
-      AlertView(
-        title: {
-          Text("\(viewModel.valueTalkModel?.nickname ?? "")").foregroundStyle(Color.primaryDefault) +
-          Text("님과의\n인연을 이어갈까요?").foregroundStyle(Color.grayscaleBlack)
-        },
-        message: "서로 수락하면 연락처가 공개돼요.",
-        firstButtonText: "뒤로",
-        secondButtonText: Constant.accepetButtonText
-      ) {
-        viewModel.isMatchAcceptAlertPresented = false
-      } secondButtonAction: {
-        viewModel.handleAction(.didAcceptMatch)
+    .overlay {
+      if viewModel.isPhotoViewPresented {
+        MatchDetailPhotoView(
+          nickname: viewModel.valueTalkModel?.nickname ?? "",
+          matchStatus: viewModel.valueTalkModel?.matchStatus ?? .RESPONDED,
+          uri: viewModel.photoUri,
+          onDismiss: { viewModel.isPhotoViewPresented = false },
+          onAcceptButtonTap: { viewModel.handleAction(.didTapAcceptButton) },
+        )
       }
     }
-    .pcAlert(isPresented: $viewModel.isMatchDeclineAlertPresented) {
-      AlertView(
-        title: {
-          Text("\(viewModel.valueTalkModel?.nickname ?? "")님과의\n").foregroundStyle(Color.grayscaleBlack) +
-          Text("인연을 ").foregroundStyle(Color.grayscaleBlack) +
-          Text("거절").foregroundStyle(Color.systemError) +
-          Text("할까요?").foregroundStyle(Color.grayscaleBlack)
-        },
-        message: "매칭을 거절하면 이후에 되돌릴 수 없으니\n신중히 선택해 주세요.",
-        firstButtonText: "뒤로",
-        secondButtonText: Constant.refuseButtonText
-      ) {
-        viewModel.isMatchDeclineAlertPresented = false
-      } secondButtonAction: {
-        viewModel.handleAction(.didRefuseMatch)
-      }
+    .pcAlert(item: $viewModel.presentedAlert) { alertType in
+      MatchingDetailAlertView(viewModel: viewModel, alertType: alertType)
     }
-    .onChange(of: viewModel.completedMatchAction) { _, actionType in
+    .onChange(of: viewModel.showToastAction) { _, actionType in
       guard let actionType else { return }
-
-      router.popToRoot()
       
       switch actionType {
       case .accept:
+        router.popToRoot()
+        
         toastManager.showToast(
+          target: .matchingHome,
           icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
           text: "인연을 수락했습니다",
           backgroundColor: .primaryDefault
         )
       case .refuse:
+        router.popToRoot()
+        
         toastManager.showToast(
+          target: .matchingHome,
           icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
           text: "인연을 거절했습니다",
           backgroundColor: .primaryDefault
         )
+        
+      case .viewPhoto:
+        toastManager.showToast(
+          target: .matchDetailPhoto,
+          icon: DesignSystemAsset.Icons.puzzleSolid24.swiftUIImage,
+          text: "퍼즐을 \(DomainConstants.PuzzleCost.viewPhoto)개 사용했어요",
+          backgroundColor: .primaryDefault
+        )
+        
+      case .timeExpired:
+        router.popToRoot()
+      }
+      
+      viewModel.handleAction(.clearToast)
+    }
+    .onChange(of: viewModel.destination) { _, destination in
+      if let destination {
+        router.push(to: destination)
       }
     }
   }
@@ -198,7 +221,7 @@ struct ValueTalkView: View {
   // MARK: - 매칭 거절하기 버튼
   
   private var shouldShowRefuseButton: Bool {
-    guard let matchStatus = PCUserDefaultsService.shared.getMatchStatus() else { return false }
+    guard let matchStatus = viewModel.matchStatus else { return false }
     switch matchStatus {
     case .BEFORE_OPEN, .WAITING, .GREEN_LIGHT: return true
     default: return false
@@ -266,11 +289,11 @@ struct ValueTalkView: View {
     VStack(spacing: 0) {
       bottomSheetContentRow(text: "차단하기") {
         viewModel.isBottomSheetPresented = false
-        router.push(to: .blockUser(matchId: model.id, nickname: model.nickname))
+        router.push(to: .blockUser(info: .init(model)))
       }
       bottomSheetContentRow(text: "신고하기") {
         viewModel.isBottomSheetPresented = false
-        router.push(to: .reportUser(nickname: model.nickname))
+        router.push(to: .reportUser(info: .init(model)))
       }
     }
   }

@@ -50,16 +50,21 @@ struct ContentView: View {
     case .profileApproved, .matchNew, .matchAccepted, .matchCompleted:
       router.setRoute(.home)
       
+      NotificationCenter.default.post(name: .refreshHomeData, object: nil)
+
       // 프로필 리젝 팝업
     case .profileRejected:
       router.setRoute(.home)
       
+      NotificationCenter.default.post(name: .refreshHomeData, object: nil)
+
       // 프로필 메인 -> 기본 정보 수정
     case .profileImageApproved, .profileImageRejected:
       router.setRoute(.home) {
         postSwitchHomeTab(.profile)
         router.push(to: .editProfile)
       }
+      NotificationCenter.default.post(name: .refreshHomeData, object: nil)
     }
   }
   

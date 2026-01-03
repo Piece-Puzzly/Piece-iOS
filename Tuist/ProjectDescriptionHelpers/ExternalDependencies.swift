@@ -21,6 +21,8 @@ public enum ExternalDependencies {
   case FirebaseMessaging
   case Mantis
   case AmplitudeSwift
+  case SDWebImageSwiftUI
+  case SDWebImageSVGCoder
   
   public var name: String {
     switch self {
@@ -37,6 +39,8 @@ public enum ExternalDependencies {
     case .FirebaseMessaging: "FirebaseMessaging"
     case .Mantis: "Mantis"
     case .AmplitudeSwift: "AmplitudeSwift"
+    case .SDWebImageSwiftUI: "SDWebImageSwiftUI"
+    case .SDWebImageSVGCoder: "SDWebImageSVGCoder"
     }
   }
 }

@@ -25,10 +25,10 @@ public enum Route: Hashable {
   
   // MARK: - 매칭
   case matchMain
-  case matchProfileBasic
-  case matchValueTalk
-  case matchValuePick
-  case matchResult(nickname: String)
+  case matchProfileBasic(matchId: Int)
+  case matchValueTalk(matchId: Int)
+  case matchValuePick(matchId: Int)
+  case matchResult(matchId: Int)
   
   // MARK: - 프로필
   case profileBasic
@@ -60,6 +60,9 @@ public enum Route: Hashable {
   case notificationList
   
   // MARK: - 기타
-  case reportUser(nickname: String)
-  case blockUser(matchId: Int, nickname: String)
+  case reportUser(info: ReportUserInfo)
+  case blockUser(info: BlockUserInfo)
+
+  // MARK: - 스토어
+  case storeMain
 }

@@ -9,4 +9,5 @@ import Entities
 
 public protocol UserRepositoryInterface {
   func getUserRole() async throws -> UserInfoModel
+  func getPuzzleCount() async throws -> PuzzleCountModel
 }

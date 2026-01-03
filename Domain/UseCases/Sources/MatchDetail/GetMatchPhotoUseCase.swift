@@ -9,7 +9,7 @@ import Entities
 import RepositoryInterfaces
 
 public protocol GetMatchPhotoUseCase {
-  func execute() async throws -> String
+  func execute(matchId: Int) async throws -> String
 }
 
 final class GetMatchPhotoUseCaseImpl: GetMatchPhotoUseCase {
@@ -19,7 +19,7 @@ final class GetMatchPhotoUseCaseImpl: GetMatchPhotoUseCase {
     self.repository = repository
   }
   
-  func execute() async throws -> String {
-    try await repository.getMatchImage().imageUri
+  func execute(matchId: Int) async throws -> String {
+    try await repository.getMatchImage(matchId: matchId).imageUri
   }
 }

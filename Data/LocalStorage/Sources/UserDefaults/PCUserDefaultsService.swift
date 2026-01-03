@@ -63,27 +63,6 @@ public final class PCUserDefaultsService {
     }
   }
   
-  var matchedUserId: Int? {
-    get {
-      PCUserDefaults.objectFor(key: .matchedUserId) as? Int
-    }
-    set {
-      _ = PCUserDefaults.setObjectFor(key: .matchedUserId, object: newValue)
-    }
-  }
-  
-  var matchStatus: MatchStatus? {
-    get {
-      if let value = PCUserDefaults.objectFor(key: .matchStatus) as? String {
-        return MatchStatus(value)
-      }
-      return nil
-    }
-    set {
-      _ = PCUserDefaults.setObjectFor(key: .matchStatus, object: newValue?.rawValue)
-    }
-  }
-  
   var latestSyncDate: Date? {
     get {
       PCUserDefaults.objectFor(key: .latestSyncDate) as? Date
@@ -92,7 +71,16 @@ public final class PCUserDefaultsService {
       _ = PCUserDefaults.setObjectFor(key: .latestSyncDate, object: newValue)
     }
   }
-  
+
+  var lastBasicMatchPoolExhaustedAlertDate: String? {
+    get {
+      PCUserDefaults.objectFor(key: .lastBasicMatchPoolExhaustedAlertDate) as? String
+    }
+    set {
+      _ = PCUserDefaults.setObjectFor(key: .lastBasicMatchPoolExhaustedAlertDate, object: newValue)
+    }
+  }
+
   // MARK: - Amplitude Progress
   var onboardingProgress: Int {
     get {
@@ -171,8 +159,6 @@ public extension PCUserDefaultsService {
   func resetFirstLaunch() {
     isFirstLaunch = true
     didSeeOnboarding = false
-    matchedUserId = nil
-    matchStatus = nil
   }
   
   func getHasRequestedPermissions() -> Bool {
@@ -189,22 +175,6 @@ public extension PCUserDefaultsService {
   
   func setUserRole(_ userRole: UserRole) {
     self.userRole = userRole
-  }
-  
-  func getMatchedUserId() -> Int? {
-    matchedUserId
-  }
-  
-  func setMatchedUserId(_ id: Int) {
-    matchedUserId = id
-  }
-  
-  func getMatchStatus() -> MatchStatus? {
-    matchStatus
-  }
-  
-  func setMatchStatus(_ status: MatchStatus) {
-    matchStatus = status
   }
   
   
@@ -255,5 +225,14 @@ public extension PCUserDefaultsService {
   func resetCreateProfileProgress() {
     createProfileProgress = -1
     NSLog("DEBUG: initialize: \(UserDefaultsKeys.createProfileProgress.rawValue)")
+  }
+
+  // MARK: - BASIC Match Pool Exhausted Alert
+  func getLastBasicMatchPoolExhaustedAlertDate() -> String? {
+    lastBasicMatchPoolExhaustedAlertDate
+  }
+
+  func setLastBasicMatchPoolExhaustedAlertDate(_ dateString: String) {
+    lastBasicMatchPoolExhaustedAlertDate = dateString
   }
 }

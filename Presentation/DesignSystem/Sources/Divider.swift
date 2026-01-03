@@ -21,9 +21,11 @@ public struct Divider: View {
   }
   
   public init(
+    color: Color = .grayscaleLight3,
     weight: Weight,
     isVertical: Bool = false
   ) {
+    self.color = color
     self.weight = weight.value
     self.isVertical = isVertical
   }
@@ -38,18 +40,19 @@ public struct Divider: View {
   
   private var verticalDivider: some View {
     Rectangle()
-      .foregroundStyle(Color.grayscaleLight3)
+      .foregroundStyle(color)
       .frame(width: weight)
   }
   
   private var horizontalDivider: some View {
     Rectangle()
-      .foregroundStyle(Color.grayscaleLight3)
+      .foregroundStyle(color)
       .frame(height: weight)
   }
   
   private let weight: CGFloat
   private let isVertical: Bool
+  private let color: Color
 }
 
 #Preview {

@@ -8,16 +8,15 @@
 import SwiftUI
 import UseCases
 import PCAmplitude
+import Entities
 
 public struct BlockUserViewFactory {
   public static func createBlockUserView(
-    matchId: Int,
-    nickname: String,
+    info: BlockUserInfo,
     blockUserUseCase: BlockUserUseCase
   ) -> some View {
     BlockUserView(
-      matchId: matchId,
-      nickname: nickname,
+      info: info,
       blockUserUseCase: blockUserUseCase
     )
     .trackScreen(trackable: DefaultProgress.blockIntro)
