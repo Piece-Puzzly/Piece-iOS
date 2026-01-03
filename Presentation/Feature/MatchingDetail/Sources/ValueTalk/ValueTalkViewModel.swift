@@ -10,6 +10,7 @@ import Observation
 import UseCases
 import PCAmplitude
 import Entities
+import Router
 
 @MainActor
 @Observable
@@ -20,6 +21,7 @@ final class ValueTalkViewModel {
   }
   
   enum Action {
+    case onAppear
     case contentOffsetDidChange(CGFloat)
     case didTapMoreButton
     case didTapPhotoButton
@@ -93,7 +95,7 @@ final class ValueTalkViewModel {
   private(set) var matchId: Int
   private(set) var puzzleCount: Int = 0
   private(set) var timerManager: MatchingDetailTimerManager?
-  private(set) var shouldNavigateToStore: Bool = false
+  private(set) var destination: Route? = nil
   
   private let getMatchValueTalkUseCase: GetMatchValueTalkUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
@@ -104,6 +106,11 @@ final class ValueTalkViewModel {
   
   func handleAction(_ action: Action) {
     switch action {
+    case .onAppear:
+      destination = nil
+      showToastAction = nil
+      presentedAlert = nil
+
     case let .contentOffsetDidChange(offset):
       contentOffset = offset
       isNameViewVisible = offset > Constant.nameVisibilityOffset
@@ -292,7 +299,7 @@ private extension ValueTalkViewModel {
       showToastAction = .timeExpired
     
     case .insufficientPuzzle:
-      shouldNavigateToStore = true
+      destination = .storeMain
     }
   }
 }

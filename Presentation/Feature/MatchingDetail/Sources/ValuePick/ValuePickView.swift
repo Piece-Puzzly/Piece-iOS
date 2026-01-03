@@ -99,6 +99,9 @@ struct ValuePickView: View {
       buttons
     }
     .toolbar(.hidden)
+    .onAppear {
+      viewModel.handleAction(.onAppear)
+    }
     .overlay {
       if viewModel.isPhotoViewPresented {
         MatchDetailPhotoView(
@@ -138,9 +141,9 @@ struct ValuePickView: View {
       
       viewModel.handleAction(.clearToast)
     }
-    .onChange(of: viewModel.shouldNavigateToStore) { _, shouldNavigate in
-      if shouldNavigate {
-        router.push(to: .storeMain)
+    .onChange(of: viewModel.destination) { _, destination in
+      if let destination {
+        router.push(to: destination)
       }
     }
     .pcAlert(item: $viewModel.presentedAlert) { alertType in

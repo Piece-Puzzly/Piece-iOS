@@ -11,6 +11,7 @@ import LocalStorage
 import Observation
 import UseCases
 import PCAmplitude
+import Router
 
 @MainActor
 @Observable
@@ -21,6 +22,7 @@ final class ValuePickViewModel {
   }
   
   enum Action {
+    case onAppear
     case contentOffsetDidChange(CGFloat)
     case didTapMoreButton
     case didSelectTab(ValuePickTab)
@@ -82,7 +84,7 @@ final class ValuePickViewModel {
   private(set) var matchId: Int
   private(set) var puzzleCount: Int = 0
   private(set) var timerManager: MatchingDetailTimerManager?
-  private(set) var shouldNavigateToStore: Bool = false
+  private(set) var destination: Route? = nil
 
   private var valuePicks: [MatchValuePickItemModel] = []
   private let getMatchValuePickUseCase: GetMatchValuePickUseCase
@@ -93,6 +95,11 @@ final class ValuePickViewModel {
   
   func handleAction(_ action: Action) {
     switch action {
+    case .onAppear:
+      destination = nil
+      showToastAction = nil
+      presentedAlert = nil
+
     case let .contentOffsetDidChange(offset):
       contentOffset = offset
       isNameViewVisible = offset > Constant.nameVisibilityOffset
@@ -270,7 +277,7 @@ extension ValuePickViewModel {
       showToastAction = .timeExpired
 
     case .insufficientPuzzle:
-      shouldNavigateToStore = true
+      destination = .storeMain
       
     default:
       break

@@ -69,6 +69,9 @@ struct ValueTalkView: View {
           bottomSheetContent(model: valueTalkModel)
             .presentationDetents([.height(160)])
         }
+        .onAppear {
+          viewModel.handleAction(.onAppear)
+        }
         .spinning(of: viewModel.showSpinner)
     } else {
       EmptyView()
@@ -189,9 +192,9 @@ struct ValueTalkView: View {
       
       viewModel.handleAction(.clearToast)
     }
-    .onChange(of: viewModel.shouldNavigateToStore) { _, shouldNavigate in
-      if shouldNavigate {
-        router.push(to: .storeMain)
+    .onChange(of: viewModel.destination) { _, destination in
+      if let destination {
+        router.push(to: destination)
       }
     }
   }

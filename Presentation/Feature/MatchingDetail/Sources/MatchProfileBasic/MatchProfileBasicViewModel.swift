@@ -10,11 +10,13 @@ import Observation
 import UseCases
 import PCAmplitude
 import Entities
+import Router
 
 @MainActor
 @Observable
 final class MatchProfileBasicViewModel {
   enum Action {
+    case onAppear
     case didTapMoreButton
     case didTapPhotoButton
     case didTapAcceptButton
@@ -52,7 +54,7 @@ final class MatchProfileBasicViewModel {
   private(set) var matchId: Int
   private(set) var puzzleCount: Int = 0
   private(set) var timerManager: MatchingDetailTimerManager?
-  private(set) var shouldNavigateToStore: Bool = false
+  private(set) var destination: Route? = nil
   
   private let getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
@@ -83,6 +85,11 @@ final class MatchProfileBasicViewModel {
   
   func handleAction(_ action: Action) {
     switch action {
+    case .onAppear:
+      destination = nil
+      showToastAction = nil
+      presentedAlert = nil
+
     case .didTapMoreButton:
       handleDidTapMoreButton()
 
@@ -238,7 +245,7 @@ extension MatchProfileBasicViewModel {
       showToastAction = .timeExpired
       
     case .insufficientPuzzle:
-      shouldNavigateToStore = true
+      destination = .storeMain
       
     default:
       break
