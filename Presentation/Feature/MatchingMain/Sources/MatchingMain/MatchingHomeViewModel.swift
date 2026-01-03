@@ -58,6 +58,12 @@ final class MatchingHomeViewModel {
   private(set) var destination: Route? = nil
   private(set) var showToastAction: ToastAction? = nil
   
+  var createNewMatchScreenName: PCAmplitudeButtonClickScreen {
+    matchingCards.isEmpty
+    ? .matchMainNoMatch
+    : .matchMainHome
+  }
+  
   var presentedAlert: MatchingAlertType? = nil
   
   init(
@@ -151,8 +157,18 @@ private extension MatchingHomeViewModel {
     // TODO: (매칭상세/연락처확인) 분기
     guard let targetIndex = matchingCards.firstIndex(where: { $0.id == matchId }) else { return }
     let targetMatchingCard = matchingCards[targetIndex]
+    let targetMatchingCardStatus = targetMatchingCard.matchStatus
+    let targetMatchingCardType = targetMatchingCard.matchType
     
-    switch targetMatchingCard.matchStatus {
+    let buttonName: PCAmplitudeButtonName = switch targetMatchingCardType {
+    case .AUTO: .matchAuto
+    case .BASIC: .matchBasic
+    case .TRIAL: .matchTrial
+    case .PREMIUM: .matchPremium
+    }
+    PCAmplitude.trackButtonClick(screenName: .matchMainHome, buttonName: buttonName)
+    
+    switch targetMatchingCardStatus {
     case .BEFORE_OPEN:
       withSpinner { [weak self] in
         _ = try? await self?.patchMatchesCheckPieceUseCase.execute(matchId: matchId)
@@ -167,7 +183,9 @@ private extension MatchingHomeViewModel {
       destination = .matchProfileBasic(matchId: matchId)
 
     case .MATCHED:
-      switch targetMatchingCard.matchType {
+      PCAmplitude.trackButtonClick(screenName: .matchMainHome, buttonName: .matchMatched)
+      
+      switch targetMatchingCardType {
       case .BASIC:
         withSpinner { [weak self] in
           await self?.navigateToContact(matchId)
@@ -203,6 +221,8 @@ private extension MatchingHomeViewModel {
       await fetchCanFreeMatch()
 
       if isTrial {
+        PCAmplitude.trackButtonClick(screenName: createNewMatchScreenName, buttonName: .newMatchingFree)
+        
         let result = try await createNewMatchUseCase.execute()
         let matchId = result.matchId
         
@@ -212,6 +232,7 @@ private extension MatchingHomeViewModel {
         selectedMatchId = matchId
         destination = .matchProfileBasic(matchId: matchId)
       } else {
+        PCAmplitude.trackButtonClick(screenName: createNewMatchScreenName, buttonName: .newMatchingPurchase)
         presentedAlert = .createNewMatch // premium이면 "새로운 인연 만나기 알럿"으로 진입
       }
     } catch {
@@ -225,12 +246,15 @@ private extension MatchingHomeViewModel {
     
     switch alertType {
     case .contactConfirm(let matchId):
+      PCAmplitude.trackButtonClick(screenName: .matchAlert, buttonName: .contactMatchingPurchase)
       await handleDidTapContactConfirmAlertConfirm(matchId)
       
     case .insufficientPuzzle:
+      PCAmplitude.trackButtonClick(screenName: .matchAlert, buttonName: .insufficientPuzzlePurchase)
       await handleDidTapInsufficientPuzzleAlertConfirm()
       
     case .createNewMatch:
+      PCAmplitude.trackButtonClick(screenName: .matchAlert, buttonName: .newMatchingPurchase)
       await handleDidTapCreateNewMatchAlertConfirm()
       
     default:

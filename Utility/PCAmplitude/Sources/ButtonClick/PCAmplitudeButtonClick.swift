@@ -16,7 +16,9 @@ public enum PCAmplitudeButtonClickScreen: String {
   case registerProfileComplete = "register_profile_complete"
   
   case matchMainHome = "match_main_home"
+  case matchMainNoMatch = "match_main_no_match"
   
+  case matchDetailBasicProfile = "match_detail_basic_profile" // 이거랑 바로 아래 match_detail_basic_info랑 혼용중임;;
   case matchDetailBasicInfo = "match_detail_basic_info"
   case matchDetailValuePick = "match_detail_value_pick"
   case matchDetailValueTalk = "match_detail_value_talk"
@@ -34,6 +36,7 @@ public enum PCAmplitudeButtonName {
   case profileRegisterNext
   case home
   
+  //
   /// 매칭 메인, 매칭 상세
   case newMatchingFree
   case newMatchingPurchase
@@ -42,6 +45,8 @@ public enum PCAmplitudeButtonName {
   case matchMatched
   case matchAuto
   case matchBasic
+  case matchTrial
+  case matchPremium
 
   case checkPictureMatchingPurchase
   case acceptMatching
@@ -69,6 +74,8 @@ public enum PCAmplitudeButtonName {
     case .matchMatched: return "match_matched"
     case .matchAuto: return "match_auto"
     case .matchBasic: return "match_basic"
+    case .matchTrial: return "match_trial"
+    case .matchPremium: return "match_premium"
     case .checkPictureMatchingPurchase: return "check_picture_matching_purchase"
     case .acceptMatching: return "accept_matching"
     case .acceptMatchingPurchase: return "accept_matching_purchase"

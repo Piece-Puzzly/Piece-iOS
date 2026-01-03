@@ -240,14 +240,16 @@ extension ValuePickViewModel {
     switch alertType {
     case .freeAccept:
       Task {
-        showToastAction = nil
+        PCAmplitude.trackButtonClick(screenName: .matchAlert, buttonName: .acceptMatching)
+        
         await acceptMatch()
         showToastAction = .accept
       }
 
     case .paidAccept:
       Task {
-        showToastAction = nil
+        PCAmplitude.trackButtonClick(screenName: .matchAlert, buttonName: .acceptMatchingPurchase)
+        
         await loadPuzzleCount()
         if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
           await acceptMatch()
@@ -259,7 +261,8 @@ extension ValuePickViewModel {
       
     case .paidPhoto:
       Task {
-        showToastAction = nil
+        PCAmplitude.trackButtonClick(screenName: .matchAlert, buttonName: .checkPictureMatchingPurchase)
+        
         await loadPuzzleCount()
         if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
           await buyMatchPhoto()
@@ -273,10 +276,10 @@ extension ValuePickViewModel {
       }
 
     case .timeExpired:
-      showToastAction = nil
       showToastAction = .timeExpired
 
     case .insufficientPuzzle:
+      PCAmplitude.trackButtonClick(screenName: .matchDetailBasicProfile, buttonName: .acceptMatchingPurchase)
       destination = .storeMain
       
     default:

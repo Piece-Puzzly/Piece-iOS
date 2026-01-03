@@ -202,6 +202,8 @@ extension MatchProfileBasicViewModel {
       }
     }
     
+    PCAmplitude.trackButtonClick(screenName: .matchAlert, buttonName: .profileImage) 
+    
     PCAmplitude.trackButtonClick(
       screenName: .matchDetailBasicInfo,
       buttonName: .photoView
@@ -212,12 +214,16 @@ extension MatchProfileBasicViewModel {
     switch alertType {
     case .freeAccept:
       Task {
+        PCAmplitude.trackButtonClick(screenName: .matchAlert, buttonName: .acceptMatching)
+        
         await acceptMatch()
         showToastAction = .accept
       }
 
     case .paidAccept:
       Task {
+        PCAmplitude.trackButtonClick(screenName: .matchAlert, buttonName: .acceptMatchingPurchase)
+        
         await loadPuzzleCount()
         if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
           await acceptMatch()
@@ -229,6 +235,8 @@ extension MatchProfileBasicViewModel {
 
     case .paidPhoto:
       Task {
+        PCAmplitude.trackButtonClick(screenName: .matchAlert, buttonName: .checkPictureMatchingPurchase)
+        
         await loadPuzzleCount()
         if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
           await buyMatchPhoto()
@@ -245,6 +253,7 @@ extension MatchProfileBasicViewModel {
       showToastAction = .timeExpired
       
     case .insufficientPuzzle:
+      PCAmplitude.trackButtonClick(screenName: .matchDetailBasicProfile, buttonName: .acceptMatchingPurchase)
       destination = .storeMain
       
     default:

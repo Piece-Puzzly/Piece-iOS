@@ -8,6 +8,7 @@
 import Observation
 import UseCases
 import Entities
+import PCAmplitude
 
 @Observable
 final class StoreMainViewModel {
@@ -60,9 +61,11 @@ final class StoreMainViewModel {
       loadProducts()
 
     case .didTapNormalProduct(let product):
+      PCAmplitude.trackButtonClick(screenName: .storeMain, buttonName: .normalProduct(name: product.name, price: String(product.backendProduct.discountedAmount)))
       purchaseNormalProduct(product)
 
     case .didTapPromotionProduct(let product):
+      PCAmplitude.trackButtonClick(screenName: .storeMain, buttonName: .promotionProduct)
       purchasePromotionProduct(product)
 
     case .didCompletePurchase:
