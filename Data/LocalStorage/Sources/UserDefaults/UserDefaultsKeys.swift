@@ -15,4 +15,5 @@ public enum UserDefaultsKeys: String {
   case onboardingProgress
   case signUpProgress
   case createProfileProgress
+  case lastBasicMatchPoolExhaustedAlertDate
 }

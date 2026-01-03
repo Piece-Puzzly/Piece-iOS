@@ -11,6 +11,7 @@ import LocalStorage
 import Observation
 import UseCases
 import PCAmplitude
+import Router
 
 @MainActor
 @Observable
@@ -21,6 +22,7 @@ final class ValuePickViewModel {
   }
   
   enum Action {
+    case onAppear
     case contentOffsetDidChange(CGFloat)
     case didTapMoreButton
     case didSelectTab(ValuePickTab)
@@ -82,7 +84,7 @@ final class ValuePickViewModel {
   private(set) var matchId: Int
   private(set) var puzzleCount: Int = 0
   private(set) var timerManager: MatchingDetailTimerManager?
-  private(set) var shouldNavigateToStore: Bool = false
+  private(set) var destination: Route? = nil
 
   private var valuePicks: [MatchValuePickItemModel] = []
   private let getMatchValuePickUseCase: GetMatchValuePickUseCase
@@ -93,6 +95,11 @@ final class ValuePickViewModel {
   
   func handleAction(_ action: Action) {
     switch action {
+    case .onAppear:
+      destination = nil
+      showToastAction = nil
+      presentedAlert = nil
+
     case let .contentOffsetDidChange(offset):
       contentOffset = offset
       isNameViewVisible = offset > Constant.nameVisibilityOffset
@@ -195,11 +202,7 @@ extension ValuePickViewModel {
       presentedAlert = .freeAccept(matchId: matchId)
       
     case .TRIAL, .PREMIUM, .AUTO:
-      if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
-        presentedAlert = .paidAccept(matchId: matchId)
-      } else {
-        presentedAlert = .insufficientPuzzle
-      }
+      presentedAlert = .paidAccept(matchId: matchId)
     }
     
     PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
@@ -223,11 +226,7 @@ extension ValuePickViewModel {
           isPhotoViewPresented = true
         }
       } else {
-        if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
-          presentedAlert = .paidPhoto(matchId: matchId)
-        } else {
-          presentedAlert = .insufficientPuzzle
-        }
+        presentedAlert = .paidPhoto(matchId: matchId)
       }
     }
     
@@ -239,21 +238,38 @@ extension ValuePickViewModel {
   
   private func handleAlertConfirm(_ alertType: MatchingDetailAlertType) {
     switch alertType {
-    case .freeAccept, .paidAccept:
+    case .freeAccept:
       Task {
         showToastAction = nil
         await acceptMatch()
         showToastAction = .accept
       }
 
+    case .paidAccept:
+      Task {
+        showToastAction = nil
+        await loadPuzzleCount()
+        if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
+          await acceptMatch()
+          showToastAction = .accept
+        } else {
+          presentedAlert = .insufficientPuzzle
+        }
+      }
+      
     case .paidPhoto:
       Task {
         showToastAction = nil
-        await buyMatchPhoto()
-        await fetchMatchPhoto()
-        await fetchMatchValuePick()
-        isPhotoViewPresented = true
-        showToastAction = .viewPhoto
+        await loadPuzzleCount()
+        if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
+          await buyMatchPhoto()
+          await fetchMatchPhoto()
+          await fetchMatchValuePick()
+          isPhotoViewPresented = true
+          showToastAction = .viewPhoto
+        } else {
+          presentedAlert = .insufficientPuzzle
+        }
       }
 
     case .timeExpired:
@@ -261,7 +277,7 @@ extension ValuePickViewModel {
       showToastAction = .timeExpired
 
     case .insufficientPuzzle:
-      shouldNavigateToStore = true
+      destination = .storeMain
       
     default:
       break

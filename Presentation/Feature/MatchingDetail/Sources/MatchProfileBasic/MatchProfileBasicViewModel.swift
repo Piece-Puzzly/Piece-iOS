@@ -10,11 +10,13 @@ import Observation
 import UseCases
 import PCAmplitude
 import Entities
+import Router
 
 @MainActor
 @Observable
 final class MatchProfileBasicViewModel {
   enum Action {
+    case onAppear
     case didTapMoreButton
     case didTapPhotoButton
     case didTapAcceptButton
@@ -52,7 +54,7 @@ final class MatchProfileBasicViewModel {
   private(set) var matchId: Int
   private(set) var puzzleCount: Int = 0
   private(set) var timerManager: MatchingDetailTimerManager?
-  private(set) var shouldNavigateToStore: Bool = false
+  private(set) var destination: Route? = nil
   
   private let getMatchProfileBasicUseCase: GetMatchProfileBasicUseCase
   private let getMatchPhotoUseCase: GetMatchPhotoUseCase
@@ -83,6 +85,11 @@ final class MatchProfileBasicViewModel {
   
   func handleAction(_ action: Action) {
     switch action {
+    case .onAppear:
+      destination = nil
+      showToastAction = nil
+      presentedAlert = nil
+
     case .didTapMoreButton:
       handleDidTapMoreButton()
 
@@ -167,11 +174,7 @@ extension MatchProfileBasicViewModel {
       presentedAlert = .freeAccept(matchId: matchId)
       
     case .TRIAL, .PREMIUM, .AUTO:
-      if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
-        presentedAlert = .paidAccept(matchId: matchId)
-      } else {
-        presentedAlert = .insufficientPuzzle
-      }
+      presentedAlert = .paidAccept(matchId: matchId)
     }
     
     PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
@@ -195,11 +198,7 @@ extension MatchProfileBasicViewModel {
           isPhotoViewPresented = true
         }
       } else {
-        if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
-          presentedAlert = .paidPhoto(matchId: matchId)
-        } else {
-          presentedAlert = .insufficientPuzzle
-        }
+        presentedAlert = .paidPhoto(matchId: matchId)
       }
     }
     
@@ -211,26 +210,42 @@ extension MatchProfileBasicViewModel {
   
   private func handleAlertConfirm(_ alertType: MatchingDetailAlertType) {
     switch alertType {
-    case .freeAccept, .paidAccept:
+    case .freeAccept:
       Task {
         await acceptMatch()
         showToastAction = .accept
       }
 
+    case .paidAccept:
+      Task {
+        await loadPuzzleCount()
+        if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
+          await acceptMatch()
+          showToastAction = .accept
+        } else {
+          presentedAlert = .insufficientPuzzle
+        }
+      }
+
     case .paidPhoto:
       Task {
-        await buyMatchPhoto()
-        await fetchMatchPhoto()
-        await fetchMatchingBasicInfo()
-        isPhotoViewPresented = true
-        showToastAction = .viewPhoto
+        await loadPuzzleCount()
+        if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
+          await buyMatchPhoto()
+          await fetchMatchPhoto()
+          await fetchMatchingBasicInfo()
+          isPhotoViewPresented = true
+          showToastAction = .viewPhoto
+        } else {
+          presentedAlert = .insufficientPuzzle
+        }
       }
 
     case .timeExpired:
       showToastAction = .timeExpired
       
     case .insufficientPuzzle:
-      shouldNavigateToStore = true
+      destination = .storeMain
       
     default:
       break

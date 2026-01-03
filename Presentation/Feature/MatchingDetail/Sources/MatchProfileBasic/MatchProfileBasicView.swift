@@ -48,6 +48,9 @@ struct MatchProfileBasicView: View {
           bottomSheetContent(model: basicInfoModel)
             .presentationDetents([.height(160)])
         }
+        .onAppear {
+          viewModel.handleAction(.onAppear)
+        }
         .onDisappear {
           toastManager.hideToast(for: .matchProfileBasic)
         }
@@ -160,9 +163,9 @@ struct MatchProfileBasicView: View {
       
       viewModel.handleAction(.clearToast)
     }
-    .onChange(of: viewModel.shouldNavigateToStore) { _, shouldNavigate in
-      if shouldNavigate {
-        router.push(to: .storeMain)
+    .onChange(of: viewModel.destination) { _, destination in
+      if let destination {
+        router.push(to: destination)
       }
     }
   }
