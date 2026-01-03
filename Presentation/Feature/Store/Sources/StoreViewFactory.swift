@@ -25,5 +25,6 @@ public struct StoreViewFactory {
       completeIAPUseCase: completeIAPUseCase,
       getPuzzleCountUseCase: getPuzzleCountUseCase,
     )
+    .trackScreen(trackable: DefaultProgress.storeMain)
   }
 }
