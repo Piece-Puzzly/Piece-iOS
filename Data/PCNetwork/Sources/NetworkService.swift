@@ -166,16 +166,35 @@ public class NetworkService {
       let container = try decoder.singleValueContainer()
       let dateString = try container.decode(String.self)
 
-      // 1. 마이크로초 포함 형식 시도 (신규 API: yyyy-MM-dd'T'HH:mm:ss.SSSSSS)
-      let microsecondsFormatter = DateFormatter()
-      microsecondsFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
-      microsecondsFormatter.locale = Locale(identifier: "en_US_POSIX")
-      microsecondsFormatter.timeZone = TimeZone(identifier: "Asia/Seoul")  // KST (UTC+9)
-      if let date = microsecondsFormatter.date(from: dateString) {
+      // 1. 마이크로초 + 타임존 (예: 2026-01-02T08:40:25.000000Z)
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX")
+        .date(from: dateString) {
         return date
       }
 
-      // 2. 기존 형식 시도 (하위 호환성 유지)
+      // 2. 마이크로초 (타임존 없을 경우, 로컬/서버 기본값으로 파싱)
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
+        .date(from: dateString) {
+        return date
+      }
+
+      // 3. 초단위 + 타임존
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ssXXXXX")
+        .date(from: dateString) {
+        return date
+      }
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ssX")
+        .date(from: dateString) {
+        return date
+      }
+
+      // 4. 초단위 (타임존 없음)
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss")
+        .date(from: dateString) {
+        return date
+      }
+
+      // 5. 기존 형식 시도 (하위 호환성 유지)
       if let self = self,
          let date = self.dateFormatter.date(from: dateString) { // "yyyy-MM-dd'T'HH:mm:ssX"
         return date
@@ -188,3 +207,19 @@ public class NetworkService {
     }
   }
 }
+
+private extension DateFormatter {
+  /// 포맷별 캐시 DateFormatter
+  static func cached(_ format: String) -> DateFormatter {
+    struct Cache {
+      static var map: [String: DateFormatter] = [:]
+    }
+    if let cached = Cache.map[format] { return cached }
+    let formatter = DateFormatter()
+    formatter.dateFormat = format
+    formatter.locale = Locale(identifier: "en_US_POSIX")
+    Cache.map[format] = formatter
+    return formatter
+  }
+}
+
