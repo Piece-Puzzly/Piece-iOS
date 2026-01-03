@@ -254,22 +254,25 @@ private extension ValueTalkViewModel {
   func handleAlertConfirm(_ alertType: MatchingDetailAlertType) {
     switch alertType {
     case .refuse:
-      showToastAction = nil
       Task {
+        PCAmplitude.trackButtonClick(screenName: .matchAlert, buttonName: .refuseMatching)
+        
         await refuseMatch()
         showToastAction = .refuse
       }
 
     case .freeAccept:
       Task {
-        showToastAction = nil
+        PCAmplitude.trackButtonClick(screenName: .matchAlert, buttonName: .acceptMatching)
+        
         await acceptMatch()
         showToastAction = .accept
       }
 
     case .paidAccept:
       Task {
-        showToastAction = nil
+        PCAmplitude.trackButtonClick(screenName: .matchAlert, buttonName: .acceptMatchingPurchase)
+        
         await loadPuzzleCount()
         if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
           await acceptMatch()
@@ -281,7 +284,8 @@ private extension ValueTalkViewModel {
 
     case .paidPhoto:
       Task {
-        showToastAction = nil
+        PCAmplitude.trackButtonClick(screenName: .matchAlert, buttonName: .checkPictureMatchingPurchase)
+        
         await loadPuzzleCount()
         if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
           await buyMatchPhoto()
@@ -295,10 +299,10 @@ private extension ValueTalkViewModel {
       }
 
     case .timeExpired:
-      showToastAction = nil
       showToastAction = .timeExpired
     
     case .insufficientPuzzle:
+      PCAmplitude.trackButtonClick(screenName: .matchDetailBasicProfile, buttonName: .acceptMatchingPurchase)
       destination = .storeMain
     }
   }

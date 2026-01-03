@@ -10,6 +10,7 @@ import Entities
 import DesignSystem
 import Router
 import UseCases
+import PCAmplitude
 
 struct MatchResultView: View {
   @State var viewModel: MatchResultViewModel
@@ -141,6 +142,9 @@ struct MatchResultView: View {
       .clipShape(RoundedRectangle(cornerRadius: 8))
       .opacity(viewModel.photoOpacity)
       .animation(.easeIn(duration: 0.3), value: viewModel.photoOpacity)
+      .onTapGesture {
+        PCAmplitude.trackButtonClick(screenName: .matchContact, buttonName: .image)
+      }
       
       PCLottieView(
         .matching_motion,

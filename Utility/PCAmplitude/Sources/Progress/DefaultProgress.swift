@@ -74,4 +74,7 @@ public enum DefaultProgress: String, ProgressTrackable {
   case withdrawalReason = "withdrawal_reason"
   case withdrawalConfirm = "withdrawal_confirm"
   case withdrawalFoundPartnerBottomsheet = "withdrawal_found_partner_bottomsheet"
+  
+  /// 스토어
+  case storeMain = "store_main"
 }

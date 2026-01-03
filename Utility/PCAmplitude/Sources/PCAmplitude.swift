@@ -54,7 +54,7 @@ public enum PCAmplitude {
   ) {
     var properties: [AmplitudeParameterKey: Any] = [
       .screenName : screenName.rawValue,
-      .buttonName : buttonName.rawValue
+      .buttonName : buttonName.buttonName
     ]
     
     if let additionalProperties {

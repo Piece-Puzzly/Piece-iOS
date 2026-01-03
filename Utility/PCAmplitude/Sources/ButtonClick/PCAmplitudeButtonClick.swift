@@ -16,17 +16,75 @@ public enum PCAmplitudeButtonClickScreen: String {
   case registerProfileComplete = "register_profile_complete"
   
   case matchMainHome = "match_main_home"
+  case matchMainNoMatch = "match_main_no_match"
   
+  case matchDetailBasicProfile = "match_detail_basic_profile" // 이거랑 바로 아래 match_detail_basic_info랑 혼용중임;;
   case matchDetailBasicInfo = "match_detail_basic_info"
   case matchDetailValuePick = "match_detail_value_pick"
   case matchDetailValueTalk = "match_detail_value_talk"
+  
+  case matchAlert = "match_dialog" // 로그는 안드로이드 네이밍 기준으로 "{$}_dialog"
+  case matchContact = "match_contact"
+  case storeMain = "store_main"
 }
 
-public enum PCAmplitudeButtonName: String {
-  case avoidanceAllow = "avoidance_allow"
-  case photoView = "photo_view"
-  case userDescription = "userDescription"
-  case checkRelationShip = "checkRelationShip"
-  case profileRegisterNext = "profile_register_next"
-  case home = "home"
+public enum PCAmplitudeButtonName {
+  case avoidanceAllow
+  case photoView
+  case userDescription
+  case checkRelationShip
+  case profileRegisterNext
+  case home
+  
+  //
+  /// 매칭 메인, 매칭 상세
+  case newMatchingFree
+  case newMatchingPurchase
+  case insufficientPuzzlePurchase
+  
+  case matchMatched
+  case matchAuto
+  case matchBasic
+  case matchTrial
+  case matchPremium
+
+  case checkPictureMatchingPurchase
+  case acceptMatching
+  case acceptMatchingPurchase
+  
+  case refuseMatching
+  case profileImage
+  
+  case contactMatchingPurchase
+  case image
+  case promotionProduct
+  case normalProduct(name: String, price: String)
+  
+  var buttonName: String {
+    switch self {
+    case .avoidanceAllow: return "avoidance_allow"
+    case .photoView: return "photo_view"
+    case .userDescription: return "userDescription"
+    case .checkRelationShip: return "checkRelationShip"
+    case .profileRegisterNext: return "profile_register_next"
+    case .home: return "home"
+    case .newMatchingFree: return "new_matching_free"
+    case .newMatchingPurchase: return "new_matching_purchase"
+    case .insufficientPuzzlePurchase: return "insufficient_puzzle_purchase"
+    case .matchMatched: return "match_matched"
+    case .matchAuto: return "match_auto"
+    case .matchBasic: return "match_basic"
+    case .matchTrial: return "match_trial"
+    case .matchPremium: return "match_premium"
+    case .checkPictureMatchingPurchase: return "check_picture_matching_purchase"
+    case .acceptMatching: return "accept_matching"
+    case .acceptMatchingPurchase: return "accept_matching_purchase"
+    case .refuseMatching: return "refuse_matching"
+    case .profileImage: return "profile_image"
+    case .contactMatchingPurchase: return "contact_matching_purchase"
+    case .image: return "image"
+    case .promotionProduct: return "store_main_banner"
+    case .normalProduct(let name, let price): return "store_main_banner_\(name)_\(price)"
+    }
+  }
 }
