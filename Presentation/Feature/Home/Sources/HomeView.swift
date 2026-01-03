@@ -107,7 +107,8 @@ struct HomeView: View {
     switch viewModel.selectedTab {
     case .profile:
       ProfileViewFactory.createProfileView(
-        getProfileUseCase: viewModel.getProfileUseCase
+        getProfileUseCase: viewModel.getProfileUseCase,
+        getNotificationsUseCase: viewModel.getNotificationsUseCase
       )
     case .home:
       MatchMainViewFactory.createMatchMainView(

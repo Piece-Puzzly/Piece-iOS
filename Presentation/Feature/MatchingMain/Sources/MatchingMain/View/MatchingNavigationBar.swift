@@ -46,11 +46,20 @@ struct MatchingNavigationBar: View {
         leftButtonTap: {
           router.push(to: .storeMain)
         },
-        rightIcon: DesignSystemAsset.Icons.alarm32.swiftUIImage,
+        rightIcon: notificationIcon,
         rightIconTap: {
           router.push(to: .notificationList)
         }
       )
+    }
+  }
+
+  private var notificationIcon: Image {
+    if viewModel.hasUnreadNotifications {
+      DesignSystemAsset.Icons.alarmWhiteUnread32.swiftUIImage
+    }
+    else {
+      DesignSystemAsset.Icons.alarmWhite32.swiftUIImage
     }
   }
 }

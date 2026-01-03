@@ -12,9 +12,13 @@ import PCAmplitude
 public struct ProfileViewFactory {
   @ViewBuilder
   public static func createProfileView(
-    getProfileUseCase: GetProfileBasicUseCase
+    getProfileUseCase: GetProfileBasicUseCase,
+    getNotificationsUseCase: GetNotificationsUseCase
   ) -> some View {
-    ProfileView(getProfileUseCase: getProfileUseCase)
+    ProfileView(
+      getProfileUseCase: getProfileUseCase,
+      getNotificationsUseCase: getNotificationsUseCase
+    )
       .trackScreen(trackable: DefaultProgress.profileBasic)
   }
 }

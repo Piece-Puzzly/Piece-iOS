@@ -16,20 +16,31 @@ final class ProfileViewModel {
     case onAppear
   }
   
-  init(getProfileUseCase: GetProfileBasicUseCase) {
+  init(
+    getProfileUseCase: GetProfileBasicUseCase,
+    getNotificationsUseCase: GetNotificationsUseCase
+  ) {
     self.getProfileUseCase = getProfileUseCase
+    self.getNotificationsUseCase = getNotificationsUseCase
   }
   
   private let getProfileUseCase: GetProfileBasicUseCase
+  private let getNotificationsUseCase: GetNotificationsUseCase
   private(set) var isLoading = true
   private(set) var error: Error?
   private(set) var userProfile: UserProfile?
+  private(set) var hasUnreadNotifications: Bool = false
   
   func handleAction(_ action: Action) {
     switch action {
     case .onAppear:
       isLoading = true
-      Task { await fetchUserProfile() }
+      Task {
+        await withTaskGroup(of: Void.self) { group in
+          group.addTask { await self.fetchUserProfile() }
+          group.addTask { await self.checkUnreadNotifications() }
+        }
+      }
     }
   }
   
@@ -58,5 +69,22 @@ final class ProfileViewModel {
   
   private func updateUserProfile(_ profile: UserProfile) {
     userProfile = profile
+  }
+
+  private func checkUnreadNotifications() async {
+    do {
+      var hasUnread = hasUnreadNotifications
+      var isEnd = false
+
+      while !hasUnread && !isEnd {
+        let result = try await getNotificationsUseCase.execute()
+        hasUnread = hasUnread || result.notifications.contains { !$0.isRead }
+        isEnd = result.isEnd
+      }
+
+      hasUnreadNotifications = hasUnread
+    } catch {
+      print("Get Notifications: \(error.localizedDescription)")
+    }
   }
 }
