@@ -31,6 +31,7 @@ final class HomeViewModel {
     createNewMatchUseCase: CreateNewMatchUseCase,
     checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
     postMatchContactsUseCase: PostMatchContactsUseCase,
+    getNotificationsUseCase: GetNotificationsUseCase,
     // settings
     getSettingsInfoUseCase: GetSettingsInfoUseCase,
     fetchTermsUseCase: FetchTermsUseCase,
@@ -60,6 +61,7 @@ final class HomeViewModel {
     self.createNewMatchUseCase = createNewMatchUseCase
     self.checkCanFreeMatchUseCase = checkCanFreeMatchUseCase
     self.postMatchContactsUseCase = postMatchContactsUseCase
+    self.getNotificationsUseCase = getNotificationsUseCase
     // settings
     self.getSettingsInfoUseCase = getSettingsInfoUseCase
     self.fetchTermsUseCase = fetchTermsUseCase
@@ -88,6 +90,7 @@ final class HomeViewModel {
   let createNewMatchUseCase: CreateNewMatchUseCase
   let checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase
   let postMatchContactsUseCase: PostMatchContactsUseCase
+  let getNotificationsUseCase: GetNotificationsUseCase
   // settings
   let getSettingsInfoUseCase: GetSettingsInfoUseCase
   let fetchTermsUseCase: FetchTermsUseCase

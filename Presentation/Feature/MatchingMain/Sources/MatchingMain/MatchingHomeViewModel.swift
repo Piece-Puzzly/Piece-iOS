@@ -45,6 +45,7 @@ final class MatchingHomeViewModel {
   private let createNewMatchUseCase: CreateNewMatchUseCase
   private let checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase
   private let postMatchContactsUseCase: PostMatchContactsUseCase
+  private let getNotificationsUseCase: GetNotificationsUseCase
 
   private var matchInfosList: [MatchInfosModel] = []                  // Card의 Entity 원본
   private var timerManagers: [Int: MatchingTimerManager] = [:]
@@ -68,6 +69,7 @@ final class MatchingHomeViewModel {
     createNewMatchUseCase: CreateNewMatchUseCase,
     checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
     postMatchContactsUseCase: PostMatchContactsUseCase,
+    getNotificationsUseCase: GetNotificationsUseCase
   ) {
     self.getUserInfoUseCase = getUserInfoUseCase
     self.getMatchesInfoUseCase = getMatchesInfoUseCase
@@ -76,6 +78,7 @@ final class MatchingHomeViewModel {
     self.createNewMatchUseCase = createNewMatchUseCase
     self.checkCanFreeMatchUseCase = checkCanFreeMatchUseCase
     self.postMatchContactsUseCase = postMatchContactsUseCase
+    self.getNotificationsUseCase = getNotificationsUseCase
   }
   
   func handleAction(_ action: Action) {

@@ -30,6 +30,7 @@ struct HomeView: View {
     createNewMatchUseCase: CreateNewMatchUseCase,
     checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
     postMatchContactsUseCase: PostMatchContactsUseCase,
+    getNotificationsUseCase: GetNotificationsUseCase,
     getSettingsInfoUseCase: GetSettingsInfoUseCase,
     fetchTermsUseCase: FetchTermsUseCase,
     checkNotificationPermissionUseCase: CheckNotificationPermissionUseCase,
@@ -57,6 +58,7 @@ struct HomeView: View {
         createNewMatchUseCase: createNewMatchUseCase,
         checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
         postMatchContactsUseCase: postMatchContactsUseCase,
+        getNotificationsUseCase: getNotificationsUseCase,
         getSettingsInfoUseCase: getSettingsInfoUseCase,
         fetchTermsUseCase: fetchTermsUseCase,
         checkNotificationPermissionUseCase: checkNotificationPermissionUseCase,
@@ -117,6 +119,7 @@ struct HomeView: View {
         createNewMatchUseCase: viewModel.createNewMatchUseCase,
         checkCanFreeMatchUseCase: viewModel.checkCanFreeMatchUseCase,
         postMatchContactsUseCase: viewModel.postMatchContactsUseCase,
+        getNotificationsUseCase: viewModel.getNotificationsUseCase
       )
     case .settings:
       SettingsViewFactory.createSettingsView(
