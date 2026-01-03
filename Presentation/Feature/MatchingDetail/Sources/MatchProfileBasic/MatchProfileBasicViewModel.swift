@@ -203,7 +203,7 @@ extension MatchProfileBasicViewModel {
     }
     
     PCAmplitude.trackButtonClick(
-      screenName: .matchDetailValueTalk,
+      screenName: .matchDetailBasicInfo,
       buttonName: .photoView
     )
   }

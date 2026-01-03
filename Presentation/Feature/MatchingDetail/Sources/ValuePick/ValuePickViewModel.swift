@@ -231,7 +231,7 @@ extension ValuePickViewModel {
     }
     
     PCAmplitude.trackButtonClick(
-      screenName: .matchDetailValueTalk,
+      screenName: .matchDetailValuePick,
       buttonName: .photoView
     )
   }
