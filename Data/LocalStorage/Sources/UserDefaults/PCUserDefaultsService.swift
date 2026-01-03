@@ -71,7 +71,16 @@ public final class PCUserDefaultsService {
       _ = PCUserDefaults.setObjectFor(key: .latestSyncDate, object: newValue)
     }
   }
-  
+
+  var lastBasicMatchPoolExhaustedAlertDate: String? {
+    get {
+      PCUserDefaults.objectFor(key: .lastBasicMatchPoolExhaustedAlertDate) as? String
+    }
+    set {
+      _ = PCUserDefaults.setObjectFor(key: .lastBasicMatchPoolExhaustedAlertDate, object: newValue)
+    }
+  }
+
   // MARK: - Amplitude Progress
   var onboardingProgress: Int {
     get {
@@ -216,5 +225,14 @@ public extension PCUserDefaultsService {
   func resetCreateProfileProgress() {
     createProfileProgress = -1
     NSLog("DEBUG: initialize: \(UserDefaultsKeys.createProfileProgress.rawValue)")
+  }
+
+  // MARK: - BASIC Match Pool Exhausted Alert
+  func getLastBasicMatchPoolExhaustedAlertDate() -> String? {
+    lastBasicMatchPoolExhaustedAlertDate
+  }
+
+  func setLastBasicMatchPoolExhaustedAlertDate(_ dateString: String) {
+    lastBasicMatchPoolExhaustedAlertDate = dateString
   }
 }

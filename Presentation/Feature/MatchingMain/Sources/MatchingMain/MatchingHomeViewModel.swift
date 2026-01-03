@@ -198,8 +198,8 @@ private extension MatchingHomeViewModel {
         presentedAlert = .createNewMatch // premium이면 "새로운 인연 만나기 알럿"으로 진입
       }
     } catch {
-      print("Check Can Free Match Error: \(error.localizedDescription)")
-      presentedAlert = .matchPoolExhausted
+      print("Check Can TRIAL Match Error: \(error.localizedDescription)")
+      presentedAlert = .trialMatchPoolExhausted
     }
   }
   
@@ -251,7 +251,9 @@ private extension MatchingHomeViewModel {
           group.addTask { await self.loadPuzzleCount() }
           group.addTask { await self.fetchCanFreeMatch() }
         }
-        
+
+        checkBasicMatchPoolExhausted() // BASIC 매치 풀 부족 체크
+
         viewState = .userRoleUser
         
       default:
@@ -276,9 +278,6 @@ private extension MatchingHomeViewModel {
   // TODO: - 새로운 인연 버튼 UI 까지 구현하고 이번 1312는 마무리하자 ✅
   // TODO: - 그리고 이제 타이머 구현해야해. ✅
   func loadMatches() async {
-    // TODO: 향후 GetMatchesListUseCase로 대체 (3가지 매칭정보 병렬 콜)
-//    matchInfosList = MatchInfosModel.dummy
-    
     if let matchInfos = try? await getMatchesInfoUseCase.execute() {
       matchInfosList = matchInfos
     } else {
@@ -420,6 +419,48 @@ private extension MatchingHomeViewModel {
     } else {
       presentedAlert = .insufficientPuzzle // 퍼즐 부족 알럿 표시
     }
+  }
+
+  // MARK: - BASIC Match Pool Exhausted Check
+  /// 오후 10시 기준 논리적 날짜 계산 (yyyy-MM-dd)
+  func getLogicalDate(for date: Date = Date()) -> String {
+    let calendar = Calendar.current
+    let hour = calendar.component(.hour, from: date)
+
+    var targetDate = date
+    // 오전 0시 ~ 오후 10시 이전이면 전날로 간주
+    if hour < 22 {
+      targetDate = calendar.date(byAdding: .day, value: -1, to: date) ?? date
+    }
+
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd"
+    formatter.timeZone = TimeZone.current
+    return formatter.string(from: targetDate)
+  }
+
+  /// matchInfosList에 BASIC 타입 매치가 존재하는지 확인
+  func hasBasicMatch() -> Bool {
+    return matchInfosList.contains { $0.matchType == .BASIC }
+  }
+
+  /// 오늘(오후 10시 기준) 이미 알럿을 띄웠는지 확인
+  func hasShownBasicPoolExhaustedAlertToday() -> Bool {
+    guard let lastAlertDate = PCUserDefaultsService.shared.getLastBasicMatchPoolExhaustedAlertDate() else {
+      return false
+    }
+
+    let currentLogicalDate = getLogicalDate()
+    return lastAlertDate == currentLogicalDate
+  }
+
+  /// BASIC 매치 풀 부족 체크 및 알럿 표시
+  func checkBasicMatchPoolExhausted() {
+    guard !hasBasicMatch() else { return }
+    guard !hasShownBasicPoolExhaustedAlertToday() else { return }
+
+    presentedAlert = .basicMatchPoolExhausted
+    PCUserDefaultsService.shared.setLastBasicMatchPoolExhaustedAlertDate(getLogicalDate())
   }
 }
 
