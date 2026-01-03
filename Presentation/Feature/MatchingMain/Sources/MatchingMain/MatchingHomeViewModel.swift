@@ -45,6 +45,7 @@ final class MatchingHomeViewModel {
   private let createNewMatchUseCase: CreateNewMatchUseCase
   private let checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase
   private let postMatchContactsUseCase: PostMatchContactsUseCase
+  private let getNotificationsUseCase: GetNotificationsUseCase
 
   private var matchInfosList: [MatchInfosModel] = []                  // Card의 Entity 원본
   private var timerManagers: [Int: MatchingTimerManager] = [:]
@@ -57,6 +58,7 @@ final class MatchingHomeViewModel {
   private(set) var isTrial: Bool = false
   private(set) var destination: Route? = nil
   private(set) var showToastAction: ToastAction? = nil
+  private(set) var hasUnreadNotifications: Bool = false
   
   var presentedAlert: MatchingAlertType? = nil
   
@@ -68,6 +70,7 @@ final class MatchingHomeViewModel {
     createNewMatchUseCase: CreateNewMatchUseCase,
     checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
     postMatchContactsUseCase: PostMatchContactsUseCase,
+    getNotificationsUseCase: GetNotificationsUseCase
   ) {
     self.getUserInfoUseCase = getUserInfoUseCase
     self.getMatchesInfoUseCase = getMatchesInfoUseCase
@@ -76,6 +79,7 @@ final class MatchingHomeViewModel {
     self.createNewMatchUseCase = createNewMatchUseCase
     self.checkCanFreeMatchUseCase = checkCanFreeMatchUseCase
     self.postMatchContactsUseCase = postMatchContactsUseCase
+    self.getNotificationsUseCase = getNotificationsUseCase
   }
   
   func handleAction(_ action: Action) {
@@ -118,6 +122,7 @@ final class MatchingHomeViewModel {
       group.addTask { await self.loadMatches() }
       group.addTask { await self.loadPuzzleCount() }
       group.addTask { await self.fetchCanFreeMatch() }
+      group.addTask { await self.checkUnreadNotifications() }
     }
 
     checkBasicMatchPoolExhausted() // BASIC 매치 풀 부족 체크
@@ -262,11 +267,12 @@ private extension MatchingHomeViewModel {
       case .PENDING:
         viewState = .userRolePending
         
-      case .USER: // (매칭&퍼즐개수&무료매칭여부)조회는 "USER" 상태에 병렬호출로 성능 개선
+      case .USER: // (매칭&퍼즐개수&무료매칭여부&알림) 조회는 병렬호출로 성능 개선
         await withTaskGroup(of: Void.self) { group in
           group.addTask { await self.loadMatches() }
           group.addTask { await self.loadPuzzleCount() }
           group.addTask { await self.fetchCanFreeMatch() }
+          group.addTask { await self.checkUnreadNotifications() }
         }
 
         checkBasicMatchPoolExhausted() // BASIC 매치 풀 부족 체크
@@ -279,6 +285,23 @@ private extension MatchingHomeViewModel {
       
     } catch {
       print("Get User Role :\(error.localizedDescription)")
+    }
+  }
+
+  func checkUnreadNotifications() async {
+    do {
+      var hasUnread = hasUnreadNotifications
+      var isEnd = false
+
+      while !hasUnread && !isEnd {
+        let result = try await getNotificationsUseCase.execute()
+        hasUnread = hasUnread || result.notifications.contains { !$0.isRead }
+        isEnd = result.isEnd
+      }
+
+      hasUnreadNotifications = hasUnread
+    } catch {
+      print("Get Notifications: \(error.localizedDescription)")
     }
   }
 

@@ -56,8 +56,6 @@ public struct HomeNavigationBar<LeftButton: View>: View {
       
       if let rightIcon {
         rightIcon
-          .renderingMode(.template)
-          .foregroundStyle(foregroundColor)
           .onTapGesture {
             rightIconTap?()
         }

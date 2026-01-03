@@ -14,8 +14,16 @@ struct ProfileView: View {
   @State var viewModel: ProfileViewModel
   @Environment(Router.self) private var router: Router
   
-  init(getProfileUseCase: GetProfileBasicUseCase) {
-    _viewModel = .init(wrappedValue: .init(getProfileUseCase: getProfileUseCase))
+  init(
+    getProfileUseCase: GetProfileBasicUseCase,
+    getNotificationsUseCase: GetNotificationsUseCase
+  ) {
+    _viewModel = .init(
+      wrappedValue: .init(
+        getProfileUseCase: getProfileUseCase,
+        getNotificationsUseCase: getNotificationsUseCase
+      )
+    )
   }
   
   var body: some View {
@@ -48,7 +56,9 @@ struct ProfileView: View {
     HomeNavigationBar(
       title: "Profile",
       foregroundColor: .grayscaleBlack,
-      rightIcon: DesignSystemAsset.Icons.alarm32.swiftUIImage
+      rightIcon: viewModel.hasUnreadNotifications
+      ? DesignSystemAsset.Icons.alarmUnread32.swiftUIImage
+      : DesignSystemAsset.Icons.alarm32.swiftUIImage
     ) {
       router.push(to: .notificationList)
     }

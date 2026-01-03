@@ -64,6 +64,7 @@ public struct Coordinator {
     case .home:
       let profileRepository = repositoryFactory.createProfileRepository()
       let matchesRepository = repositoryFactory.createMatchesRepository()
+      let notificationRepository = repositoryFactory.createNotificationRepository()
       let termsRepository = repositoryFactory.createTermsRepository()
       let blockContactsRepository = repositoryFactory.createBlockContactsRepository()
       let settingsRepository = repositoryFactory.createSettingsRepository()
@@ -80,6 +81,7 @@ public struct Coordinator {
       let createNewMatchUseCase = UseCaseFactory.createCreateNewMatchUseCase(repository: matchesRepository)
       let checkCanFreeMatchUseCase = UseCaseFactory.createCheckCanFreeMatchUseCase(repository: matchesRepository)
       let postMatchContactsUseCase = UseCaseFactory.createpostMatchContactsUseCase(repository: matchesRepository)
+      let getNotificationsUseCase = UseCaseFactory.createGetNotificationsUseCase(repository: notificationRepository)
       // setting
       let getSettingsInfoUseCase = UseCaseFactory.createGetSettingsInfoUseCase(repository: settingsRepository)
       let fetchTermsUseCase = UseCaseFactory.createFetchTermsUseCase(repository: termsRepository)
@@ -106,6 +108,7 @@ public struct Coordinator {
         createNewMatchUseCase: createNewMatchUseCase,
         checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
         postMatchContactsUseCase: postMatchContactsUseCase,
+        getNotificationsUseCase: getNotificationsUseCase,
         getSettingsInfoUseCase: getSettingsInfoUseCase,
         fetchTermsUseCase: fetchTermsUseCase,
         checkNotificationPermissionUseCase: checkNotificationPermissionUseCase,
@@ -135,6 +138,7 @@ public struct Coordinator {
     case .matchMain:
       let matchesRepository = repositoryFactory.createMatchesRepository()
       let userRepository = repositoryFactory.createUserRepository()
+      let notificationRepository = repositoryFactory.createNotificationRepository()
       let getUserInfoUseCase = UseCaseFactory.createGetUserInfoUseCase(repository: userRepository)
       let getPuzzleCountUseCase = UseCaseFactory.createGetPuzzleCountUseCase(repository: userRepository)
       let getMatchesInfoUseCase = UseCaseFactory.createGetMatchesInfoUseCase(repository: matchesRepository)
@@ -143,6 +147,7 @@ public struct Coordinator {
       let createNewMatchUseCase = UseCaseFactory.createCreateNewMatchUseCase(repository: matchesRepository)
       let checkCanFreeMatchUseCase = UseCaseFactory.createCheckCanFreeMatchUseCase(repository: matchesRepository)
       let postMatchContactsUseCase = UseCaseFactory.createpostMatchContactsUseCase(repository: matchesRepository)
+      let getNotificationsUseCase = UseCaseFactory.createGetNotificationsUseCase(repository: notificationRepository)
       MatchMainViewFactory.createMatchMainView(
         getUserInfoUseCase: getUserInfoUseCase,
         getPuzzleCountUseCase: getPuzzleCountUseCase,
@@ -152,6 +157,7 @@ public struct Coordinator {
         createNewMatchUseCase: createNewMatchUseCase,
         checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
         postMatchContactsUseCase: postMatchContactsUseCase,
+        getNotificationsUseCase: getNotificationsUseCase
       )
       
       // MARK: - 매칭 상세
@@ -327,6 +333,7 @@ public struct Coordinator {
     case .profileBasic:
       let profileRepository = repositoryFactory.createProfileRepository()
       let matchesRepository = repositoryFactory.createMatchesRepository()
+      let notificationRepository = repositoryFactory.createNotificationRepository()
       let termsRepository = repositoryFactory.createTermsRepository()
       let blockContactsRepository = repositoryFactory.createBlockContactsRepository()
       let settingsRepository = repositoryFactory.createSettingsRepository()
@@ -343,6 +350,7 @@ public struct Coordinator {
       let createNewMatchUseCase = UseCaseFactory.createCreateNewMatchUseCase(repository: matchesRepository)
       let checkCanFreeMatchUseCase = UseCaseFactory.createCheckCanFreeMatchUseCase(repository: matchesRepository)
       let postMatchContactsUseCase = UseCaseFactory.createpostMatchContactsUseCase(repository: matchesRepository)
+      let getNotificationsUseCase = UseCaseFactory.createGetNotificationsUseCase(repository: notificationRepository)
       // setting
       let getSettingsInfoUseCase = UseCaseFactory.createGetSettingsInfoUseCase(repository: settingsRepository)
       let fetchTermsUseCase = UseCaseFactory.createFetchTermsUseCase(repository: termsRepository)
@@ -369,6 +377,7 @@ public struct Coordinator {
         createNewMatchUseCase: createNewMatchUseCase,
         checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
         postMatchContactsUseCase: postMatchContactsUseCase,
+        getNotificationsUseCase: getNotificationsUseCase,
         getSettingsInfoUseCase: getSettingsInfoUseCase,
         fetchTermsUseCase: fetchTermsUseCase,
         checkNotificationPermissionUseCase: checkNotificationPermissionUseCase,
