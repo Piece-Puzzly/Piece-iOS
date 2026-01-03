@@ -195,11 +195,7 @@ extension ValuePickViewModel {
       presentedAlert = .freeAccept(matchId: matchId)
       
     case .TRIAL, .PREMIUM, .AUTO:
-      if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
-        presentedAlert = .paidAccept(matchId: matchId)
-      } else {
-        presentedAlert = .insufficientPuzzle
-      }
+      presentedAlert = .paidAccept(matchId: matchId)
     }
     
     PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
@@ -223,11 +219,7 @@ extension ValuePickViewModel {
           isPhotoViewPresented = true
         }
       } else {
-        if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
-          presentedAlert = .paidPhoto(matchId: matchId)
-        } else {
-          presentedAlert = .insufficientPuzzle
-        }
+        presentedAlert = .paidPhoto(matchId: matchId)
       }
     }
     
@@ -239,21 +231,38 @@ extension ValuePickViewModel {
   
   private func handleAlertConfirm(_ alertType: MatchingDetailAlertType) {
     switch alertType {
-    case .freeAccept, .paidAccept:
+    case .freeAccept:
       Task {
         showToastAction = nil
         await acceptMatch()
         showToastAction = .accept
       }
 
+    case .paidAccept:
+      Task {
+        showToastAction = nil
+        await loadPuzzleCount()
+        if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
+          await acceptMatch()
+          showToastAction = .accept
+        } else {
+          presentedAlert = .insufficientPuzzle
+        }
+      }
+      
     case .paidPhoto:
       Task {
         showToastAction = nil
-        await buyMatchPhoto()
-        await fetchMatchPhoto()
-        await fetchMatchValuePick()
-        isPhotoViewPresented = true
-        showToastAction = .viewPhoto
+        await loadPuzzleCount()
+        if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
+          await buyMatchPhoto()
+          await fetchMatchPhoto()
+          await fetchMatchValuePick()
+          isPhotoViewPresented = true
+          showToastAction = .viewPhoto
+        } else {
+          presentedAlert = .insufficientPuzzle
+        }
       }
 
     case .timeExpired:

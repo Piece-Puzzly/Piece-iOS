@@ -167,11 +167,7 @@ extension MatchProfileBasicViewModel {
       presentedAlert = .freeAccept(matchId: matchId)
       
     case .TRIAL, .PREMIUM, .AUTO:
-      if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
-        presentedAlert = .paidAccept(matchId: matchId)
-      } else {
-        presentedAlert = .insufficientPuzzle
-      }
+      presentedAlert = .paidAccept(matchId: matchId)
     }
     
     PCAmplitude.trackScreenView(DefaultProgress.matchDetailAcceptPopup.rawValue)
@@ -195,11 +191,7 @@ extension MatchProfileBasicViewModel {
           isPhotoViewPresented = true
         }
       } else {
-        if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
-          presentedAlert = .paidPhoto(matchId: matchId)
-        } else {
-          presentedAlert = .insufficientPuzzle
-        }
+        presentedAlert = .paidPhoto(matchId: matchId)
       }
     }
     
@@ -211,19 +203,35 @@ extension MatchProfileBasicViewModel {
   
   private func handleAlertConfirm(_ alertType: MatchingDetailAlertType) {
     switch alertType {
-    case .freeAccept, .paidAccept:
+    case .freeAccept:
       Task {
         await acceptMatch()
         showToastAction = .accept
       }
 
+    case .paidAccept:
+      Task {
+        await loadPuzzleCount()
+        if puzzleCount >= DomainConstants.PuzzleCost.acceptMatch {
+          await acceptMatch()
+          showToastAction = .accept
+        } else {
+          presentedAlert = .insufficientPuzzle
+        }
+      }
+
     case .paidPhoto:
       Task {
-        await buyMatchPhoto()
-        await fetchMatchPhoto()
-        await fetchMatchingBasicInfo()
-        isPhotoViewPresented = true
-        showToastAction = .viewPhoto
+        await loadPuzzleCount()
+        if puzzleCount >= DomainConstants.PuzzleCost.viewPhoto {
+          await buyMatchPhoto()
+          await fetchMatchPhoto()
+          await fetchMatchingBasicInfo()
+          isPhotoViewPresented = true
+          showToastAction = .viewPhoto
+        } else {
+          presentedAlert = .insufficientPuzzle
+        }
       }
 
     case .timeExpired:
