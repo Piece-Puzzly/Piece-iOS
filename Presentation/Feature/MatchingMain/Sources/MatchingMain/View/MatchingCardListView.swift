@@ -8,6 +8,7 @@
 import Router
 import SwiftUI
 import DesignSystem
+import UIKit
 
 // MARK: - User Matching List View (UserRole -> USER)
 struct MatchingCardListView: View {
@@ -19,25 +20,32 @@ struct MatchingCardListView: View {
   }
   
   var body: some View {
-      ScrollViewReader { proxy in
-        ScrollView(showsIndicators: false) {
-          VStack(spacing: Constants.cardSpacing) {
-            if viewModel.matchingCards.isEmpty {
-              MatchingEmptyCardView()
-            } else {
-              MatchingCardsView(viewModel: viewModel)
-            }
+    ScrollViewReader { proxy in
+      ScrollView(showsIndicators: false) {
+        VStack(spacing: Constants.cardSpacing) {
+          if viewModel.matchingCards.isEmpty {
+            MatchingEmptyCardView()
+          } else {
+            MatchingCardsView(viewModel: viewModel)
+          }
 
-            CreateNewMatchButton(
-              isTrial: viewModel.isTrial,
-              action: { viewModel.handleAction(.didTapCreateNewMatchButton) }
-            )
+          CreateNewMatchButton(
+            isTrial: viewModel.isTrial,
+            action: { viewModel.handleAction(.didTapCreateNewMatchButton) }
+          )
         }
         .animation(.interactiveSpring(response: 0.45), value: viewModel.selectedMatchId)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(.horizontal, Constants.horizontalMargin)
         .padding(.top, Constants.topMargin)
         .padding(.bottom, Constants.bottomMargin)
+      }
+      .scrollBounceBehavior(.always)
+      .refreshable {
+        await viewModel.refresh()
+      }
+      .onAppear {
+        UIRefreshControl.appearance().tintColor = UIColor(Color.primaryDefault)
       }
       .onChange(of: viewModel.selectedMatchId) { _, newSelectedId in
         if let selectedId = newSelectedId {

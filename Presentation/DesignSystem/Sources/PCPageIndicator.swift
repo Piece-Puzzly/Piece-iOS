@@ -33,11 +33,13 @@ public struct PCPageIndicator: View {
   public var body: some View {
     ZStack(alignment: .leading) {
       Rectangle()
-        .fill(.clear)
-        .frame(height: 4)
+        .fill(Color.grayscaleLight2)
+        .frame(width: width, height: 6)
+        .cornerRadius(4)
       Rectangle()
         .fill(Color.primaryDefault)
-        .frame(width: width * step.widthRatio, height: 4)
+        .frame(width: width * step.widthRatio, height: 6)
+        .cornerRadius(4)
     }
   }
 }

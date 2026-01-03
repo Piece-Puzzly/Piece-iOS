@@ -18,8 +18,6 @@ struct CreateEditRejectedProfileContainerView: View {
   @Environment(Router.self) private var router: Router
   @Environment(\.dismiss) private var dismiss // TODO: - dismiss 동작 확인
   
-  private let screenWidth = UIScreen.main.bounds.width
-  
   init(
     getProfileBasicUseCase: GetProfileBasicUseCase,
     checkNicknameUseCase: CheckNicknameUseCase,
@@ -44,23 +42,8 @@ struct CreateEditRejectedProfileContainerView: View {
   
   var body: some View {
     VStack(spacing: 0) {
-      switch viewModel.currentStep {
-      case .basicInfo:
-        Spacer()
-          .frame(height: 60)
-      case .valueTalk:
-        NavigationBar(
-          title: "",
-          leftButtonTap: { viewModel.handleAction(.didTapBackButton) }
-        )
-      case .valuePick:
-        NavigationBar(
-          title: "",
-          leftButtonTap: { viewModel.handleAction(.didTapBackButton) }
-        )
-      }
+      navigationBar
       
-      pageIndicator
       ZStack {
         basicInfoView
           .transition(.move(edge: .leading))
@@ -86,6 +69,15 @@ struct CreateEditRejectedProfileContainerView: View {
     }
   }
   
+  private var navigationBar: some View {
+    NavigationBar(
+      title: { pageIndicator },
+      leftButtonTap: viewModel.currentStep == .basicInfo
+        ? nil
+        : { viewModel.handleAction(.didTapBackButton) }
+    )
+  }
+  
   private var pageIndicator: some View {
     let step = viewModel.currentStep == .basicInfo
     ? PCPageIndicator.IndicatorStep.first
@@ -93,8 +85,9 @@ struct CreateEditRejectedProfileContainerView: View {
     
     return PCPageIndicator(
       step: step,
-      width: screenWidth
+      width: UIScreen.main.bounds.width - 154 // 좌우 패딩, 버튼 뺀 네비게이션 titleView 영역
     )
+    .animation(.easeInOut(duration: 0.35), value: viewModel.currentStep)
   }
   
   private var basicInfoView: some View {

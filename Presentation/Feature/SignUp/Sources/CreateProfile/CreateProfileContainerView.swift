@@ -18,8 +18,6 @@ struct CreateProfileContainerView: View {
   @State var viewModel: CreateProfileContainerViewModel
   @Environment(Router.self) private var router: Router
   
-  private let screenWidth = UIScreen.main.bounds.width
-  
   init(
     checkNicknameUseCase: CheckNicknameUseCase,
     uploadProfileImageUseCase: UploadProfileImageUseCase,
@@ -40,23 +38,8 @@ struct CreateProfileContainerView: View {
   
   var body: some View {
     VStack(spacing: 0) {
-      switch viewModel.currentStep {
-      case .basicInfo:
-        Spacer()
-          .frame(height: 60)
-      case .valueTalk:
-        NavigationBar(
-          title: "",
-          leftButtonTap: { viewModel.handleAction(.didTapBackButton) }
-        )
-      case .valuePick:
-        NavigationBar(
-          title: "",
-          leftButtonTap: { viewModel.handleAction(.didTapBackButton) }
-        )
-      }
+      navigationBar
       
-      pageIndicator
       ZStack {
         basicInfoView
           .transition(.move(edge: .leading))
@@ -84,6 +67,15 @@ struct CreateProfileContainerView: View {
     }
   }
   
+  private var navigationBar: some View {
+    NavigationBar(
+      title: { pageIndicator },
+      leftButtonTap: viewModel.currentStep == .basicInfo
+        ? nil
+        : { viewModel.handleAction(.didTapBackButton) }
+    )
+  }
+  
   private var pageIndicator: some View {
     let step = viewModel.currentStep == .basicInfo
     ? PCPageIndicator.IndicatorStep.first
@@ -91,8 +83,9 @@ struct CreateProfileContainerView: View {
     
     return PCPageIndicator(
       step: step,
-      width: screenWidth
+      width: UIScreen.main.bounds.width - 154 // 좌우 패딩, 버튼 뺀 네비게이션 titleView 영역
     )
+    .animation(.easeInOut(duration: 0.35), value: viewModel.currentStep)
   }
   
   private var basicInfoView: some View {
