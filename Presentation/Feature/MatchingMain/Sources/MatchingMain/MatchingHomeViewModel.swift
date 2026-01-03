@@ -24,6 +24,7 @@ final class MatchingHomeViewModel {
   
   enum Action {
     case onAppear
+    case refresh
     case onSelectMatchingCard(matchId: Int)
     case onConfirmMatchingCard(matchId: Int)
     case didTapCreateNewMatchButton
@@ -82,6 +83,11 @@ final class MatchingHomeViewModel {
     case .onAppear:
       handleOnAppear()
 
+    case .refresh:
+      Task {
+        await refresh()
+      }
+
     case .onSelectMatchingCard(let matchId):
       handleOnSelectMatchingCard(matchId)
 
@@ -104,6 +110,17 @@ final class MatchingHomeViewModel {
     case .clearToast:
       showToastAction = nil
     }
+  }
+
+  // Pull Refresh
+  func refresh() async {
+    await withTaskGroup(of: Void.self) { group in
+      group.addTask { await self.loadMatches() }
+      group.addTask { await self.loadPuzzleCount() }
+      group.addTask { await self.fetchCanFreeMatch() }
+    }
+
+    checkBasicMatchPoolExhausted() // BASIC 매치 풀 부족 체크
   }
 }
 
