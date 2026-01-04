@@ -28,7 +28,7 @@ public extension BasicCashProductResponseDTO {
       rewardPuzzleCount: rewardPuzzleCount,
       originalAmount: originalAmount,
       currencyCode: currencyCode,
-      discountRate: discountRate,
+      discountRate: discountRate.rounded(), // 소숫점 첫째자리 반올림
       discountedAmount: discountedAmount
     )
   }
