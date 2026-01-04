@@ -57,8 +57,8 @@ public enum PCAmplitudeButtonName {
   
   case contactMatchingPurchase
   case image
-  case promotionProduct
-  case normalProduct(name: String, price: String)
+  
+  case product(productId: String)
   
   var buttonName: String {
     switch self {
@@ -83,8 +83,7 @@ public enum PCAmplitudeButtonName {
     case .profileImage: return "profile_image"
     case .contactMatchingPurchase: return "contact_matching_purchase"
     case .image: return "image"
-    case .promotionProduct: return "store_main_banner"
-    case .normalProduct(let name, let price): return "store_main_banner_\(name)_\(price)"
+    case .product(let productId): return "\(productId)"
     }
   }
 }
