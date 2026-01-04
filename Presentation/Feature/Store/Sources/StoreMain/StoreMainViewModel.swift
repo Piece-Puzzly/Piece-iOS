@@ -61,11 +61,11 @@ final class StoreMainViewModel {
       loadProducts()
 
     case .didTapNormalProduct(let product):
-      PCAmplitude.trackButtonClick(screenName: .storeMain, buttonName: .normalProduct(name: product.name, price: String(product.backendProduct.discountedAmount)))
+      PCAmplitude.trackButtonClick(screenName: .storeMain, buttonName: .product(productId: product.id))
       purchaseNormalProduct(product)
 
     case .didTapPromotionProduct(let product):
-      PCAmplitude.trackButtonClick(screenName: .storeMain, buttonName: .promotionProduct)
+      PCAmplitude.trackButtonClick(screenName: .storeMain, buttonName: .product(productId: product.id))
       purchasePromotionProduct(product)
 
     case .didCompletePurchase:
