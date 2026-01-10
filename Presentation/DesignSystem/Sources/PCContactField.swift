@@ -19,13 +19,13 @@ public struct ContactDisplayModel: Identifiable, Hashable {
     public var icon: Image {
       switch self {
       case .kakao:
-        return DesignSystemAsset.Icons.kakao32.swiftUIImage
+        return DesignSystemAsset.Icons.kakao20.swiftUIImage
       case .openKakao:
-        return DesignSystemAsset.Icons.kakaoOpenchat32.swiftUIImage
+        return DesignSystemAsset.Icons.kakaoOpenchat20.swiftUIImage
       case .instagram:
-        return DesignSystemAsset.Icons.instagram32.swiftUIImage
+        return DesignSystemAsset.Icons.instagram20.swiftUIImage
       case .phone:
-        return DesignSystemAsset.Icons.cellFill32.swiftUIImage
+        return DesignSystemAsset.Icons.cell20.swiftUIImage
       case .unknown:
         return Image(systemName: "questionmark")
       }
@@ -48,15 +48,7 @@ public struct PCContactField: View {
   // MARK: - Injected Properties
   @Binding private var contact: ContactDisplayModel
   private let action: () -> Void
-  
-  // MARK: - Internal State
-  @State private var contactFieldHeight: CGFloat = 24.0
-  
-  // MARK: - Computed Properties
-  private var estimatedLineCount: Int {
-    max(1, Int(contactFieldHeight / Constant.lineHeight))
-  }
-  
+
   // MARK: - Initializer
   public init(
     contact: Binding<ContactDisplayModel>,
@@ -68,7 +60,7 @@ public struct PCContactField: View {
   
   // MARK: Body
   public var body: some View {
-    HStack(spacing: 16) {
+    HStack(spacing: 12) {
       contactTypeButtonView
       contactField
     }
@@ -77,56 +69,40 @@ public struct PCContactField: View {
     .background(Color.grayscaleLight3)
     .cornerRadius(8)
   }
-  
-  private var contactTypeButtonView: some View {
-    VStack {
-      Button(action: action) {
-        HStack {
-          contact.image
-          DesignSystemAsset.Icons.chevronDown24.swiftUIImage
-            .renderingMode(.template)
-            .foregroundColor(Color.grayscaleDark3)
-        }
-      }
 
-      if contact.type == .openKakao, estimatedLineCount >= 2 {
-        Spacer(minLength: 0)
+  private var contactTypeButtonView: some View {
+    Button(action: action) {
+      HStack(spacing: 4) {
+        contact.image
+          .resizable()
+          .aspectRatio(contentMode: .fit)
+          .frame(width: 20, height: 24)
+        
+        DesignSystemAsset.Icons.chevronDown24.swiftUIImage
+          .renderingMode(.template)
+          .foregroundColor(Color.grayscaleDark3)
       }
     }
+    .frame(maxHeight: .infinity, alignment: .top)
   }
   
   @ViewBuilder
   private var contactField: some View {
     switch contact.type {
     case .openKakao:
-      TextEditor(text: $contact.value)
+      TextField("", text: $contact.value, axis: .vertical)
         .font(DesignSystemFontFamily.Pretendard.medium.swiftUIFont(size: 16))
         .foregroundStyle(Color.grayscaleBlack)
-        .scrollContentBackground(.hidden)
         .background(Color.grayscaleLight3)
-        .background(
-          GeometryReader { geo in
-            Color.clear
-              .onChange(of: geo.size.height) { _, newValue in
-                contactFieldHeight = newValue
-              }
-          }
-        )
-        .onAppear {
-          Task {
-            await MainActor.run {
-              let copy = contact.value
-              contact.value = copy
-            }
-          }
-        }
+        .lineLimit(1...)
+        .frame(minHeight: 24, alignment: .top)
 
     default:
       TextField("", text: $contact.value)
-        .pretendard(.body_M_M)
+        .font(DesignSystemFontFamily.Pretendard.medium.swiftUIFont(size: 16))
         .foregroundStyle(Color.grayscaleBlack)
         .background(Color.grayscaleLight3)
-        .frame(height: 24)
+        .frame(minHeight: 24, alignment: .top)
     }
   }
 }
