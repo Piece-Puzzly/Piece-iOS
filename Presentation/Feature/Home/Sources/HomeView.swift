@@ -30,7 +30,7 @@ struct HomeView: View {
     createNewMatchUseCase: CreateNewMatchUseCase,
     checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
     postMatchContactsUseCase: PostMatchContactsUseCase,
-    getNotificationsUseCase: GetNotificationsUseCase,
+    getUnreadNotificationCountUseCase: GetUnreadNotificationCountUseCase,
     getSettingsInfoUseCase: GetSettingsInfoUseCase,
     fetchTermsUseCase: FetchTermsUseCase,
     checkNotificationPermissionUseCase: CheckNotificationPermissionUseCase,
@@ -58,7 +58,7 @@ struct HomeView: View {
         createNewMatchUseCase: createNewMatchUseCase,
         checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
         postMatchContactsUseCase: postMatchContactsUseCase,
-        getNotificationsUseCase: getNotificationsUseCase,
+        getUnreadNotificationCountUseCase: getUnreadNotificationCountUseCase,
         getSettingsInfoUseCase: getSettingsInfoUseCase,
         fetchTermsUseCase: fetchTermsUseCase,
         checkNotificationPermissionUseCase: checkNotificationPermissionUseCase,
@@ -108,7 +108,7 @@ struct HomeView: View {
     case .profile:
       ProfileViewFactory.createProfileView(
         getProfileUseCase: viewModel.getProfileUseCase,
-        getNotificationsUseCase: viewModel.getNotificationsUseCase
+        getUnreadNotificationCountUseCase: viewModel.getUnreadNotificationCountUseCase
       )
     case .home:
       MatchMainViewFactory.createMatchMainView(
@@ -120,7 +120,7 @@ struct HomeView: View {
         createNewMatchUseCase: viewModel.createNewMatchUseCase,
         checkCanFreeMatchUseCase: viewModel.checkCanFreeMatchUseCase,
         postMatchContactsUseCase: viewModel.postMatchContactsUseCase,
-        getNotificationsUseCase: viewModel.getNotificationsUseCase
+        getUnreadNotificationCountUseCase: viewModel.getUnreadNotificationCountUseCase
       )
     case .settings:
       SettingsViewFactory.createSettingsView(

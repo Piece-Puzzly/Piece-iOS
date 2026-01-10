@@ -38,7 +38,7 @@ public struct MatchMainViewFactory {
     createNewMatchUseCase: CreateNewMatchUseCase,
     checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
     postMatchContactsUseCase: PostMatchContactsUseCase,
-    getNotificationsUseCase: GetNotificationsUseCase
+    getUnreadNotificationCountUseCase: GetUnreadNotificationCountUseCase
   ) -> some View {
     MatchingHomeView(
       getUserInfoUseCase: getUserInfoUseCase,
@@ -49,7 +49,7 @@ public struct MatchMainViewFactory {
       createNewMatchUseCase: createNewMatchUseCase,
       checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
       postMatchContactsUseCase: postMatchContactsUseCase,
-      getNotificationsUseCase: getNotificationsUseCase
+      getUnreadNotificationCountUseCase: getUnreadNotificationCountUseCase
     )
   }
 }

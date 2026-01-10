@@ -9,6 +9,7 @@ import DesignSystem
 import Router
 import SwiftUI
 import UseCases
+import Entities
 
 struct NotificationListView: View {
   @State var viewModel: NotificationListViewModel
@@ -98,29 +99,54 @@ extension NotificationListView {
   }
   
   private func navigateToDestination(for item: NotificationItemModel) {
+    // MARK: - 딥링크와 달리 현재 route가 home이 아니기 때문에 setRoute가 씹힐 수 없음. 따로 리프레시 호출하지 않아도 ok
     switch item.type {
     case .profileApproved:
-      // 프로필 승인 -> 홈으로
-      router.setRoute(.home)
+      // 프로필 심사 승인
+      router.setRoute(.home) {
+        postSwitchHomeTab(.home) // 현재 selectedTab이 profile일 수 있기 때문에
+      }
     case .profileRejected:
-      // TODO: - 프로필 거부 -> 프로필 리젝 팝업인데 임시로 홈으로 보내야함
-      router.setRoute(.home)
+      // 프로필 심사 거절
+      router.setRoute(.home) {
+        postSwitchHomeTab(.home)
+      }
     case .profileImageApproved:
       // 프로필 이미지 승인 -> 기본 정보 수정(프로필 편집)
-      router.push(to: .editProfile)
+      router.setRoute(.home) {
+        postSwitchHomeTab(.profile)
+        router.push(to: .editProfile)
+      }
     case .profileImageRejected:
       // 프로필 이미지 거부 -> 기본 정보 수정(프로필 편집)
-      router.push(to: .editProfile)
+      router.setRoute(.home) {
+        postSwitchHomeTab(.profile)
+        router.push(to: .editProfile)
+      }
     case .matchNew:
       // 새로운 매칭 -> 홈으로
-      router.setRoute(.home)
+      router.setRoute(.home) {
+        postSwitchHomeTab(.home)
+      }
     case .matchAccepted:
       // 매칭 수락 -> 홈으로
-      router.setRoute(.home)
+      router.setRoute(.home) {
+        postSwitchHomeTab(.home)
+      }
     case .matchCompleted:
       // 매칭 성공 -> 홈으로
-      router.setRoute(.home)
+      router.setRoute(.home) {
+        postSwitchHomeTab(.home)
+      }
     }
+  }
+  
+  private func postSwitchHomeTab(_ tab: HomeViewTab) {
+    NotificationCenter.default.post(
+      name: .switchHomeTab,
+      object: nil,
+      userInfo: ["homeViewTab": tab.rawValue]
+    )
   }
 }
 

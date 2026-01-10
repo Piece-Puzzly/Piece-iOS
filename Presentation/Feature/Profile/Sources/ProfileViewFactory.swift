@@ -13,11 +13,11 @@ public struct ProfileViewFactory {
   @ViewBuilder
   public static func createProfileView(
     getProfileUseCase: GetProfileBasicUseCase,
-    getNotificationsUseCase: GetNotificationsUseCase
+    getUnreadNotificationCountUseCase: GetUnreadNotificationCountUseCase
   ) -> some View {
     ProfileView(
       getProfileUseCase: getProfileUseCase,
-      getNotificationsUseCase: getNotificationsUseCase
+      getUnreadNotificationCountUseCase: getUnreadNotificationCountUseCase
     )
       .trackScreen(trackable: DefaultProgress.profileBasic)
   }

@@ -43,4 +43,10 @@ public final class NotificationRepository: NotificationRepositoryInterface {
     let responseDTO: VoidResponseDTO = try await networkService.request(endpoint: endpoint)
     return responseDTO.toDomain()
   }
+  
+  public func getUnreadCount() async throws -> Int {
+    let endpoint = NotificationsEndpoint.unreadCount
+    let responseDTO: Int = try await networkService.request(endpoint: endpoint)
+    return responseDTO
+  }
 }
