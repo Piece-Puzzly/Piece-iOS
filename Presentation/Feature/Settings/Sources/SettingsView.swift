@@ -80,6 +80,7 @@ struct SettingsView: View {
       .padding(.bottom, 89) // 탭바 높이 만큼 패딩
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .toolbar(.hidden)
     .alert(
       "알림 권한이 필요합니다",
       isPresented: $viewModel.showNotificationAlert

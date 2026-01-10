@@ -31,6 +31,7 @@ struct PreviewProfileBasicView: View {
         .toolbar(.hidden)
     } else {
       EmptyView()
+        .toolbar(.hidden)
     }
   }
   

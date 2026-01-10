@@ -60,6 +60,7 @@ struct MatchingHomeView: View {
         profileRejectedViewModel: profileRejectedViewModel
       )
     }
+    .toolbar(.hidden, for: .navigationBar)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .onAppear {
       matchingHomeViewModel.handleAction(.onAppear)

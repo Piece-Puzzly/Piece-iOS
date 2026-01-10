@@ -57,6 +57,7 @@ struct MatchProfileBasicView: View {
         .spinning(of: viewModel.showSpinner)
     } else {
       EmptyView()
+        .toolbar(.hidden)
     }
   }
   

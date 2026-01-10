@@ -75,6 +75,7 @@ struct ValueTalkView: View {
         .spinning(of: viewModel.showSpinner)
     } else {
       EmptyView()
+        .toolbar(.hidden)
     }
   }
   

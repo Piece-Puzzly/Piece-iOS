@@ -43,6 +43,7 @@ struct ProfileView: View {
         
         Spacer()
       }
+      .toolbar(.hidden)
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .background(Color.grayscaleWhite)
       .onAppear {
