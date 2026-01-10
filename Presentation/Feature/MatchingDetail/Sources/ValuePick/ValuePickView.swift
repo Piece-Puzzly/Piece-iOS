@@ -78,7 +78,6 @@ struct ValuePickView: View {
           }
           .padding(20)
           .background(Color.grayscaleWhite)
-          .transition(.move(edge: .top).combined(with: .opacity))
         }
       }
       
@@ -91,6 +90,9 @@ struct ValuePickView: View {
           viewModel.handleAction(.contentOffsetDidChange(offset))
         })) {
           pickCards
+          
+          Spacer()
+            .frame(height: 100)
         }
         .scrollIndicators(.never)
         .frame(maxWidth: .infinity)
@@ -208,7 +210,9 @@ struct ValuePickView: View {
   // MARK: - Pick Card
   
   private var pickCards: some View {
-    VStack(spacing: 20) {
+    let isEmpty = viewModel.displayedValuePicks.isEmpty
+
+    return VStack(spacing: 20) {
       ForEach(viewModel.displayedValuePicks) { valuePick in
         ValuePickCard(valuePick: valuePick)
       }
@@ -216,6 +220,10 @@ struct ValuePickView: View {
     .padding(.horizontal, 20)
     .padding(.top, 20)
     .padding(.bottom, 60)
+    .animation(
+      isEmpty ? nil : .easeInOut,
+      value: viewModel.displayedValuePicks.map { $0.id }
+    )
   }
   
   // MARK: - 하단 버튼
