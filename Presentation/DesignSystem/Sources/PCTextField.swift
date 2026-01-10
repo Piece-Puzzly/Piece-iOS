@@ -27,7 +27,7 @@ public struct PCTextField<FocusField: Hashable>: View {
           .padding(.vertical, 14)
           .padding(.leading, 16)
           .padding(.trailing, trailingPadding)
-          .frame(minWidth: 202, maxWidth: 335)
+          .frame(minWidth: 202, maxWidth: .infinity)
           .frame(height: 52)
           .background(
             Rectangle()
