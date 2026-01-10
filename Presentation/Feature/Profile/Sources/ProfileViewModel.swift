@@ -18,14 +18,14 @@ final class ProfileViewModel {
   
   init(
     getProfileUseCase: GetProfileBasicUseCase,
-    getNotificationsUseCase: GetNotificationsUseCase
+    getUnreadNotificationCountUseCase: GetUnreadNotificationCountUseCase
   ) {
     self.getProfileUseCase = getProfileUseCase
-    self.getNotificationsUseCase = getNotificationsUseCase
+    self.getUnreadNotificationCountUseCase = getUnreadNotificationCountUseCase
   }
   
   private let getProfileUseCase: GetProfileBasicUseCase
-  private let getNotificationsUseCase: GetNotificationsUseCase
+  private let getUnreadNotificationCountUseCase: GetUnreadNotificationCountUseCase
   private(set) var isLoading = true
   private(set) var error: Error?
   private(set) var userProfile: UserProfile?
@@ -73,18 +73,10 @@ final class ProfileViewModel {
 
   private func checkUnreadNotifications() async {
     do {
-      var hasUnread = hasUnreadNotifications
-      var isEnd = false
-
-      while !hasUnread && !isEnd {
-        let result = try await getNotificationsUseCase.execute()
-        hasUnread = hasUnread || result.notifications.contains { !$0.isRead }
-        isEnd = result.isEnd
-      }
-
-      hasUnreadNotifications = hasUnread
+      let count = try await getUnreadNotificationCountUseCase.execute()
+      hasUnreadNotifications = count > 0
     } catch {
-      print("Get Notifications: \(error.localizedDescription)")
+      print("Get Unread Notifications Count: \(error.localizedDescription)")
     }
   }
 }

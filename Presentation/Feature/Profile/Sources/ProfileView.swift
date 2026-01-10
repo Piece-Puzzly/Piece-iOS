@@ -16,12 +16,12 @@ struct ProfileView: View {
   
   init(
     getProfileUseCase: GetProfileBasicUseCase,
-    getNotificationsUseCase: GetNotificationsUseCase
+    getUnreadNotificationCountUseCase: GetUnreadNotificationCountUseCase
   ) {
     _viewModel = .init(
       wrappedValue: .init(
         getProfileUseCase: getProfileUseCase,
-        getNotificationsUseCase: getNotificationsUseCase
+        getUnreadNotificationCountUseCase: getUnreadNotificationCountUseCase
       )
     )
   }

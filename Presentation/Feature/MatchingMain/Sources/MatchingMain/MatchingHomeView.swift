@@ -29,7 +29,7 @@ struct MatchingHomeView: View {
     createNewMatchUseCase: CreateNewMatchUseCase,
     checkCanFreeMatchUseCase: CheckCanFreeMatchUseCase,
     postMatchContactsUseCase: PostMatchContactsUseCase,
-    getNotificationsUseCase: GetNotificationsUseCase
+    getUnreadNotificationCountUseCase: GetUnreadNotificationCountUseCase
   ) {
     _matchingHomeViewModel = .init(
       wrappedValue: .init(
@@ -40,7 +40,7 @@ struct MatchingHomeView: View {
         createNewMatchUseCase: createNewMatchUseCase,
         checkCanFreeMatchUseCase: checkCanFreeMatchUseCase,
         postMatchContactsUseCase: postMatchContactsUseCase,
-        getNotificationsUseCase: getNotificationsUseCase
+        getUnreadNotificationCountUseCase: getUnreadNotificationCountUseCase
       )
     )
     
