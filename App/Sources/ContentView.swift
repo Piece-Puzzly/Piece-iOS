@@ -48,15 +48,17 @@ struct ContentView: View {
     switch type {
       // 매칭 메인
     case .profileApproved, .matchNew, .matchAccepted, .matchCompleted:
-      router.setRoute(.home)
-      
-      NotificationCenter.default.post(name: .refreshHomeData, object: nil)
+      router.setRoute(.home) {
+        postSwitchHomeTab(.home)
+      }
+      postRefreshHome() // 만약 현재 화면이 home이라면 푸시알림 탭하는 시점에 위 setRoute가 씹히기 때문에 리프레시 별도 호출
 
       // 프로필 리젝 팝업
     case .profileRejected:
-      router.setRoute(.home)
-      
-      NotificationCenter.default.post(name: .refreshHomeData, object: nil)
+      router.setRoute(.home) {
+        postSwitchHomeTab(.home)
+      }
+      postRefreshHome() // 만약 현재 화면이 home이라면 푸시알림 탭하는 시점에 위 setRoute가 씹히기 때문에 리프레시 별도 호출
 
       // 프로필 메인 -> 기본 정보 수정
     case .profileImageApproved, .profileImageRejected:
@@ -64,7 +66,6 @@ struct ContentView: View {
         postSwitchHomeTab(.profile)
         router.push(to: .editProfile)
       }
-      NotificationCenter.default.post(name: .refreshHomeData, object: nil)
     }
   }
   
@@ -73,6 +74,13 @@ struct ContentView: View {
       name: .switchHomeTab,
       object: nil,
       userInfo: ["homeViewTab": tab.rawValue]
+    )
+  }
+  
+  private func postRefreshHome() {
+    NotificationCenter.default.post(
+      name: .refreshHomeData,
+      object: nil
     )
   }
 }

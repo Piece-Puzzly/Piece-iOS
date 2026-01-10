@@ -8,8 +8,13 @@
 import Foundation
 
 public enum HomeViewTab: String {
+  /// ProfileView
   case profile
+  
+  /// MatchingHomeView
   case home
+  
+  /// SettingsView
   case settings
   
   public init?(rawValue: String) {
