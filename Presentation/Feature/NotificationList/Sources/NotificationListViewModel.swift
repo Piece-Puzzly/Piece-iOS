@@ -13,13 +13,15 @@ import UseCases
 final class NotificationListViewModel {
   enum Action {
     case loadNotifications
-    case onDisappear
+    case didTapBackButton
     case didTapNotificationItem(NotificationItemModel)
   }
   
   private(set) var notifications: [NotificationItemModel] = []
   @ObservationIgnored private(set) var isEnd = false
   private(set) var error: Error?
+  var showSpinner: Bool = false
+  var shouldDismiss: Bool = false
   
   private let getNotificationsUseCase: GetNotificationsUseCase
   private let readNotificationUseCase: ReadNotificationUseCase
@@ -30,79 +32,91 @@ final class NotificationListViewModel {
   ) {
     self.getNotificationsUseCase = getNotificationsUseCase
     self.readNotificationUseCase = readNotificationUseCase
-    loadNotifications()
+    
+    Task {
+      showSpinner = true
+      await loadNotifications()
+      showSpinner = false
+    }
   }
   
   func handleAction(_ action: Action) {
     switch action {
     case .loadNotifications:
-      loadNotifications()
+      Task {
+        showSpinner = true
+        await loadNotifications()
+        showSpinner = false
+      }
       
-    case .onDisappear:
-      readNotifications()
+    case .didTapBackButton:
+      Task {
+        showSpinner = true
+        await readNotifications()
+        showSpinner = false
+        
+        shouldDismiss = true
+      }
       
     case .didTapNotificationItem(let item):
-      readNotifications(for: item)
-    }
-  }
-  
-  private func loadNotifications() {
-    if isEnd { return }
-    
-    Task {
-      do {
-        let result = try await getNotificationsUseCase.execute()
-        notifications.append(
-          contentsOf: result.notifications.map {
-            NotificationItemModel(
-              id: $0.id,
-              type: $0.type,
-              title: $0.title,
-              body: $0.body,
-              dateTime: $0.dateTime,
-              isRead: $0.isRead
-            )
-          })
-        isEnd = result.isEnd
-      } catch {
-        self.error = error
+      Task {
+        showSpinner = true
+        await readNotifications(for: item)
+        showSpinner = false
       }
     }
   }
   
-  private func readNotifications() {
+  private func loadNotifications() async {
+    if isEnd { return }
+    do {
+      let result = try await getNotificationsUseCase.execute()
+      notifications.append(
+        contentsOf: result.notifications.map {
+          NotificationItemModel(
+            id: $0.id,
+            type: $0.type,
+            title: $0.title,
+            body: $0.body,
+            dateTime: $0.dateTime,
+            isRead: $0.isRead
+          )
+        })
+      isEnd = result.isEnd
+    } catch {
+      self.error = error
+    }
+  }
+  
+  private func readNotifications() async {
     let unreadNotifications = notifications.filter { !$0.isRead }
     for notification in unreadNotifications {
-      Task {
-        do {
-          _ = try await readNotificationUseCase.execute(id: notification.id)
-        } catch {
-          self.error = error
-        }
+      do {
+        _ = try await readNotificationUseCase.execute(id: notification.id)
+      } catch {
+        self.error = error
       }
     }
   }
   
-  private func readNotifications(for item: NotificationItemModel) {
+  private func readNotifications(for item: NotificationItemModel) async {
     guard !item.isRead else { return }
     
-    Task {
-      do {
-        _ = try await readNotificationUseCase.execute(id: item.id)
-        
-        if let index = notifications.firstIndex(where: { $0.id == item.id }) {
-          notifications[index] = NotificationItemModel(
-            id: notifications[index].id,
-            type: notifications[index].type,
-            title: notifications[index].title,
-            body: notifications[index].body,
-            dateTime: notifications[index].dateTime,
-            isRead: true
-          )
-        }
-      } catch {
-        self.error = error
+    do {
+      _ = try await readNotificationUseCase.execute(id: item.id)
+      
+      if let index = notifications.firstIndex(where: { $0.id == item.id }) {
+        notifications[index] = NotificationItemModel(
+          id: notifications[index].id,
+          type: notifications[index].type,
+          title: notifications[index].title,
+          body: notifications[index].body,
+          dateTime: notifications[index].dateTime,
+          isRead: true
+        )
       }
+    } catch {
+      self.error = error
     }
   }
 }
