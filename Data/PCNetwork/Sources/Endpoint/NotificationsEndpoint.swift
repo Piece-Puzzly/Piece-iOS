@@ -13,6 +13,7 @@ import LocalStorage
 public enum NotificationsEndpoint: TargetType {
   case notifications(cursor: Int?)
   case readNotification(id: Int)
+  case unreadCount
   
   public var method: HTTPMethod {
     switch self {
@@ -20,6 +21,8 @@ public enum NotificationsEndpoint: TargetType {
         .get
     case .readNotification:
         .put
+    case .unreadCount:
+        .get
     }
   }
   
@@ -29,6 +32,8 @@ public enum NotificationsEndpoint: TargetType {
       "api/notifications"
     case let .readNotification(id):
       "api/notifications/\(id)/read"
+    case .unreadCount:
+      "api/notifications/count"
     }
   }
   
@@ -40,6 +45,11 @@ public enum NotificationsEndpoint: TargetType {
         NetworkHeader.authorization:NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
       ]
     case .readNotification:
+      [
+        NetworkHeader.contentType:NetworkHeader.applicationJson,
+        NetworkHeader.authorization:NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
+      ]
+    case .unreadCount:
       [
         NetworkHeader.contentType:NetworkHeader.applicationJson,
         NetworkHeader.authorization:NetworkHeader.bearer(PCKeychainManager.shared.read(.accessToken) ?? "")
@@ -58,6 +68,9 @@ public enum NotificationsEndpoint: TargetType {
       return .query(queryItems)
       
     case .readNotification:
+      return .plain
+      
+    case .unreadCount:
       return .plain
     }
   }

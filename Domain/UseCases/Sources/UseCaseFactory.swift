@@ -254,6 +254,10 @@ public struct UseCaseFactory {
     GetNotificationsUseCaseImpl(repository: repository)
   }
   
+  public static func createGetUnreadNotificationCountUseCase(repository: NotificationRepositoryInterface) -> GetUnreadNotificationCountUseCase {
+    GetUnreadNotificationCountUseCaseImpl(repository: repository)
+  }
+  
   public static func createReadNotificationUseCase(repository: NotificationRepositoryInterface) -> ReadNotificationUseCase {
     ReadNotificationUseCaseImpl(repository: repository)
   }
