@@ -30,6 +30,7 @@ struct CompleteCreateProfileView: View {
       
       buttons
     }
+    .toolbar(.hidden)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .padding(.horizontal, 20)
   }

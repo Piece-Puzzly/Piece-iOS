@@ -31,18 +31,20 @@ struct NotificationListView: View {
     VStack(spacing: 0) {
       NavigationBar(
         title: "알림",
-        leftButtonTap: {
-          router.pop()
-        }
+        leftButtonTap: { viewModel.handleAction(.didTapBackButton) }
       )
       Divider(weight: .normal)
       content
     }
     .toolbar(.hidden)
     .background(.grayscaleWhite)
-    .onDisappear {
-      viewModel.handleAction(.onDisappear)
+    .onChange(of: viewModel.shouldDismiss) { _, shouldDismiss in
+      if shouldDismiss {
+        router.pop()
+        viewModel.shouldDismiss = false
+      }
     }
+    .spinning(of: viewModel.showSpinner)
   }
   
   @ViewBuilder

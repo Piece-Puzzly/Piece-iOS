@@ -37,6 +37,7 @@ struct WaitingAISummaryView: View {
       Spacer()
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .toolbar(.hidden)
     .padding(.horizontal, 20)
     .background(.grayscaleWhite)
     .onAppear {

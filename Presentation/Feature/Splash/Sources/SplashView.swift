@@ -26,6 +26,7 @@ struct SplashView: View {
     DesignSystemAsset.Icons.logoCircle3x.swiftUIImage
       .resizable()
       .frame(width: 160, height: 160)
+      .toolbar(.hidden)
       .onAppear {
         viewModel.handleAction(.onAppear)
       }
