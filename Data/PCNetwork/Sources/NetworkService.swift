@@ -15,6 +15,8 @@ public class NetworkService {
   public static let shared = NetworkService()
   private let authQueue = DispatchQueue(label: "authQueue")
   private let networkLogger: NetworkLogger
+  private let authenticator: OAuthAuthenticator
+  private let interceptor: AuthenticationInterceptor<OAuthAuthenticator>
   private let dateFormatter = DateFormatter()
   private var session: Session
   
@@ -30,6 +32,7 @@ public class NetworkService {
       expiration = Date(timeIntervalSince1970: exp)
     }
     
+    self.authenticator = OAuthAuthenticator()
     // Create credential and session
     let credential = OAuthCredential(
       accessToken: accessToken,
@@ -37,10 +40,10 @@ public class NetworkService {
       expiration: expiration
     )
     
-    let authenticator = OAuthAuthenticator()
     let interceptor = AuthenticationInterceptor(authenticator: authenticator, credential: credential)
     let networkLogger = NetworkLogger()
     self.networkLogger = networkLogger
+    self.interceptor = interceptor
     self.session = Session(
       interceptor: interceptor,
       eventMonitors: [networkLogger]
@@ -150,13 +153,9 @@ public class NetworkService {
         refreshToken: refreshToken,
         expiration: expiration
       )
-      
-      let authenticator = OAuthAuthenticator()
-      let interceptor = AuthenticationInterceptor(authenticator: authenticator, credential: credential)
-      self.session = Session(
-        interceptor: interceptor,
-        eventMonitors: [self.networkLogger]
-      )
+
+      // 세션은 유지하고 인터셉터의 크레덴셜만 갱신하여 in-flight 요청이 끊기지 않도록 함
+      self.interceptor.credential = credential
     }
   }
 
@@ -166,35 +165,18 @@ public class NetworkService {
       let container = try decoder.singleValueContainer()
       let dateString = try container.decode(String.self)
 
-      // 1. 마이크로초 + 타임존 (예: 2026-01-02T08:40:25.000000Z)
-      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX")
-        .date(from: dateString) {
-        return date
-      }
-
-      // 2. 마이크로초 (타임존 없을 경우, 로컬/서버 기본값으로 파싱)
-      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
-        .date(from: dateString) {
-        return date
-      }
-
-      // 3. 초단위 + 타임존
-      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ssXXXXX")
-        .date(from: dateString) {
-        return date
-      }
-      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ssX")
-        .date(from: dateString) {
-        return date
-      }
-
-      // 4. 초단위 (타임존 없음)
-      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss")
-        .date(from: dateString) {
-        return date
-      }
-
-      // 5. 기존 형식 시도 (하위 호환성 유지)
+      // 1) 마이크로초 + 타임존
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX").date(from: dateString) { return date }
+      // 2) 마이크로초
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss.SSSSSS").date(from: dateString) { return date }
+      // 3) 초단위 + 타임존 (ISO)
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ssXXXXX").date(from: dateString) { return date }
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ssX").date(from: dateString) { return date }
+      // 4) 초단위 (타임존 없음)
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss").date(from: dateString) { return date }
+      // 5) yyyy-MM-dd HH:mm:ss (approvedAt 등)
+      if let date = DateFormatter.cached("yyyy-MM-dd HH:mm:ss").date(from: dateString) { return date }
+      // 6) 기존 형식 시도 (하위 호환성 유지)
       if let self = self,
          let date = self.dateFormatter.date(from: dateString) { // "yyyy-MM-dd'T'HH:mm:ssX"
         return date

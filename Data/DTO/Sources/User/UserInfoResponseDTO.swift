@@ -15,6 +15,7 @@ public struct UserInfoResponseDTO: Decodable {
   public let hasRoleChanged: Bool
   public let accessToken: String?
   public let refreshToken: String?
+  public let approvedAt: Date?
 }
 
 public extension UserInfoResponseDTO {
@@ -22,7 +23,8 @@ public extension UserInfoResponseDTO {
     UserInfoModel(
       id: userId,
       role: UserRole(role),
-      profileStatus: profileStatus
+      profileStatus: profileStatus,
+      approvedAt: approvedAt
     )
   }
 }

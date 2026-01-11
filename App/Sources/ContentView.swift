@@ -22,6 +22,7 @@ struct ContentView: View {
       )
       .navigationDestination(for: Route.self) { route in
         coordinator.view(for: route)
+          .toolbar(.hidden)
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
