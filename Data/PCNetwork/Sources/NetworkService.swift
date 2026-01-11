@@ -166,35 +166,18 @@ public class NetworkService {
       let container = try decoder.singleValueContainer()
       let dateString = try container.decode(String.self)
 
-      // 1. 마이크로초 + 타임존 (예: 2026-01-02T08:40:25.000000Z)
-      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX")
-        .date(from: dateString) {
-        return date
-      }
-
-      // 2. 마이크로초 (타임존 없을 경우, 로컬/서버 기본값으로 파싱)
-      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
-        .date(from: dateString) {
-        return date
-      }
-
-      // 3. 초단위 + 타임존
-      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ssXXXXX")
-        .date(from: dateString) {
-        return date
-      }
-      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ssX")
-        .date(from: dateString) {
-        return date
-      }
-
-      // 4. 초단위 (타임존 없음)
-      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss")
-        .date(from: dateString) {
-        return date
-      }
-
-      // 5. 기존 형식 시도 (하위 호환성 유지)
+      // 1) 마이크로초 + 타임존
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXXXX").date(from: dateString) { return date }
+      // 2) 마이크로초
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss.SSSSSS").date(from: dateString) { return date }
+      // 3) 초단위 + 타임존 (ISO)
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ssXXXXX").date(from: dateString) { return date }
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ssX").date(from: dateString) { return date }
+      // 4) 초단위 (타임존 없음)
+      if let date = DateFormatter.cached("yyyy-MM-dd'T'HH:mm:ss").date(from: dateString) { return date }
+      // 5) yyyy-MM-dd HH:mm:ss (approvedAt 등)
+      if let date = DateFormatter.cached("yyyy-MM-dd HH:mm:ss").date(from: dateString) { return date }
+      // 6) 기존 형식 시도 (하위 호환성 유지)
       if let self = self,
          let date = self.dateFormatter.date(from: dateString) { // "yyyy-MM-dd'T'HH:mm:ssX"
         return date

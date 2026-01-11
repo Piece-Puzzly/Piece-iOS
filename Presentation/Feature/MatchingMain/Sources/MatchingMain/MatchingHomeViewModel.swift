@@ -49,6 +49,7 @@ final class MatchingHomeViewModel {
 
   private var matchInfosList: [MatchInfosModel] = []                  // Card의 Entity 원본
   private var timerManagers: [Int: MatchingTimerManager] = [:]
+  private var approvedAt: Date? = nil
   
   private(set) var viewState: MatchingHomeViewState = .loading
   private(set) var selectedMatchId: Int?
@@ -274,7 +275,8 @@ private extension MatchingHomeViewModel {
       let userInfo = try await getUserInfoUseCase.execute()
       let userRole = userInfo.role
       let profileStatus = userInfo.profileStatus
-      
+      let approvedAt = userInfo.approvedAt
+      self.approvedAt = approvedAt
       PCUserDefaultsService.shared.setUserRole(userRole)
       PCAmplitude.setUserId(with: String(userInfo.id))
       
@@ -478,6 +480,28 @@ private extension MatchingHomeViewModel {
   }
 
   // MARK: - BASIC Match Pool Exhausted Check
+  /// 승인일 당일(KST) 22시 전까지 BASIC 풀 부족 알럿을 억제할지 여부
+  func shouldSuppressBasicPoolAlert(approvedAt: Date?) -> Bool {
+    guard let approvedAt else { return false }
+    
+    var calendar = Calendar.current
+    calendar.timeZone = TimeZone.current
+    
+    let approvedHour = calendar.component(.hour, from: approvedAt)
+    guard approvedHour < 22 else { return false }
+    
+    let approvedDate = calendar.dateComponents([.year, .month, .day], from: approvedAt)
+    let currentDate = calendar.dateComponents([.year, .month, .day], from: Date())
+    guard approvedDate.year == currentDate.year,
+          approvedDate.month == currentDate.month,
+          approvedDate.day == currentDate.day else {
+      return false
+    }
+    
+    let currentHour = calendar.component(.hour, from: Date())
+    return currentHour < 22
+  }
+  
   /// 오후 10시 기준 논리적 날짜 계산 (yyyy-MM-dd)
   func getLogicalDate(for date: Date = Date()) -> String {
     let calendar = Calendar.current
@@ -512,6 +536,7 @@ private extension MatchingHomeViewModel {
 
   /// BASIC 매치 풀 부족 체크 및 알럿 표시
   func checkBasicMatchPoolExhausted() {
+    guard !shouldSuppressBasicPoolAlert(approvedAt: approvedAt) else { return }
     guard !hasBasicMatch() else { return }
     guard !hasShownBasicPoolExhaustedAlertToday() else { return }
 
