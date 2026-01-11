@@ -15,6 +15,8 @@ public class NetworkService {
   public static let shared = NetworkService()
   private let authQueue = DispatchQueue(label: "authQueue")
   private let networkLogger: NetworkLogger
+  private let authenticator: OAuthAuthenticator
+  private let interceptor: AuthenticationInterceptor<OAuthAuthenticator>
   private let dateFormatter = DateFormatter()
   private var session: Session
   
@@ -30,6 +32,7 @@ public class NetworkService {
       expiration = Date(timeIntervalSince1970: exp)
     }
     
+    self.authenticator = OAuthAuthenticator()
     // Create credential and session
     let credential = OAuthCredential(
       accessToken: accessToken,
@@ -37,10 +40,10 @@ public class NetworkService {
       expiration: expiration
     )
     
-    let authenticator = OAuthAuthenticator()
     let interceptor = AuthenticationInterceptor(authenticator: authenticator, credential: credential)
     let networkLogger = NetworkLogger()
     self.networkLogger = networkLogger
+    self.interceptor = interceptor
     self.session = Session(
       interceptor: interceptor,
       eventMonitors: [networkLogger]
@@ -150,13 +153,9 @@ public class NetworkService {
         refreshToken: refreshToken,
         expiration: expiration
       )
-      
-      let authenticator = OAuthAuthenticator()
-      let interceptor = AuthenticationInterceptor(authenticator: authenticator, credential: credential)
-      self.session = Session(
-        interceptor: interceptor,
-        eventMonitors: [self.networkLogger]
-      )
+
+      // 세션은 유지하고 인터셉터의 크레덴셜만 갱신하여 in-flight 요청이 끊기지 않도록 함
+      self.interceptor.credential = credential
     }
   }
 

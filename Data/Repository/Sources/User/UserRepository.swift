@@ -43,6 +43,7 @@ private extension UserRepository {
     else { return }
     
     saveTokens(accessToken: accessToken, refreshToken: refreshToken)
+    networkService.updateCredentials()
   }
   
   func saveTokens(accessToken: String, refreshToken: String) {

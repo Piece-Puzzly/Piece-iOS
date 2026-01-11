@@ -333,17 +333,19 @@ private extension MatchingHomeViewModel {
     }
   }
 
-  // TODO: - 새로운 인연 버튼 UI 까지 구현하고 이번 1312는 마무리하자 ✅
-  // TODO: - 그리고 이제 타이머 구현해야해. ✅
   func loadMatches() async {
-    if let matchInfos = try? await getMatchesInfoUseCase.execute() {
+    do {
+      let matchInfos = try await getMatchesInfoUseCase.execute()
       matchInfosList = matchInfos
-    } else {
-      matchInfosList = MatchInfosModel.dummy
+      
+      selectedMatchId = determineInitialSelection()
+      updateMatchingCards()
+    } catch {
+      matchInfosList = []
+      selectedMatchId = nil
+      matchingCards = []
+      print("getMatchesInfoUseCase Error :\(error.localizedDescription)")
     }
-    
-    selectedMatchId = determineInitialSelection()
-    updateMatchingCards()
   }
   
   func determineInitialSelection() -> Int? {
