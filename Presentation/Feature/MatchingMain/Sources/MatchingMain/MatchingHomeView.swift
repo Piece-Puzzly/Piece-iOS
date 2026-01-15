@@ -182,10 +182,13 @@ fileprivate struct MatchingListContentView: View {
         .padding(.horizontal, 20)
       
     case .profileStatusRejected:
-      ProfileRejectedView(viewModel: profileRejectedViewModel)
+      ProfileRejectedView(
+        profileRejectedViewModel: profileRejectedViewModel,
+        matchingHomeViewModel: matchingHomeViewModel
+      )
     
     case .userRolePending:
-      MatchingPendingCardView()
+      MatchingPendingCardView(viewModel: matchingHomeViewModel)
         .padding(.top, 16)
         .padding(.bottom, 12)
         .padding(.horizontal, 20)

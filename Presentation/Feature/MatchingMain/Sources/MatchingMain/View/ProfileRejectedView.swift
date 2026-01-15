@@ -13,15 +13,20 @@ import PCAmplitude
 struct ProfileRejectedView: View {
   @Environment(Router.self) private var router: Router
   
-  private let viewModel: ProfileRejectedViewModel
+  private let profileRejectedViewModel: ProfileRejectedViewModel
+  private let matchingHomeViewModel: MatchingHomeViewModel
   
-  init(viewModel: ProfileRejectedViewModel) {
-    self.viewModel = viewModel
+  init(
+    profileRejectedViewModel: ProfileRejectedViewModel,
+    matchingHomeViewModel: MatchingHomeViewModel
+  ) {
+    self.profileRejectedViewModel = profileRejectedViewModel
+    self.matchingHomeViewModel = matchingHomeViewModel
   }
   
   var body: some View {
     Group {
-      switch viewModel.viewState {
+      switch profileRejectedViewModel.viewState {
       case .loading:
         ProfileRejectContentView(
           message: { ProgressView() },
@@ -29,14 +34,18 @@ struct ProfileRejectedView: View {
         )
         
       case .success:
-        ProfileRejectContentView(
-          message: { ProfileRejectMessageView(reason: viewModel.rejectedReason) },
-          action: { router.setRoute(.editRejectedProfile) }
-        )
+        ZStack {
+          MatchingPendingCardView(viewModel: matchingHomeViewModel)
+          
+          ProfileRejectContentView(
+            message: { ProfileRejectMessageView(reason: profileRejectedViewModel.rejectedReason) },
+            action: { router.setRoute(.editRejectedProfile) }
+          )
+        }
       }
     }
     .onAppear {
-      viewModel.handleAction(.onAppear)
+      profileRejectedViewModel.handleAction(.onAppear)
     }
     .trackScreen(trackable: DefaultProgress.matchMainProfileRejectPopup)
   }
