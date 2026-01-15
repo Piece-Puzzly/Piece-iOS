@@ -483,26 +483,30 @@ private extension MatchingHomeViewModel {
   }
 
   // MARK: - BASIC Match Pool Exhausted Check
-  /// 승인일 당일(KST) 22시 전까지 BASIC 풀 부족 알럿을 억제할지 여부
+  /// 심사 승인 시간대(22시 전/후)에 따른 BASIC 풀 부족 알럿 억제 로직 세분화
   func shouldSuppressBasicPoolAlert(approvedAt: Date?) -> Bool {
     guard let approvedAt else { return false }
     
     var calendar = Calendar.current
     calendar.timeZone = TimeZone.current
     
+    let startOfDay = calendar.startOfDay(for: approvedAt)
     let approvedHour = calendar.component(.hour, from: approvedAt)
-    guard approvedHour < 22 else { return false }
     
-    let approvedDate = calendar.dateComponents([.year, .month, .day], from: approvedAt)
-    let currentDate = calendar.dateComponents([.year, .month, .day], from: Date())
-    guard approvedDate.year == currentDate.year,
-          approvedDate.month == currentDate.month,
-          approvedDate.day == currentDate.day else {
+    // 22시 이전 승인: 당일 22시까지 억제
+    // 22시 이후 승인: 다음날 22시까지 억제
+    let deadlineDayStart: Date
+    if approvedHour < 22 {
+      deadlineDayStart = startOfDay
+    } else {
+      deadlineDayStart = calendar.date(byAdding: .day, value: 1, to: startOfDay) ?? startOfDay
+    }
+    
+    guard let deadline = calendar.date(byAdding: .hour, value: 22, to: deadlineDayStart) else {
       return false
     }
     
-    let currentHour = calendar.component(.hour, from: Date())
-    return currentHour < 22
+    return Date() < deadline
   }
   
   /// 오후 10시 기준 논리적 날짜 계산 (yyyy-MM-dd)
