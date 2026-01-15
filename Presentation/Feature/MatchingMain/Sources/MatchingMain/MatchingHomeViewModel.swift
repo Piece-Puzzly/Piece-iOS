@@ -280,6 +280,8 @@ private extension MatchingHomeViewModel {
       PCUserDefaultsService.shared.setUserRole(userRole)
       PCAmplitude.setUserId(with: String(userInfo.id))
       
+      await checkUnreadNotifications()
+      
       switch profileStatus {
       case .REJECTED:
         viewState = .profileStatusRejected
@@ -298,7 +300,6 @@ private extension MatchingHomeViewModel {
           group.addTask { await self.loadMatches() }
           group.addTask { await self.loadPuzzleCount() }
           group.addTask { await self.fetchCanFreeMatch() }
-          group.addTask { await self.checkUnreadNotifications() }
         }
 
         checkBasicMatchPoolExhausted() // BASIC 매치 풀 부족 체크
