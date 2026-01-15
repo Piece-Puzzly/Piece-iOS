@@ -126,14 +126,13 @@ private extension WithdrawView {
         get: { viewModel.currentWithdraw == type },
         set: { viewModel.handleAction(.bindingWithdraw($0 ? type : nil)) }
       ))
-      .padding(.leading, 14)
       
       Text(type.rawValue)
         .foregroundStyle(.grayscaleBlack)
         .pretendard(.body_M_R)
         .padding(.vertical, 14)
       
-      Spacer(minLength: 14)
+      Spacer()
     }
   }
   
