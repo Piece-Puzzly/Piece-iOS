@@ -25,7 +25,7 @@ struct MatchingNavigationBar: View {
         foregroundColor: .grayscaleWhite,
         leftButton: { PCPuzzleCount(style: .skeleton(.dark)) },
         leftButtonTap: { /* None Action */ },
-        rightIcon: DesignSystemAsset.Icons.alarm32.swiftUIImage,
+        rightIcon: notificationIcon,
         rightIconTap: { /* None Action */ }
       )
       
@@ -33,7 +33,7 @@ struct MatchingNavigationBar: View {
       HomeNavigationBar(
         title: "Matching",
         foregroundColor: .grayscaleWhite,
-        rightIcon: DesignSystemAsset.Icons.alarm32.swiftUIImage,
+        rightIcon: notificationIcon,
         rightIconTap: {
           router.push(to: .notificationList)
         }
