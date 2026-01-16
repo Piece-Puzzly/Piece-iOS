@@ -185,9 +185,23 @@ private extension MatchingHomeViewModel {
         self?.destination = .matchProfileBasic(matchId: matchId)
       }
       
-    case .WAITING, .RESPONDED, .GREEN_LIGHT:
+    case .WAITING, .RESPONDED:
       destination = .matchProfileBasic(matchId: matchId)
 
+    case .GREEN_LIGHT:
+      if targetMatchingCardType == .AUTO {
+        withSpinner { [weak self] in
+          _ = try? await self?.patchMatchesCheckPieceUseCase.execute(matchId: matchId)
+          PCAmplitude.trackButtonClick(
+            screenName: .matchMainHome,
+            buttonName: .checkRelationShip
+          )
+          self?.destination = .matchProfileBasic(matchId: matchId)
+        }
+      } else {
+        destination = .matchProfileBasic(matchId: matchId)
+      }
+      
     case .MATCHED:
       PCAmplitude.trackButtonClick(screenName: .matchMainHome, buttonName: .matchMatched)
       
