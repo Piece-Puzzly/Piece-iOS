@@ -25,6 +25,7 @@ final class SplashViewModel {
   }
   
   let inquiriesUri = "https://kd0n5.channel.io/home"
+  var showMaintenanceAlert: Bool = false
   var showNeedsForceUpdateAlert: Bool = false
   var showBannedAlert: Bool = false
   private(set) var destination: Route?
