@@ -152,4 +152,12 @@ extension PCFirebase {
     guard let remoteConfig else { return -1 }
     return remoteConfig[key.rawValue].numberValue.doubleValue
   }
+
+  // MARK: - Maintenance
+  public func maintenancePeriodString(isDebug: Bool) -> String {
+    if isDebug {
+      return string(forKey: .maintenancePeriodIOSDebug)
+    }
+    return string(forKey: .maintenancePeriodIOS)
+  }
 }
