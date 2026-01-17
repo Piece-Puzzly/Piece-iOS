@@ -49,7 +49,7 @@ public final class PCFirebase {
     #if DEBUG
     settings.minimumFetchInterval = 0
     #else
-    settings.minimumFetchInterval = 43_200
+    settings.minimumFetchInterval = 600
     #endif
     
     remoteConfig.configSettings = settings
