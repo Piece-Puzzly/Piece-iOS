@@ -21,21 +21,13 @@ import PCAmplitude
 final class SplashViewModel {
   enum Action {
     case onAppear
-    case openAppStore
   }
   
   let inquiriesUri = "https://kd0n5.channel.io/home"
-  var showMaintenanceAlert: Bool = false
-  var showNeedsForceUpdateAlert: Bool = false
   var showBannedAlert: Bool = false
   private(set) var destination: Route?
-  private(set) var maintenancePeriod: String = ""
   
   private let getUserInfoUseCase: GetUserInfoUseCase
-  
-  private struct MaintenancePayload: Decodable {
-    let maintenancePeriod: String?
-  }
   
   init(getUserInfoUseCase: GetUserInfoUseCase) {
     self.getUserInfoUseCase = getUserInfoUseCase
@@ -45,22 +37,18 @@ final class SplashViewModel {
     switch action {
     case .onAppear:
       onAppear()
-      
-    case .openAppStore:
-      openAppStore()
     }
   }
   
   private func onAppear() {
-    /// 1.  강제 업데이트 필요 여부 확인
-    /// 2. 온보딩 여부 확인
+    /// 1. 온보딩 여부 확인
     /// - 온보딩 본 적 없으면 온보딩 화면으로
     /// - 본 적 있으면 토큰 확인
-    /// 3. 인증 토큰 확인
+    /// 2. 인증 토큰 확인
     /// - accessToken이 유효하면 바로 사용
     /// - accessToken이 유효하지 않으면 refreshToken으로 갱신 시도 (Interceptor에서 처리)
     /// - 둘 다 없거나 갱신 실패시 로그인 화면으로 이동
-    /// 4. 인증 성공 후 role에 따라 화면 분기 처리
+    /// 3. 인증 성공 후 role에 따라 화면 분기 처리
     /// - NONE: 소셜 로그인 완료, SMS 인증 전 > SMS 인증 화면으로
     /// - REGISTER: SMS 인증 완료 > 프로필 등록 화면으로
     /// - PENDING: 프로필 등록 완료, 프로필 심사중 > 매칭 메인 - 심사중
@@ -70,12 +58,6 @@ final class SplashViewModel {
     
     Task {
       do {
-        await checkForceUpdate()
-        guard !showNeedsForceUpdateAlert else { return }
-        
-        let isDebug = _isDebugAssertConfiguration()
-        if checkMaintenance(isDebug: isDebug) { return }
-        
         guard checkOnboarding() else { return }
         guard checkAccesstoken() else { return }
         try await setRoute()
@@ -123,49 +105,6 @@ final class SplashViewModel {
     }
   }
   
-  // MARK: - onAppear 시 로직
-  
-  private func checkForceUpdate() async {
-    do {
-      try await PCFirebase.shared.fetchRemoteConfigValues()
-      let currentVersion = AppVersion.appVersion()
-      
-      #if DEBUG
-      let minimumVersion = PCFirebase.shared.minimumVersionDebug()
-      #else
-      let minimumVersion = PCFirebase.shared.minimumVersion()
-      #endif
-
-      let needsForceUpdate = currentVersion.compare(minimumVersion, options: .numeric) == .orderedAscending
-      
-      NSLog(needsForceUpdate ? ">>> LOG:🚨 강제 업데이트 필요합니다." : ">>> LOG: 🔹 업데이트가 없습니다.")
-      NSLog(">>> LOG: 🔔 currentVersion(\(currentVersion))")
-      NSLog(">>> LOG: 🔔 minimumVersion(\(minimumVersion))")
-      NSLog(">>> LOG: 🔔 needsForceUpdate(\(needsForceUpdate))")
-      showNeedsForceUpdateAlert = needsForceUpdate
-    } catch {
-      print("🔥 Failed to check for updates: \(error.localizedDescription)")
-      showNeedsForceUpdateAlert = false
-    }
-  }
-  
-  private func checkMaintenance(isDebug: Bool) -> Bool {
-    let jsonString = PCFirebase.shared.maintenancePeriodString(isDebug: isDebug)
-    let trimmed = jsonString.trimmingCharacters(in: .whitespacesAndNewlines)
-    guard !trimmed.isEmpty else { return false }
-    
-    guard let data = trimmed.data(using: .utf8),
-          let payload = try? JSONDecoder().decode(MaintenancePayload.self, from: data),
-          let period = payload.maintenancePeriod,
-          !period.isEmpty else {
-      return false
-    }
-    
-    maintenancePeriod = period
-    showMaintenanceAlert = true
-    return true
-  }
-  
   private func checkOnboarding() -> Bool {
     guard PCUserDefaultsService.shared.getDidSeeOnboarding() else {
       print("온보딩을 본 적 없어 온보딩 화면으로 이동")
@@ -184,15 +123,6 @@ final class SplashViewModel {
     }
     print("SplashView AccessToken: \(accessToken)")
     return true
-  }
-  
-  private func openAppStore() {
-    let appId = "6742348014"
-    let appStoreUrl = "itms-apps://itunes.apple.com/app/apple-store/\(appId)"
-    guard let url = URL(string: appStoreUrl) else { return }
-    if UIApplication.shared.canOpenURL(url) {
-      UIApplication.shared.open(url)
-    }
   }
   
   private func setRoute() async throws {
