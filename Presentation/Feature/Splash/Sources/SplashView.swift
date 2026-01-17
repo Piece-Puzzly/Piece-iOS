@@ -90,7 +90,7 @@ struct SplashView: View {
       
       Group {
         Text("일시 중단 시간: ").foregroundColor(.grayscaleDark3) +
-        Text("1.NN(N) 08:00 - 09:00").foregroundStyle(.subDefault)
+        Text(viewModel.maintenancePeriod).foregroundStyle(.subDefault)
       }
       .padding(.vertical, 12)
       .frame(maxWidth: .infinity)

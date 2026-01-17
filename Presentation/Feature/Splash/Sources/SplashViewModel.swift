@@ -29,8 +29,13 @@ final class SplashViewModel {
   var showNeedsForceUpdateAlert: Bool = false
   var showBannedAlert: Bool = false
   private(set) var destination: Route?
+  private(set) var maintenancePeriod: String = ""
   
   private let getUserInfoUseCase: GetUserInfoUseCase
+  
+  private struct MaintenancePayload: Decodable {
+    let maintenancePeriod: String?
+  }
   
   init(getUserInfoUseCase: GetUserInfoUseCase) {
     self.getUserInfoUseCase = getUserInfoUseCase
@@ -67,6 +72,9 @@ final class SplashViewModel {
       do {
         await checkForceUpdate()
         guard !showNeedsForceUpdateAlert else { return }
+        
+        let isDebug = _isDebugAssertConfiguration()
+        if checkMaintenance(isDebug: isDebug) { return }
         
         guard checkOnboarding() else { return }
         guard checkAccesstoken() else { return }
@@ -139,6 +147,23 @@ final class SplashViewModel {
       print("🔥 Failed to check for updates: \(error.localizedDescription)")
       showNeedsForceUpdateAlert = false
     }
+  }
+  
+  private func checkMaintenance(isDebug: Bool) -> Bool {
+    let jsonString = PCFirebase.shared.maintenancePeriodString(isDebug: isDebug)
+    let trimmed = jsonString.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmed.isEmpty else { return false }
+    
+    guard let data = trimmed.data(using: .utf8),
+          let payload = try? JSONDecoder().decode(MaintenancePayload.self, from: data),
+          let period = payload.maintenancePeriod,
+          !period.isEmpty else {
+      return false
+    }
+    
+    maintenancePeriod = period
+    showMaintenanceAlert = true
+    return true
   }
   
   private func checkOnboarding() -> Bool {
